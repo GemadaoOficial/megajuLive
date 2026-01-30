@@ -1,0 +1,144 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite não suporta Enums nativamente, usando String
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("COLLABORATOR") // ADMIN, COLLABORATOR
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  lives     Live[]
+  moduleProgress UserModuleProgress[]
+  
+  @@map("users")
+}
+
+model Live {
+  id                    String     @id @default(uuid())
+  userId                String
+  user                  User       @relation(fields: [userId], references: [id])
+  
+  status                String     @default("IN_PROGRESS") // IN_PROGRESS, FINISHED, CANCELLED
+  
+  // Dados Temporais
+  startedAt             DateTime   @default(now())
+  finishedAt            DateTime?
+  duration              Int?       // em minutos
+  
+  // Métricas de Seguidores
+  followersStart        Int
+  followersEnd          Int?
+  followersGained       Int?
+  
+  // Métricas de Moedas
+  coinsStart            Float
+  coinsEnd              Float?
+  coinsSpent            Float?     // calculado: coinsStart - coinsEnd
+  
+  // Métricas de Engajamento
+  peakViewers           Int?
+  totalViews            Int?
+  chatInteractions      Int?
+  likes                 Int?
+  shares                Int?
+  
+  // Métricas de Vendas
+  totalOrders           Int?
+  totalRevenue          Float?
+  conversionRate        Float?
+  
+  // ROI
+  roi                   Float?     // (totalRevenue - coinsSpent) / coinsSpent * 100
+  
+  // Screenshots e Relatórios
+  screenshotUrl         String?
+  excelUrl              String?
+  
+  // Dados extraídos por IA
+  aiExtractedData       String?    // SQLite não suporta Json nativo, usando String (JSON.stringify)
+  
+  // Observações
+  notes                 String?
+  
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+  
+  products              LiveProduct[]
+  
+  @@map("lives")
+}
+
+model LiveProduct {
+  id              String   @id @default(uuid())
+  liveId          String
+  live            Live     @relation(fields: [liveId], references: [id], onDelete: Cascade)
+  
+  // Dados do Produto
+  productName     String
+  productSku      String?
+  productPrice    Float
+  
+  // Métricas do Produto na Live
+  timesShown      Int      @default(0)
+  clicks          Int      @default(0)
+  views           Int      @default(0)
+  orders          Int      @default(0)
+  revenue         Float    @default(0)
+  
+  // Posicionamento
+  displayOrder    Int?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("live_products")
+}
+
+model Module {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String?
+  content     String
+  order       Int
+  status      String   @default("em_breve")
+  icon        String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userProgress UserModuleProgress[]
+  
+  @@map("modules")
+}
+
+model UserModuleProgress {
+  id        String   @id @default(uuid())
+  userId    String
+  moduleId  String
+  completed Boolean  @default(false)
+  completedAt DateTime?
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  module    Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, moduleId])
+  @@map("user_module_progress")
+}
