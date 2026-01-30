@@ -34,20 +34,22 @@ model Live {
   userId                String
   user                  User       @relation(fields: [userId], references: [id])
   
-  status                String     @default("IN_PROGRESS") // IN_PROGRESS, FINISHED, CANCELLED
+  title                 String?    // Título da Live (Agendada ou Realizada)
+  status                String     @default("IN_PROGRESS") // SCHEDULED, IN_PROGRESS, FINISHED, CANCELLED
   
   // Dados Temporais
-  startedAt             DateTime   @default(now())
+  scheduledDate         DateTime?  // Data agendada
+  startedAt             DateTime?  // Data real de início (pode ser diferente da agendada)
   finishedAt            DateTime?
   duration              Int?       // em minutos
   
   // Métricas de Seguidores
-  followersStart        Int
+  followersStart        Int?       // Opcional até iniciar
   followersEnd          Int?
   followersGained       Int?
   
   // Métricas de Moedas
-  coinsStart            Float
+  coinsStart            Float?     // Opcional até iniciar
   coinsEnd              Float?
   coinsSpent            Float?     // calculado: coinsStart - coinsEnd
   

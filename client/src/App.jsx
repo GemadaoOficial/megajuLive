@@ -9,6 +9,7 @@ import StartLive from './pages/live/StartLive';
 import LiveInProgress from './pages/live/LiveInProgress';
 import FinishLive from './pages/live/FinishLive';
 import LiveHistory from './pages/live/LiveHistory';
+import LiveSchedule from './pages/live/LiveSchedule';
 import CollaboratorDashboard from './pages/dashboard/CollaboratorDashboard';
 import TutorialHome from './pages/tutorial/TutorialHome';
 import ModulePage from './pages/tutorial/ModulePage';
@@ -44,6 +45,7 @@ function App() {
                         <Route index element={<Navigate to="/dashboard" replace />} />
                         <Route path="dashboard" element={<CollaboratorDashboard />} />
                         <Route path="lives" element={<LiveHistory />} />
+                        <Route path="schedule" element={<LiveSchedule />} />
                         <Route path="live/start" element={<StartLive />} />
                         <Route path="live/:id/active" element={<LiveInProgress />} />
                         <Route path="live/:id/finish" element={<FinishLive />} />

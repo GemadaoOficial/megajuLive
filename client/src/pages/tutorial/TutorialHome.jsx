@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Video, Settings, Star, CheckCircle, PlayCircle, Trophy, GraduationCap, ArrowRight, Lock } from 'lucide-react';
+import { BookOpen, Video, Settings, Star, CheckCircle, PlayCircle, Trophy, GraduationCap, ArrowRight, Lock, Check } from 'lucide-react';
 import { api } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../../components/ui/Modal';
+import TiltCard from '../../components/ui/TiltCard';
+import PremiumPageHeader from '../../components/ui/PremiumPageHeader';
 
 export default function TutorialHome() {
     const [modules, setModules] = useState([]);
@@ -10,14 +12,7 @@ export default function TutorialHome() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
-    // Mapping icons strings from DB to components
-    const iconMap = {
-        'Star': Star,
-        'Settings': Settings,
-        'BookOpen': BookOpen,
-        'Video': Video,
-        'Trophy': Trophy
-    };
+    const iconMap = { 'Star': Star, 'Settings': Settings, 'BookOpen': BookOpen, 'Video': Video, 'Trophy': Trophy };
 
     useEffect(() => {
         loadModules();
@@ -37,7 +32,12 @@ export default function TutorialHome() {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-[50vh]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <div className="relative">
+                    <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-8 h-8 bg-orange-100 rounded-full animate-pulse"></div>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -46,46 +46,41 @@ export default function TutorialHome() {
     const progressPercentage = (completedCount / modules.length) * 100;
 
     return (
-        <div className="space-y-8 animate-fade-in pb-12">
-            {/* Header Section */}
-            <div className="relative bg-gradient-to-r from-orange-500 to-red-600 rounded-3xl p-8 text-white shadow-xl overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 animate-pulse"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-yellow-400/20 rounded-full blur-2xl -ml-10 -mb-10"></div>
-
-                <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div>
-                        <div className="flex items-center mb-2">
-                            <div className="p-2 bg-white/20 rounded-lg mr-3 backdrop-blur-sm">
-                                <GraduationCap size={28} />
-                            </div>
-                            <h1 className="text-3xl font-bold">Academia Shopee Live</h1>
+        <div className="space-y-10 animate-fade-in pb-16 perspective-1000">
+            {/* Immersive Header using Component */}
+            <PremiumPageHeader
+                title={<>Shopee Live <br /> Masterclass</>}
+                subtitle={<>Desbloqueie todo o potencial das suas vendas. <span className="text-orange-400 font-semibold">Complete 100% dos módulos</span> para receber sua certificação oficial.</>}
+                variant="orange"
+                rightContent={
+                    <>
+                        <div className="flex justify-between items-end mb-4">
+                            <span className="text-slate-400 font-medium uppercase text-xs tracking-widest">Seu Nível</span>
+                            <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-300">
+                                {Math.round(progressPercentage)}%
+                            </span>
                         </div>
-                        <p className="text-orange-100 max-w-xl text-lg">
-                            Domine a arte das vendas ao vivo! Complete todos os módulos para desbloquear o recurso de Lives.
-                        </p>
-                    </div>
 
-                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 min-w-[280px]">
-                        <div className="flex justify-between items-end mb-2">
-                            <span className="text-orange-100 font-medium">Seu Progresso</span>
-                            <span className="text-2xl font-bold">{Math.round(progressPercentage)}%</span>
-                        </div>
-                        <div className="w-full bg-black/20 rounded-full h-3 mb-2 overflow-hidden">
+                        <div className="relative w-full bg-slate-800 rounded-full h-4 mb-4 shadow-inner overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 translate-x-[-100%] animate-shimmer"></div>
                             <div
-                                className="bg-yellow-400 h-3 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(250,204,21,0.5)]"
+                                className="h-full rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_20px_rgba(249,115,22,0.5)] transition-all duration-1000 ease-out relative"
                                 style={{ width: `${progressPercentage}%` }}
-                            ></div>
+                            >
+                                <div className="absolute right-0 top-0 bottom-0 w-1 bg-white/50 blur-[1px]"></div>
+                            </div>
                         </div>
-                        <div className="text-xs text-orange-200 flex justify-between">
-                            <span>{completedCount} módulos concluídos</span>
-                            <span>Total: {modules.length}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            {/* Modules Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="flex justify-between text-xs font-medium text-slate-400">
+                            <span className="flex items-center gap-1"><CheckCircle size={12} className="text-orange-500" /> {completedCount} Concluídos</span>
+                            <span>{modules.length - completedCount} Restantes</span>
+                        </div>
+                    </>
+                }
+            />
+
+            {/* Modules Grid (3D Tilt Layout) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-2">
                 {modules.map((module, index) => {
                     const IconComponent = iconMap[module.icon] || BookOpen;
                     const isCompleted = module.completed;
@@ -93,7 +88,6 @@ export default function TutorialHome() {
 
                     const handleModuleClick = () => {
                         if (isLocked) {
-
                             setIsModalOpen(true);
                             return;
                         }
@@ -101,116 +95,137 @@ export default function TutorialHome() {
                     };
 
                     return (
-                        <div
+                        <TiltCard
                             key={module.id}
+                            isCompleted={isCompleted}
+                            disabled={isLocked}
                             onClick={handleModuleClick}
-                            className={`relative bg-white/80 backdrop-blur-xl rounded-2xl border transition-all duration-300 overflow-hidden flex flex-col h-full
+                            style={{ animationDelay: `${index * 100}ms` }}
+                            className={`
+                                h-full rounded-[2rem] border transition-all duration-300 animate-slide-up
                                 ${isCompleted
-                                    ? 'border-green-200/50 shadow-sm hover:shadow-green-100/50 cursor-pointer group'
+                                    ? 'bg-white border-emerald-200/50 shadow-[0_20px_40px_-12px_rgba(16,185,129,0.15)] group'
                                     : isLocked
-                                        ? 'border-gray-200 opacity-60 grayscale cursor-not-allowed'
-                                        : 'border-white/50 shadow-lg hover:shadow-orange-glow hover:-translate-y-2 cursor-pointer group'
+                                        ? 'bg-gray-50/50 border-gray-200/50 cursor-not-allowed opacity-80'
+                                        : 'bg-white border-white/80 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.05)] hover:shadow-[0_25px_50px_-12px_rgba(249,115,22,0.15)] cursor-pointer group hover:border-orange-100'
                                 }
                             `}
-                            style={{ animationDelay: `${index * 100}ms` }}
                         >
-                            {/* Card Status Indicator */}
-                            <div className={`h-1.5 w-full ${isCompleted ? 'bg-green-500' : isLocked ? 'bg-gray-300' : 'bg-gray-200 group-hover:bg-gradient-to-r from-orange-400 to-red-500'}`}></div>
+                            <div className="p-8 flex flex-col h-full relative z-10">
+                                {/* LOCKED OVERLAY */}
+                                {isLocked && (
+                                    <div className="absolute inset-0 z-30 backdrop-blur-[3px] bg-slate-50/60 flex flex-col items-center justify-center text-center p-6 grayscale">
+                                        <div className="bg-white p-4 rounded-2xl shadow-xl shadow-gray-200/50 mb-3 transform scale-90">
+                                            <Lock size={24} className="text-gray-300" />
+                                        </div>
+                                        <span className="text-xs font-black text-gray-300 tracking-widest uppercase">Bloqueado</span>
+                                    </div>
+                                )}
 
-                            <div className="p-6 flex-1 flex flex-col">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner transition-transform group-hover:scale-110
+                                {/* Top Icons & Status */}
+                                <div className="flex justify-between items-start mb-8">
+                                    <div className={`
+                                        w-16 h-16 rounded-2xl flex items-center justify-center relative transition-all duration-500
                                         ${isCompleted
-                                            ? 'bg-green-100 text-green-600'
+                                            ? 'bg-gradient-to-br from-emerald-100 to-teal-50 text-emerald-600 shadow-inner group-hover:scale-110 group-hover:rotate-3'
                                             : isLocked
-                                                ? 'bg-gray-100 text-gray-400'
-                                                : 'bg-gradient-to-br from-orange-100 to-red-50 text-orange-600'
-                                        }`}
-                                    >
-                                        <IconComponent size={28} className={!isCompleted && !isLocked ? "group-hover:animate-shake" : ""} />
+                                                ? 'bg-gray-100 text-gray-300'
+                                                : 'bg-gradient-to-br from-orange-50 to-rose-50 text-orange-500 shadow-sm group-hover:shadow-orange-200/50 group-hover:scale-110 group-hover:-rotate-3'
+                                        }
+                                    `}>
+                                        <IconComponent size={30} strokeWidth={1.5} />
+                                        {isCompleted && (
+                                            <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-1 rounded-full shadow-lg border-2 border-white">
+                                                <Check size={12} strokeWidth={4} />
+                                            </div>
+                                        )}
                                     </div>
 
                                     {isCompleted ? (
-                                        <div className="flex items-center text-green-600 bg-green-50 px-3 py-1 rounded-full text-xs font-bold border border-green-100">
-                                            <CheckCircle size={14} className="mr-1" />
-                                            CONCLUÍDO
+                                        <div className="px-3 py-1 rounded-full bg-emerald-100/50 border border-emerald-200 text-emerald-700 text-[10px] font-bold uppercase tracking-wide flex items-center gap-1">
+                                            <Trophy size={12} /> Concluído
                                         </div>
-                                    ) : (
-                                        <div className={`flex items-center px-3 py-1 rounded-full text-xs font-bold border ${isLocked ? 'text-gray-500 bg-gray-100 border-gray-200' : 'text-orange-600 bg-orange-50 border-orange-100'}`}>
-                                            <PlayCircle size={14} className="mr-1" />
-                                            {isLocked ? 'BLOQUEADO' : 'DISPONÍVEL'}
+                                    ) : !isLocked && (
+                                        <div className="px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-orange-600 text-[10px] font-bold uppercase tracking-wide flex items-center gap-1 group-hover:bg-orange-100 transition-colors">
+                                            <PlayCircle size={12} /> Disponível
                                         </div>
                                     )}
                                 </div>
 
-                                <h3 className={`text-xl font-bold mb-2 group-hover:text-primary transition-colors ${isCompleted ? 'text-green-800' : isLocked ? 'text-gray-500' : 'text-gray-800'}`}>
-                                    {module.title}
-                                </h3>
+                                {/* Content Info */}
+                                <div className="flex-1">
+                                    <h3 className={`text-xl font-bold mb-3 leading-tight
+                                        ${isCompleted ? 'text-emerald-950' : 'text-slate-800 group-hover:text-orange-600 transition-colors'}
+                                    `}>
+                                        {module.title}
+                                    </h3>
+                                    <p className="text-sm text-slate-500 leading-relaxed font-medium line-clamp-3">
+                                        {module.description}
+                                    </p>
+                                </div>
 
-                                <p className="text-gray-500 text-sm mb-6 line-clamp-3 leading-relaxed flex-1">
-                                    {module.description}
-                                </p>
+                                {/* Footer Action */}
+                                <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
+                                    <span className="text-xs font-bold text-slate-300 uppercase tracking-widest">
+                                        Aula 0{index + 1}
+                                    </span>
 
-                                <div className={`mt-auto pt-4 border-t flex items-center justify-between transition-colors ${isLocked ? 'border-gray-200' : 'border-gray-100 group-hover:border-orange-100'}`}>
-                                    <span className={`text-xs font-medium transition-colors ${isLocked ? 'text-gray-400' : 'text-gray-400 group-hover:text-orange-400'}`}>
-                                        Módulo {index + 1}
-                                    </span>
-                                    <span className={`text-sm font-bold flex items-center transition-transform group-hover:translate-x-1
-                                        ${isCompleted ? 'text-green-600' : isLocked ? 'text-gray-400' : 'text-primary'}`
-                                    }>
-                                        {isCompleted ? 'Revisar Conteúdo' : isLocked ? 'Bloqueado' : 'Iniciar Aula'}
-                                        {!isLocked && <ArrowRight size={16} className="ml-2" />}
-                                    </span>
+                                    {!isLocked && (
+                                        <button className={`
+                                            flex items-center gap-2 text-sm font-bold transition-all duration-300 transform group-hover:translate-x-2
+                                            ${isCompleted ? 'text-emerald-600' : 'text-orange-500'}
+                                        `}>
+                                            {isCompleted ? 'Revisar' : 'Começar'}
+                                            <ArrowRight size={16} />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
-
-                            {/* Hover Shine Effect */}
-                            {!isCompleted && !isLocked && (
-                                <div className="absolute top-0 -left-[100%] w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[20deg] group-hover:animate-shine pointer-events-none"></div>
-                            )}
-                        </div>
+                        </TiltCard>
                     );
                 })}
-            </div>
 
-            {/* TikTok Section (Locked) */}
-            <div className="relative mt-12 bg-gray-900 rounded-3xl p-8 text-white shadow-xl overflow-hidden opacity-90 cursor-not-allowed group">
-                {/* Overlay Lock */}
-                <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-20 flex flex-col items-center justify-center text-center p-6">
-                    <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-4 backdrop-blur-md animate-pulse">
-                        <Settings className="text-gray-400" size={32} />
-                    </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">Tutorial Live TikTok</h3>
-                    <span className="bg-gray-700 text-gray-200 px-4 py-1.5 rounded-full text-sm font-bold border border-gray-600 flex items-center">
-                        <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2 animate-pulse"></span>
-                        EM BREVE
-                    </span>
-                </div>
+                {/* Coming Soon Card (Stays Flat but Glassy) */}
+                <div className="col-span-1 md:col-span-2 lg:col-span-3 relative h-64 rounded-[2.5rem] overflow-hidden group">
+                    <div className="absolute inset-0 bg-slate-900"></div>
+                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-luminosity group-hover:scale-105 transition-transform duration-1000"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-slate-900/80 to-transparent"></div>
 
-                <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6 opacity-30 pointer-events-none">
-                    <div>
-                        <div className="flex items-center mb-2">
-                            <div className="p-2 bg-white/20 rounded-lg mr-3">
-                                <Video size={28} />
-                            </div>
-                            <h1 className="text-3xl font-bold">Tutorial Live TikTok</h1>
+                    <div className="relative z-10 h-full flex flex-col items-center justify-center text-center p-8">
+                        <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-4 border border-white/10 shadow-2xl animate-float">
+                            <Settings size={32} className="text-white" />
                         </div>
-                        <p className="text-gray-300 max-w-xl text-lg">
-                            Aprenda a dominar as lives no TikTok e expanda suas vendas.
-                        </p>
+                        <h3 className="text-2xl font-bold text-white mb-2">Dominando o TikTok Live</h3>
+                        <p className="text-slate-400 mb-6 font-light">Expanda suas fronteiras. Em breve na plataforma.</p>
+                        <span className="px-5 py-2 rounded-full border border-white/10 bg-white/5 text-xs text-slate-300 uppercase tracking-widest backdrop-blur-sm">
+                            Em Desenvolvimento
+                        </span>
                     </div>
                 </div>
             </div>
 
+            {/* Modal de Bloqueio */}
             <Modal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                title="Módulo Bloqueado"
-                icon={Lock}
-                type="warning"
+                title="Conteúdo Bloqueado"
             >
-                <p>Para manter o aprendizado sequencial e eficiente, você precisa <strong>concluir o módulo anterior</strong> antes de avançar.</p>
-                <p className="mt-2 text-sm text-gray-500">Concentre-se em dominar o conteúdo atual primeiro!</p>
+                <div className="text-center py-8">
+                    <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                        <Lock size={40} className="text-slate-300" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-800 mb-2">Continue sua Jornada!</h3>
+                    <p className="text-slate-500 mb-8 px-8 leading-relaxed">
+                        Para manter a qualidade do aprendizado, os módulos são liberados sequencialmente.
+                        Finalize o módulo anterior para destravar este conteúdo exclusivo.
+                    </p>
+                    <button
+                        onClick={() => setIsModalOpen(false)}
+                        className="bg-slate-900 text-white px-10 py-3.5 rounded-xl font-bold hover:bg-black transition-all transform hover:-translate-y-1 hover:shadow-lg"
+                    >
+                        Entendi, vou focar!
+                    </button>
+                </div>
             </Modal>
         </div>
     );

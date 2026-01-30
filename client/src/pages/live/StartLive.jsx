@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
-import { Play, Users, Coins, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Play, Users, Coins, AlertTriangle, ArrowRight, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function StartLive() {
@@ -20,10 +20,11 @@ export default function StartLive() {
     const checkPrerequisites = async () => {
         try {
             // 1. Get User Status (to check for bypass)
+            // 1. Get User Status (to check for bypass)
             const userResponse = await api.get('/auth/me');
-            const user = userResponse.data;
+            const user = userResponse.data.user; // Fix: Access user property from response
 
-            if (user.role === 'ADMIN' || user.skipTutorial) {
+            if (user && (user.role === 'ADMIN' || user.skipTutorial === true || user.skipTutorial === "true")) {
                 setCheckingPrereqs(false);
                 return; // Bypass check
             }
@@ -149,7 +150,7 @@ export default function StartLive() {
 
                     <div>
                         <label className="block text-sm font-bold text-gray-700 mb-2 ml-1">
-                            Saldo de Moedas
+                            Saldo de moedas atual
                         </label>
                         <div className="relative group">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -164,6 +165,24 @@ export default function StartLive() {
                             />
                         </div>
                         {errors.coins && <span className="text-xs text-red-500 mt-2 ml-1 font-medium">{errors.coins.message}</span>}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2 ml-1">
+                            Link da Live (Opcional)
+                        </label>
+                        <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <Share2 size={20} className="text-gray-400 group-focus-within:text-primary transition-colors" />
+                            </div>
+                            <input
+                                type="url"
+                                {...register("liveLink")}
+                                className="block w-full pl-12 pr-4 py-4 bg-gray-50/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-gray-800 font-medium placeholder-gray-400"
+                                placeholder="https://shopee.com.br/live/..."
+                            />
+                        </div>
+                        <p className="text-xs text-gray-400 mt-2 ml-1">Cole o link de compartilhamento da sua live aqui.</p>
                     </div>
 
                     <button

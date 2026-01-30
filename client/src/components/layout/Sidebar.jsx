@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Video, BookOpen, BarChart2, Settings, Users, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { LayoutDashboard, Video, BookOpen, BarChart2, Settings, Users, ChevronLeft, ChevronRight, LogOut, Calendar } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 export default function Sidebar() {
@@ -10,6 +10,7 @@ export default function Sidebar() {
     const navItems = [
         { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
         { icon: Video, label: 'Minhas Lives', path: '/lives' },
+        { icon: Calendar, label: 'Agendar Live', path: '/schedule' },
         { icon: BookOpen, label: 'Tutoriais', path: '/tutorials' },
     ];
 

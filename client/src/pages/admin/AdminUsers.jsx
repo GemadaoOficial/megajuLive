@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { adminService } from '../../services/adminService';
-import { Search, MoreVertical, Shield, User, Video, Edit2, CheckCircle, XCircle } from 'lucide-react';
+import { Search, MoreVertical, Shield, User, Video, Edit2, CheckCircle, XCircle, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -10,6 +10,7 @@ export default function AdminUsers() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [editingUser, setEditingUser] = useState(null);
+    const [loadingUserDetails, setLoadingUserDetails] = useState(false);
 
     useEffect(() => {
         loadUsers();
@@ -24,6 +25,20 @@ export default function AdminUsers() {
             toast.error('Erro ao carregar usuários');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleEditClick = async (user) => {
+        setLoadingUserDetails(true);
+        setEditingUser(user);
+        try {
+            const details = await adminService.getUserDetails(user.id);
+            setEditingUser({ ...user, ...details }); // Merge list data with detailed data
+        } catch (error) {
+            console.error("Failed to fetch user details", error);
+            toast.error("Erro ao carregar detalhes do usuário");
+        } finally {
+            setLoadingUserDetails(false);
         }
     };
 
@@ -92,12 +107,12 @@ export default function AdminUsers() {
                             {filteredUsers.map((user) => (
                                 <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
                                     <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 border border-slate-200">
+                                        <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleEditClick(user)}>
+                                            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 border border-slate-200 hover:border-orange-300 transition-colors">
                                                 <User size={20} />
                                             </div>
                                             <div>
-                                                <p className="font-semibold text-gray-900">{user.name}</p>
+                                                <p className="font-semibold text-gray-900 hover:text-orange-600 transition-colors">{user.name}</p>
                                                 <p className="text-sm text-gray-500">{user.email}</p>
                                             </div>
                                         </div>
@@ -130,7 +145,7 @@ export default function AdminUsers() {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <button
-                                            onClick={() => setEditingUser(user)}
+                                            onClick={() => handleEditClick(user)}
                                             className="text-gray-400 hover:text-orange-500 p-2 hover:bg-orange-50 rounded-lg transition-colors"
                                             title="Editar Usuário"
                                         >
@@ -147,66 +162,129 @@ export default function AdminUsers() {
             {/* Edit User Modal */}
             {editingUser && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md animate-in zoom-in-95 duration-200">
-                        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-gray-900">Editar Usuário</h2>
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white rounded-t-2xl z-10">
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-900">Detalhes do Usuário</h2>
+                                <p className="text-sm text-gray-500">Edite informações e visualize histórico.</p>
+                            </div>
                             <button onClick={() => setEditingUser(null)} className="text-gray-400 hover:text-gray-600">
                                 <XCircle size={24} />
                             </button>
                         </div>
 
-                        <form onSubmit={handleUpdateUser} className="p-6 space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-                                <input
-                                    type="text"
-                                    value={editingUser.name}
-                                    disabled
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
-                                />
-                            </div>
+                        <div className="p-6 overflow-y-auto custom-scrollbar">
+                            {loadingUserDetails ? (
+                                <div className="flex justify-center py-12">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* Column 1: Edit Form */}
+                                    <div className="space-y-6">
+                                        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2">Configurações</h3>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Cargo / Título</label>
-                                <input
-                                    type="text"
-                                    value={editingUser.roleTitle || ''}
-                                    onChange={(e) => setEditingUser({ ...editingUser, roleTitle: e.target.value })}
-                                    placeholder="Ex: Streamer Senior"
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                />
-                                <p className="text-xs text-gray-500 mt-1">Título exibido internamente.</p>
-                            </div>
+                                        <form id="editUserForm" onSubmit={handleUpdateUser} className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                                                <input
+                                                    type="text"
+                                                    value={editingUser.name}
+                                                    disabled
+                                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+                                                />
+                                            </div>
 
-                            <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl border border-purple-100">
-                                <input
-                                    type="checkbox"
-                                    id="skipTutorial"
-                                    checked={editingUser.skipTutorial || false}
-                                    onChange={(e) => setEditingUser({ ...editingUser, skipTutorial: e.target.checked })}
-                                    className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 border-gray-300"
-                                />
-                                <label htmlFor="skipTutorial" className="text-sm font-medium text-gray-900 cursor-pointer select-none">
-                                    Pular Tutorial Obrigatório
-                                </label>
-                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Cargo / Título</label>
+                                                <input
+                                                    type="text"
+                                                    value={editingUser.roleTitle || ''}
+                                                    onChange={(e) => setEditingUser({ ...editingUser, roleTitle: e.target.value })}
+                                                    placeholder="Ex: Streamer Senior"
+                                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                                />
+                                            </div>
 
-                            <div className="flex gap-3 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setEditingUser(null)}
-                                    className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
-                                >
-                                    Cancelar
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 px-4 py-2 text-white bg-orange-600 hover:bg-orange-700 rounded-lg font-medium transition-colors shadow-lg shadow-orange-900/20"
-                                >
-                                    Salvar Alterações
-                                </button>
-                            </div>
-                        </form>
+                                            <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl border border-purple-100">
+                                                <input
+                                                    type="checkbox"
+                                                    id="skipTutorial"
+                                                    checked={editingUser.skipTutorial || false}
+                                                    onChange={(e) => setEditingUser({ ...editingUser, skipTutorial: e.target.checked })}
+                                                    className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 border-gray-300"
+                                                />
+                                                <label htmlFor="skipTutorial" className="text-sm font-medium text-gray-900 cursor-pointer select-none">
+                                                    Pular Tutorial Obrigatório
+                                                </label>
+                                            </div>
+                                        </form>
+                                    </div>
+
+                                    {/* Column 2: History & Live Link */}
+                                    <div className="space-y-6">
+                                        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2">Última Transmissão</h3>
+
+                                        {editingUser.lives && editingUser.lives.length > 0 ? (
+                                            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                                <div className="mb-4">
+                                                    <span className="text-xs font-semibold text-gray-500 uppercase">Link da Live</span>
+                                                    {editingUser.lives[0].liveLink ? (
+                                                        <a
+                                                            href={editingUser.lives[0].liveLink}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium break-all mt-1 p-2 bg-blue-50/50 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors"
+                                                        >
+                                                            <Share2 size={16} />
+                                                            {editingUser.lives[0].liveLink}
+                                                        </a>
+                                                    ) : (
+                                                        <p className="text-sm text-gray-400 italic mt-1">Nenhum link fornecido.</p>
+                                                    )}
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                                    <div>
+                                                        <span className="text-xs text-gray-500">Data</span>
+                                                        <p className="font-medium text-gray-900">
+                                                            {new Date(editingUser.lives[0].createdAt).toLocaleDateString('pt-BR')}
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-xs text-gray-500">Duração</span>
+                                                        <p className="font-medium text-gray-900">
+                                                            {editingUser.lives[0].duration ? `${editingUser.lives[0].duration} min` : 'Em andamento'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-gray-400 text-sm">
+                                                Nenhuma live registrada ainda.
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setEditingUser(null)}
+                                className="px-4 py-2 text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg font-medium transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={handleUpdateUser}
+                                disabled={loadingUserDetails}
+                                className="px-6 py-2 text-white bg-orange-600 hover:bg-orange-700 rounded-lg font-medium transition-colors shadow-lg shadow-orange-900/20 disabled:opacity-50"
+                            >
+                                Salvar Alterações
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

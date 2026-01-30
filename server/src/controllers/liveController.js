@@ -180,3 +180,145 @@ exports.getLiveDetails = async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+// Schedule Live Schema
+const scheduleLiveSchema = z.object({
+    title: z.string().min(1, "O título é obrigatório"),
+    scheduledDate: z.string().datetime(), // ISO Date String
+    description: z.string().optional(),
+    products: z.array(z.object({
+        productName: z.string(),
+        productPrice: z.number(),
+        productSku: z.string().optional()
+    })).optional()
+});
+
+exports.scheduleLive = async (req, res) => {
+    try {
+        const data = scheduleLiveSchema.parse(req.body);
+        const userId = req.user.id;
+
+        const live = await prisma.live.create({
+            data: {
+                userId,
+                title: data.title,
+                scheduledDate: new Date(data.scheduledDate),
+                status: 'SCHEDULED',
+                notes: data.description,
+                // Initialize optional fields as null/0 where appropriate? No, allow null.
+                followersStart: null,
+                coinsStart: null,
+                products: {
+                    create: data.products || []
+                }
+            },
+            include: {
+                products: true
+            }
+        });
+
+        res.status(201).json(live);
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).json({ error: error.errors });
+        }
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.getScheduledLives = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const lives = await prisma.live.findMany({
+            where: {
+                userId,
+                status: 'SCHEDULED'
+            },
+            orderBy: {
+                scheduledDate: 'asc'
+            },
+            include: {
+                products: true
+            }
+        });
+        res.json(lives);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.updateScheduledLive = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = scheduleLiveSchema.partial().parse(req.body); // Allow partial updates
+
+        // Check if live exists and is scheduled
+        const existingLive = await prisma.live.findUnique({
+            where: { id, userId: req.user.id }
+        });
+
+        if (!existingLive || existingLive.status !== 'SCHEDULED') {
+            return res.status(404).json({ error: 'Scheduled live not found or cannot be edited' });
+        }
+
+        const updateData = {
+            ...data,
+            scheduledDate: data.scheduledDate ? new Date(data.scheduledDate) : undefined,
+            products: undefined // Handle products separately if needed
+        };
+
+        // If products are updated, we might need to delete old ones and create new ones, 
+        // or just add new ones. For simplicity, let's treat it as a replace if provided.
+        // But Prisma update with relations is tricky. Let's stick to basic field updates for now.
+        // If the user sends products, we replace them.
+
+        let productOperations = {};
+        if (data.products) {
+            productOperations = {
+                products: {
+                    deleteMany: {}, // Delete all existing products for this live
+                    create: data.products // Create new ones
+                }
+            };
+        }
+
+        const live = await prisma.live.update({
+            where: { id },
+            data: {
+                title: updateData.title,
+                scheduledDate: updateData.scheduledDate,
+                notes: updateData.description,
+                ...productOperations
+            },
+            include: { products: true }
+        });
+
+        res.json(live);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.deleteScheduledLive = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const live = await prisma.live.findUnique({
+            where: { id, userId: req.user.id }
+        });
+
+        if (!live || live.status !== 'SCHEDULED') {
+            return res.status(404).json({ error: 'Live not found or active' });
+        }
+
+        await prisma.live.delete({
+            where: { id }
+        });
+
+        res.json({ message: 'Live scheduled deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
