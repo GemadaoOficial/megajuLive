@@ -17,6 +17,8 @@ model User {
   password  String
   name      String
   role      String   @default("COLLABORATOR") // ADMIN, COLLABORATOR
+  roleTitle String?  // Ex: "Streamer Senior", "Gerente"
+  skipTutorial Boolean @default(false)
   avatar    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -61,11 +63,12 @@ model Live {
   totalRevenue          Float?
   conversionRate        Float?
   
-  // ROI
+  // ROI e Engajamento
   roi                   Float?     // (totalRevenue - coinsSpent) / coinsSpent * 100
+  engagementRate        Float?     // (likes + comments + shares) / totalViews * 100
   
   // Screenshots e Relatórios
-  screenshotUrl         String?
+  screenshots           LiveScreenshot[]
   excelUrl              String?
   
   // Dados extraídos por IA
@@ -73,6 +76,7 @@ model Live {
   
   // Observações
   notes                 String?
+  liveLink              String?
   
   createdAt             DateTime   @default(now())
   updatedAt             DateTime   @updatedAt
@@ -141,4 +145,14 @@ model UserModuleProgress {
 
   @@unique([userId, moduleId])
   @@map("user_module_progress")
+}
+
+model LiveScreenshot {
+  id        String   @id @default(uuid())
+  liveId    String
+  live      Live     @relation(fields: [liveId], references: [id], onDelete: Cascade)
+  url       String
+  createdAt DateTime @default(now())
+
+  @@map("live_screenshots")
 }

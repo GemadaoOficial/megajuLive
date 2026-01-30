@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { liveService } from '../../services/liveService';
 import { Clock, Eye, MessageCircle, Save, StopCircle } from 'lucide-react';
+import { toast } from 'sonner';
+import ConfirmationModal from '../../components/ui/ConfirmationModal';
 
 export default function LiveInProgress() {
     const { id } = useParams();
@@ -9,6 +11,7 @@ export default function LiveInProgress() {
     const [live, setLive] = useState(null);
     const [elapsed, setElapsed] = useState(0);
     const [metrics, setMetrics] = useState({ peakViewers: 0, chatInteractions: 0 });
+    const [isFinishModalOpen, setIsFinishModalOpen] = useState(false);
 
     useEffect(() => {
         // Carregar dados iniciais
@@ -40,16 +43,18 @@ export default function LiveInProgress() {
     const handleUpdate = async () => {
         try {
             await liveService.updateLive(id, metrics);
-            alert('Métricas atualizadas!');
+            toast.success('Métricas atualizadas com sucesso!');
         } catch (error) {
             console.error(error);
         }
     };
 
-    const handleFinish = () => {
-        if (window.confirm("Tem certeza que deseja encerrar a live?")) {
-            navigate(`/live/${id}/finish`);
-        }
+    const handleFinishClick = () => {
+        setIsFinishModalOpen(true);
+    };
+
+    const confirmFinish = () => {
+        navigate(`/live/${id}/finish`);
     };
 
     if (!live) return <div>Carregando live...</div>;
@@ -112,12 +117,23 @@ export default function LiveInProgress() {
                 </button>
 
                 <button
-                    onClick={handleFinish}
+                    onClick={handleFinishClick}
                     className="flex-1 bg-gray-900 text-white py-3 rounded-lg font-bold hover:bg-black transition-colors flex items-center justify-center gap-2"
                 >
                     <StopCircle size={20} /> Finalizar Live
                 </button>
             </div>
+
+            <ConfirmationModal
+                isOpen={isFinishModalOpen}
+                onClose={() => setIsFinishModalOpen(false)}
+                onConfirm={confirmFinish}
+                title="Encerrar Transmissão"
+                message="Tem certeza que deseja encerrar a live? Esta ação não pode ser desfeita e você será redirecionado para preencher os dados finais."
+                confirmText="Sim, Encerrar"
+                type="danger"
+            />
         </div>
+
     );
 }

@@ -47,9 +47,19 @@ exports.getModuleBySlug = async (req, res) => {
             return res.status(404).json({ error: 'Módulo não encontrado' });
         }
 
+        // Busca próximo módulo
+        const nextModule = await prisma.module.findFirst({
+            where: {
+                order: { gt: module.order }
+            },
+            orderBy: { order: 'asc' },
+            select: { slug: true }
+        });
+
         const formattedModule = {
             ...module,
             completed: module.userProgress.length > 0 ? module.userProgress[0].completed : false,
+            nextModuleSlug: nextModule ? nextModule.slug : null,
             userProgress: undefined
         };
 
@@ -95,5 +105,74 @@ exports.completeModule = async (req, res) => {
     } catch (error) {
         console.error('Erro ao completar módulo:', error);
         res.status(500).json({ error: 'Erro ao completar módulo' });
+    }
+};
+
+exports.createModule = async (req, res) => {
+    try {
+        const { title, slug, description, content, videoUrl, order, icon } = req.body;
+
+        const existingSlug = await prisma.module.findUnique({ where: { slug } });
+        if (existingSlug) {
+            return res.status(400).json({ error: 'Slug já existe' });
+        }
+
+        const newModule = await prisma.module.create({
+            data: {
+                title,
+                slug,
+                description,
+                content,
+                videoUrl,
+                order: parseInt(order),
+                icon,
+                status: 'disponivel' // Default status
+            }
+        });
+
+        res.status(201).json(newModule);
+    } catch (error) {
+        console.error('Erro ao criar módulo:', error);
+        res.status(500).json({ error: 'Erro ao criar módulo' });
+    }
+};
+
+exports.updateModule = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description, content, videoUrl, order, icon, status } = req.body;
+
+        const updatedModule = await prisma.module.update({
+            where: { id },
+            data: {
+                title,
+                description,
+                content,
+                videoUrl,
+                order: order ? parseInt(order) : undefined,
+                icon,
+                status
+            }
+        });
+
+        res.json(updatedModule);
+    } catch (error) {
+        console.error('Erro ao atualizar módulo:', error);
+        res.status(500).json({ error: 'Erro ao atualizar módulo' });
+    }
+};
+
+exports.deleteModule = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        await prisma.module.delete({
+            where: { id }
+        });
+
+        res.json({ message: 'Módulo removido com sucesso' });
+    } catch (error) {
+        console.error('Erro ao deletar módulo:', error);
+        res.status(500).json({ error: 'Erro ao deletar módulo' });
     }
 };

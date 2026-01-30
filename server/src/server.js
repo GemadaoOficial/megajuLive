@@ -47,6 +47,7 @@ app.use('/api/lives', liveRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/modules', moduleRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/admin', require('./routes/admin.routes'));
 
 // Error Handler
 app.use((err, req, res, next) => {

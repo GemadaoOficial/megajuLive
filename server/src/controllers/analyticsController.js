@@ -11,15 +11,23 @@ exports.getMyStats = async (req, res) => {
 
         const summary = lives.reduce((acc, live) => {
             acc.totalLives++;
-            acc.totalRevenue += live.revenue || 0; // Ajustar campo se necessário
+            acc.totalRevenue += live.revenue || 0;
             acc.totalCoinsSpent += live.coinsSpent || 0;
             acc.totalFollowersGained += live.followersGained || 0;
+            acc.totalViews += live.totalViews || 0;
+            acc.totalLikes += live.likes || 0;
+            acc.totalShares += live.shares || 0;
+            acc.totalChatInteractions += live.chatInteractions || 0;
             return acc;
         }, {
             totalLives: 0,
             totalRevenue: 0,
             totalCoinsSpent: 0,
-            totalFollowersGained: 0
+            totalFollowersGained: 0,
+            totalViews: 0,
+            totalLikes: 0,
+            totalShares: 0,
+            totalChatInteractions: 0
         });
 
         summary.averageROI = summary.totalCoinsSpent > 0

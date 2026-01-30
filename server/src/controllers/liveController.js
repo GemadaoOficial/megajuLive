@@ -20,31 +20,34 @@ const finishLiveSchema = z.object({
 
 exports.startLive = async (req, res) => {
     try {
-        const { followersStart, coinsStart } = req.body;
+        const { followersStart, coinsStart, liveLink } = req.body;
         const userId = req.user.id;
 
         // 1. Verificar se o usuário completou todos os módulos obrigatórios
-        // Ignora para ADMIN se quiser, mas para garantir qualidade, todos fazem.
-        // Vamos contar quantos módulos existem e quantos o usuário completou.
-        const totalModules = await prisma.module.count({
-            where: { status: 'completo' } // Considera apenas módulos ativos/publicados
-        });
+        // Ignora se for ADMIN ou tiver flag skipTutorial
+        const user = await prisma.user.findUnique({ where: { id: userId } });
 
-        const completedModules = await prisma.userModuleProgress.count({
-            where: {
-                userId,
-                completed: true,
-                module: { status: 'completo' } // Garante que é um módulo ativo
-            }
-        });
-
-        if (completedModules < totalModules) {
-            return res.status(403).json({
-                error: 'Treinamento Incompleto',
-                message: `Você precisa concluir todos os ${totalModules} módulos de treinamento antes de iniciar uma live.`,
-                completed: completedModules,
-                total: totalModules
+        if (user.role !== 'ADMIN' && !user.skipTutorial) {
+            const totalModules = await prisma.module.count({
+                where: { status: 'completo' } // Considera apenas módulos ativos/publicados
             });
+
+            const completedModules = await prisma.userModuleProgress.count({
+                where: {
+                    userId,
+                    completed: true,
+                    module: { status: 'completo' } // Garante que é um módulo ativo
+                }
+            });
+
+            if (completedModules < totalModules) {
+                return res.status(403).json({
+                    error: 'Treinamento Incompleto',
+                    message: `Você precisa concluir todos os ${totalModules} módulos de treinamento antes de iniciar uma live.`,
+                    completed: completedModules,
+                    total: totalModules
+                });
+            }
         }
 
         const live = await prisma.live.create({
@@ -52,6 +55,7 @@ exports.startLive = async (req, res) => {
                 userId,
                 followersStart: parseInt(followersStart),
                 coinsStart: parseFloat(coinsStart),
+                liveLink, // Optional field
                 status: 'IN_PROGRESS'
             }
         });
@@ -86,7 +90,12 @@ exports.updateLive = async (req, res) => {
 exports.finishLive = async (req, res) => {
     try {
         const { id } = req.params;
-        const data = finishLiveSchema.parse(req.body);
+        // When using FormData, field numbers might need conversion
+        const bodyObj = {
+            followersEnd: parseInt(req.body.followersEnd),
+            coinsEnd: parseFloat(req.body.coinsEnd)
+        };
+        const data = finishLiveSchema.parse(bodyObj);
 
         // Buscar live atual para cálculos
         const currentLive = await prisma.live.findUnique({
@@ -100,7 +109,14 @@ exports.finishLive = async (req, res) => {
         const followersGained = data.followersEnd - currentLive.followersStart;
         const coinsSpent = currentLive.coinsStart - data.coinsEnd;
 
-        // Nota: ROI e Revenue serão atualizados posteriormente com a extração da IA/Excel
+        // Process AI metrics if available
+        const aiMetrics = {};
+        if (req.body.likes) aiMetrics.likes = parseInt(req.body.likes);
+        if (req.body.shares) aiMetrics.shares = parseInt(req.body.shares);
+        if (req.body.chatInteractions) aiMetrics.chatInteractions = parseInt(req.body.chatInteractions);
+        if (req.body.totalViews) aiMetrics.totalViews = parseInt(req.body.totalViews);
+        if (req.body.engagementRate) aiMetrics.engagementRate = parseFloat(req.body.engagementRate);
+        if (req.body.aiExtractedData) aiMetrics.aiExtractedData = req.body.aiExtractedData; // String
 
         const updatedLive = await prisma.live.update({
             where: { id },
@@ -111,9 +127,22 @@ exports.finishLive = async (req, res) => {
                 followersEnd: data.followersEnd,
                 followersGained,
                 coinsEnd: data.coinsEnd,
-                coinsSpent
+                coinsSpent,
+                ...aiMetrics
             }
         });
+
+        // Save Screenshots if any
+        if (req.files && req.files.length > 0) {
+            const screenshotsData = req.files.map(file => ({
+                liveId: id,
+                url: file.path // Or a relative URL depending on setup. Using path for now.
+            }));
+
+            await prisma.liveScreenshot.createMany({
+                data: screenshotsData
+            });
+        }
 
         res.json(updatedLive);
     } catch (error) {

@@ -13,12 +13,14 @@ export default function Sidebar() {
         { icon: BookOpen, label: 'Tutoriais', path: '/tutorials' },
     ];
 
-    if (user?.role === 'ADMIN') {
-        navItems.push(
-            { icon: BarChart2, label: 'Analytics Global', path: '/admin/analytics' },
-            { icon: Users, label: 'Usuários', path: '/admin/users' }
-        );
-    }
+    // Admin Panel Link (External/New Tab)
+    // Admin Panel Link (External/New Tab)
+    const adminLink = user?.role === 'ADMIN' ? {
+        icon: BarChart2,
+        label: 'Painel Administrativo',
+        path: '/admin/dashboard',
+        external: true
+    } : null;
 
     return (
         <div
@@ -65,7 +67,6 @@ export default function Sidebar() {
                             </span>
                         )}
 
-                        {/* Hover Indicator for Collapsed Mode */}
                         {collapsed && (
                             <div className="absolute left-full ml-4 px-3 py-1 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl">
                                 {item.label}
@@ -73,6 +74,30 @@ export default function Sidebar() {
                         )}
                     </NavLink>
                 ))}
+
+                {/* Admin Panel Button (New Tab) */}
+                {adminLink && (
+                    <a
+                        href={adminLink.path}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`group flex items-center px-4 py-4 rounded-2xl transition-all duration-300 relative overflow-hidden text-orange-600 hover:bg-orange-50 mt-2 border border-orange-100
+                            ${collapsed ? 'justify-center' : ''}
+                        `}
+                    >
+                        <adminLink.icon size={22} className={`shrink-0 transition-transform ${collapsed ? '' : 'mr-4'} group-hover:scale-110`} />
+                        {!collapsed && (
+                            <span className="font-medium tracking-wide whitespace-nowrap animate-slide-in-right">
+                                {adminLink.label}
+                            </span>
+                        )}
+                        {collapsed && (
+                            <div className="absolute left-full ml-4 px-3 py-1 bg-orange-600 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-xl">
+                                {adminLink.label}
+                            </div>
+                        )}
+                    </a>
+                )}
             </nav>
 
             {/* User Profile & Logout */}

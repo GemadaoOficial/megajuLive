@@ -14,9 +14,20 @@ export default function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(schema)
     });
-    const { login } = useAuth();
+    const { login, user } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState('');
+
+    // Redirect if already logged in
+    React.useEffect(() => {
+        if (user) {
+            if (user.role === 'ADMIN') {
+                navigate('/admin/dashboard');
+            } else {
+                navigate('/dashboard');
+            }
+        }
+    }, [user, navigate]);
 
     const onSubmit = async (data) => {
         try {

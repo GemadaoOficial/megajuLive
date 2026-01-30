@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../services/api';
 import StatCard from '../../components/dashboard/StatCard';
-import { DollarSign, Video, Users, TrendingUp, Calendar, Clock } from 'lucide-react';
+import { DollarSign, Video, Users, TrendingUp, Calendar, Clock, Heart, Eye, MessageSquare, Share2 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function CollaboratorDashboard() {
@@ -76,6 +76,34 @@ export default function CollaboratorDashboard() {
                     value={`${summary.averageROI?.toFixed(1) || 0}%`}
                     icon={TrendingUp}
                     color="purple"
+                />
+            </div>
+
+            {/* Engagement Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard
+                    title="Total Visualizações"
+                    value={summary.totalViews || 0}
+                    icon={Eye}
+                    color="cyan"
+                />
+                <StatCard
+                    title="Total Curtidas"
+                    value={summary.totalLikes || 0}
+                    icon={Heart}
+                    color="pink"
+                />
+                <StatCard
+                    title="Comentários"
+                    value={summary.totalChatInteractions || 0}
+                    icon={MessageSquare}
+                    color="indigo"
+                />
+                <StatCard
+                    title="Compartilhamentos"
+                    value={summary.totalShares || 0}
+                    icon={Share2}
+                    color="yellow"
                 />
             </div>
 

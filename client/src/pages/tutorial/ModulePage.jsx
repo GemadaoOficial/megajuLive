@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown'; // Se tiver instalado, senão usamos display simples
 import { api } from '../../services/api';
 import { ArrowLeft, CheckCircle, Lock } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ModulePage() {
     const { slug } = useParams();
@@ -21,7 +22,7 @@ export default function ModulePage() {
             setModule(response.data);
         } catch (error) {
             console.error('Erro ao carregar módulo', error);
-            alert('Erro ao carregar módulo. Tente novamente.');
+            toast.error('Erro ao carregar módulo. Tente novamente.');
             navigate('/tutorials');
         } finally {
             setLoading(false);
@@ -34,10 +35,10 @@ export default function ModulePage() {
         try {
             await api.post(`/modules/${module.id}/complete`);
             setModule(prev => ({ ...prev, completed: true }));
-            // Opcional: Efeito de confete ou som
+            toast.success('Módulo concluído! 🎉');
         } catch (error) {
             console.error('Erro ao completar módulo', error);
-            alert('Não foi possível registrar o progresso.');
+            toast.error('Não foi possível registrar o progresso.');
         } finally {
             setMarkingComplete(false);
         }
@@ -119,6 +120,16 @@ export default function ModulePage() {
                         >
                             {markingComplete ? 'Registrando...' : 'Marcar como Concluído'}
                             {!markingComplete && <CheckCircle size={20} className="ml-2" />}
+                        </button>
+                    )}
+
+                    {module.completed && module.nextModuleSlug && (
+                        <button
+                            onClick={() => navigate(`/tutorials/${module.nextModuleSlug}`)}
+                            className="flex items-center px-6 py-3 ml-4 bg-orange-100 text-orange-700 rounded-lg font-medium hover:bg-orange-200 transition-colors"
+                        >
+                            Próximo Módulo
+                            <ArrowLeft size={20} className="ml-2 rotate-180" />
                         </button>
                     )}
                 </div>

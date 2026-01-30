@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import { Play, Users, Coins, AlertTriangle, ArrowRight } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function StartLive() {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -18,7 +19,16 @@ export default function StartLive() {
 
     const checkPrerequisites = async () => {
         try {
-            // Verifica status dos módulos
+            // 1. Get User Status (to check for bypass)
+            const userResponse = await api.get('/auth/me');
+            const user = userResponse.data;
+
+            if (user.role === 'ADMIN' || user.skipTutorial) {
+                setCheckingPrereqs(false);
+                return; // Bypass check
+            }
+
+            // 2. Check Modules only if validation is required
             const response = await api.get('/modules');
             const modules = response.data;
             const incomplete = modules.filter(m => !m.completed);
@@ -42,17 +52,18 @@ export default function StartLive() {
         try {
             const response = await api.post('/lives/start', {
                 followersStart: parseInt(data.followers),
-                coinsStart: parseFloat(data.coins)
+                coinsStart: parseFloat(data.coins),
+                liveLink: data.liveLink || null // Include liveLink in the payload
             });
 
-            navigate(`/live/${response.data.liveId}/active`);
+            navigate(`/live/${response.data.id}/active`);
         } catch (error) {
             console.error('Erro ao iniciar live', error);
             if (error.response?.status === 403) {
-                alert(error.response.data.message);
+                toast.error(error.response.data.message);
                 navigate('/tutorials');
             } else {
-                alert('Erro ao iniciar live. Tente novamente.');
+                toast.error('Erro ao iniciar live. Tente novamente.');
             }
         } finally {
             setLoading(false);
