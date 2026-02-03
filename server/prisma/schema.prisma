@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  name          String
+  role          String         @default("COLABORADOR")
+  avatar        String?
+  lives         Live[]
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Live {
+  id              String           @id @default(uuid())
+  title           String
+  description     String?
+  scheduledAt     DateTime
+  duration        Int?
+  status          String           @default("SCHEDULED")
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  products        Product[]
+  analytics       Analytics?
+  analyticsEvents AnalyticsEvent[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Product {
+  id       String @id @default(uuid())
+  name     String
+  price    Float
+  timeSlot Int    @default(60)
+  liveId   String
+  live     Live   @relation(fields: [liveId], references: [id], onDelete: Cascade)
+}
+
+model Tutorial {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  videoUrl    String?
+  content     String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Analytics {
+  id         String   @id @default(uuid())
+  liveId     String   @unique
+  live       Live     @relation(fields: [liveId], references: [id], onDelete: Cascade)
+  views      Int      @default(0)
+  sales      Int      @default(0)
+  revenue    Float    @default(0)
+  conversion Float    @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(uuid())
+  liveId    String
+  live      Live     @relation(fields: [liveId], references: [id], onDelete: Cascade)
+  type      String   // 'view', 'purchase', 'click', 'share'
+  productId String?
+  amount    Float?   // For purchase events
+  sessionId String?
+  metadata  String?  // JSON for extra data
+  timestamp DateTime @default(now())
+
+  @@index([liveId])
+  @@index([type])
+  @@index([timestamp])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String   // 'CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT', 'START_LIVE', 'END_LIVE'
+  entity    String   // 'USER', 'LIVE', 'PRODUCT', 'AUTH'
+  entityId  String?  // ID of the affected entity
+  details   String?  // JSON with additional details
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+}
+
+// Snapshot diário de analytics - armazenado permanentemente para comparações históricas
+model AnalyticsSnapshot {
+  id                  String   @id @default(uuid())
+  date                DateTime @unique // Data do snapshot (apenas data, sem hora)
+  period              String   @default("daily") // 'daily', 'weekly', 'monthly', 'yearly'
+
+  // Métricas de engajamento
+  totalViews          Int      @default(0)
+  totalLikes          Int      @default(0)
+  totalComments       Int      @default(0)
+  totalShares         Int      @default(0)
+  totalFollowers      Int      @default(0)
+  newFollowers        Int      @default(0)
+  engagementRate      Float    @default(0)
+  avgWatchTime        Int      @default(0) // em segundos
+
+  // Métricas de vendas
+  totalSales          Int      @default(0)
+  totalRevenue        Float    @default(0)
+  avgOrderValue       Float    @default(0)
+  conversionRate      Float    @default(0)
+
+  // Métricas de lives
+  totalLives          Int      @default(0)
+  completedLives      Int      @default(0)
+  avgViewersPerLive   Float    @default(0)
+  peakViewers         Int      @default(0)
+
+  // Métricas de produtos
+  totalProducts       Int      @default(0)
+  topSellingProduct   String?  // JSON com info do produto
+
+  // Comparação com período anterior (calculado automaticamente)
+  viewsGrowth         Float    @default(0)
+  followersGrowth     Float    @default(0)
+  salesGrowth         Float    @default(0)
+  revenueGrowth       Float    @default(0)
+  engagementGrowth    Float    @default(0)
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([date])
+  @@index([period])
+  @@index([createdAt])
+}
