@@ -160,12 +160,18 @@ export const auditAPI = {
     const queryString = searchParams.toString()
     return api.get(`/audit${queryString ? `?${queryString}` : ''}`)
   },
+  getMyActivity: (limit = 10) => api.get(`/audit/my-activity?limit=${limit}`),
   getStats: () => api.get('/audit/stats'),
   getById: (id) => api.get(`/audit/${id}`),
 }
 
 export const aiAPI = {
   suggestTitle: (data) => api.post('/ai/suggest-title', data),
+  suggestDescription: (data) => api.post('/ai/suggest-description', data),
+  extractLiveReport: (formData) => api.post('/ai/extract-live-report', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 300000,
+  }),
 }
 
 export const analyticsHistoryAPI = {
@@ -195,4 +201,32 @@ export const analyticsHistoryAPI = {
 
   // Seed historical data (admin only)
   seedData: (days = 90) => api.post('/analytics-history/snapshot/seed', { days }),
+}
+
+export const liveReportsAPI = {
+  getSummary: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') searchParams.append(key, String(value))
+    })
+    return api.get(`/live-reports/summary?${searchParams.toString()}`)
+  },
+  getAll: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') searchParams.append(key, String(value))
+    })
+    return api.get(`/live-reports?${searchParams.toString()}`)
+  },
+  getProducts: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') searchParams.append(key, String(value))
+    })
+    return api.get(`/live-reports/products?${searchParams.toString()}`)
+  },
+  getById: (id) => api.get(`/live-reports/${id}`),
+  create: (data) => api.post('/live-reports', data),
+  update: (id, data) => api.put(`/live-reports/${id}`, data),
+  delete: (id) => api.delete(`/live-reports/${id}`),
 }

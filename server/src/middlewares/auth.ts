@@ -62,6 +62,10 @@ export const requireAdmin = (
   res: Response,
   next: NextFunction
 ): void => {
+  if (!req.user) {
+    res.status(401).json({ message: 'Nao autenticado' })
+    return
+  }
   if (req.user.role !== 'ADMIN') {
     res.status(403).json({ message: 'Acesso negado. Requer permissao de administrador.' })
     return

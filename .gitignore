@@ -47,6 +47,9 @@ server/prisma/*.db-journal
 coverage/
 .nyc_output/
 
+# Uploads
+server/uploads/
+
 # Misc
 *.local
 .cache/

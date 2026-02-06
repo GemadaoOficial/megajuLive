@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../../services/api';
+import api from '../../services/api';
 import { Play, Users, Coins, AlertTriangle, ArrowRight, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 

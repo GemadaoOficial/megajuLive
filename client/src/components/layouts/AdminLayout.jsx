@@ -4,12 +4,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { LayoutDashboard, Users, BookOpen, LogOut, Shield } from 'lucide-react';
 
 export default function AdminLayout() {
-    const { user, signOut } = useAuth();
+    const { user, logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
     const handleSignOut = () => {
-        signOut();
+        logout();
         navigate('/login');
     };
 

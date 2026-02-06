@@ -12,6 +12,109 @@ const router = Router()
 // All routes require admin
 router.use(authenticate, requireAdmin)
 
+// GET /admin/dashboard - Full dashboard stats from LiveReports
+router.get('/dashboard', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const [totalUsers, totalLives, reportAgg] = await Promise.all([
+      prisma.user.count({ where: { role: { not: 'ADMIN' } } }),
+      prisma.live.count(),
+      prisma.liveReport.aggregate({
+        _sum: { totalRevenue: true, totalViewers: true, totalOrders: true },
+        _avg: { conversionRate: true },
+      }),
+    ])
+
+    // Recent activity from audit logs
+    const recentLogs = await prisma.auditLog.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      include: { user: { select: { name: true } } },
+    })
+
+    const recentActivity = recentLogs.map(log => {
+      const details = log.details ? JSON.parse(log.details) : {}
+      const actionMap: Record<string, string> = {
+        CREATE: 'Criou', UPDATE: 'Atualizou', DELETE: 'Excluiu',
+        LOGIN: 'Login', LOGOUT: 'Logout', START_LIVE: 'Iniciou live', END_LIVE: 'Encerrou live',
+      }
+      const entityMap: Record<string, string> = {
+        USER: 'usuario', LIVE: 'live', PRODUCT: 'produto', AUTH: 'autenticacao',
+      }
+      const action = actionMap[log.action] || log.action
+      const entity = entityMap[log.entity] || log.entity
+      const title = details.title || details.name || ''
+
+      const diff = Date.now() - new Date(log.createdAt).getTime()
+      let time = ''
+      if (diff < 60000) time = 'agora'
+      else if (diff < 3600000) time = `${Math.floor(diff / 60000)} min atras`
+      else if (diff < 86400000) time = `${Math.floor(diff / 3600000)}h atras`
+      else time = new Date(log.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+
+      return {
+        id: log.id,
+        text: `${log.user?.name || 'Sistema'}: ${action} ${entity}${title ? ': ' + title : ''}`,
+        time,
+        type: log.entity === 'USER' || log.entity === 'AUTH' ? 'user' : log.entity === 'LIVE' ? 'live' : 'tutorial',
+      }
+    })
+
+    // Active lives (LIVE status)
+    const activeLives = await prisma.live.count({ where: { status: 'LIVE' } })
+    const activeLivesList = await prisma.live.findMany({
+      where: { status: 'LIVE' },
+      include: { user: { select: { name: true, avatar: true } } },
+      orderBy: { updatedAt: 'desc' },
+    })
+
+    // Top streamers by revenue (from LiveReports)
+    const allUsers = await prisma.user.findMany({
+      where: { role: { not: 'ADMIN' } },
+      select: {
+        id: true,
+        name: true,
+        avatar: true,
+        liveReports: {
+          select: { totalRevenue: true },
+        },
+        _count: { select: { lives: true } },
+      },
+    })
+
+    const topStreamers = allUsers
+      .map(u => ({
+        id: u.id,
+        name: u.name,
+        avatar: u.avatar,
+        totalLives: u._count.lives,
+        totalRevenue: u.liveReports.reduce((s, r) => s + r.totalRevenue, 0),
+      }))
+      .sort((a, b) => b.totalRevenue - a.totalRevenue)
+      .slice(0, 5)
+
+    res.json({
+      stats: {
+        totalRevenue: reportAgg._sum.totalRevenue || 0,
+        activeLives,
+        totalLives,
+        totalUsers,
+        avgEngagement: reportAgg._avg.conversionRate || 0,
+      },
+      topStreamers,
+      recentActivity,
+      activeLivesList: activeLivesList.map(l => ({
+        id: l.id,
+        user: l.user,
+        startedAt: l.updatedAt,
+        liveLink: null,
+      })),
+    })
+  } catch (error) {
+    console.error('Get admin dashboard error:', error)
+    res.status(500).json({ message: 'Erro ao buscar dados do dashboard' })
+  }
+})
+
 // Get all users
 router.get('/users', async (req: Request, res: Response): Promise<void> => {
   try {
@@ -223,25 +326,63 @@ router.get('/lives', async (req: Request, res: Response): Promise<void> => {
   }
 })
 
-// Get analytics
+// Get analytics (aggregates from LiveReport instead of old Analytics model)
 router.get('/analytics', async (req: Request, res: Response): Promise<void> => {
   try {
-    const [totalUsers, totalLives, analytics] = await Promise.all([
+    const [totalUsers, totalLives, totalReports, reportAgg] = await Promise.all([
       prisma.user.count(),
       prisma.live.count(),
-      prisma.analytics.aggregate({
-        _sum: { views: true, sales: true, revenue: true },
+      prisma.liveReport.count(),
+      prisma.liveReport.aggregate({
+        _sum: { totalRevenue: true, totalViewers: true, totalOrders: true },
       }),
     ])
+
+    // Recent activity from audit logs
+    const recentLogs = await prisma.auditLog.findMany({
+      take: 10,
+      orderBy: { createdAt: 'desc' },
+      include: { user: { select: { name: true } } },
+    })
+
+    const recentActivity = recentLogs.map(log => {
+      const details = log.details ? JSON.parse(log.details) : {}
+      const actionMap: Record<string, string> = {
+        CREATE: 'Criou', UPDATE: 'Atualizou', DELETE: 'Excluiu',
+        LOGIN: 'Login', LOGOUT: 'Logout', START_LIVE: 'Iniciou live', END_LIVE: 'Encerrou live',
+      }
+      const entityMap: Record<string, string> = {
+        USER: 'usuario', LIVE: 'live', PRODUCT: 'produto', AUTH: 'autenticacao',
+      }
+      const action = actionMap[log.action] || log.action
+      const entity = entityMap[log.entity] || log.entity
+      const title = details.title || details.name || ''
+
+      const diff = Date.now() - new Date(log.createdAt).getTime()
+      let time = ''
+      if (diff < 60000) time = 'agora'
+      else if (diff < 3600000) time = `${Math.floor(diff / 60000)} min atras`
+      else if (diff < 86400000) time = `${Math.floor(diff / 3600000)}h atras`
+      else time = new Date(log.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+
+      return {
+        id: log.id,
+        text: `${log.user?.name || 'Sistema'}: ${action} ${entity}${title ? ': ' + title : ''}`,
+        time,
+        type: log.entity === 'USER' || log.entity === 'AUTH' ? 'user' : log.entity === 'LIVE' ? 'live' : 'tutorial',
+      }
+    })
 
     res.json({
       stats: {
         totalUsers,
         totalLives,
-        totalViews: analytics._sum.views || 0,
-        totalSales: analytics._sum.sales || 0,
-        totalRevenue: analytics._sum.revenue || 0,
+        totalReports,
+        totalViews: reportAgg._sum.totalViewers || 0,
+        totalRevenue: reportAgg._sum.totalRevenue || 0,
+        totalOrders: reportAgg._sum.totalOrders || 0,
       },
+      recentActivity,
     })
   } catch (error) {
     console.error('Get analytics error:', error)

@@ -31,8 +31,6 @@ export default function LiveExecutor() {
   const [loading, setLoading] = useState(!!id)
   const [modalOpen, setModalOpen] = useState(false)
   const [titleModalOpen, setTitleModalOpen] = useState(false)
-  const [suggestedTitles, setSuggestedTitles] = useState([])
-  const [generatingTitles, setGeneratingTitles] = useState(false)
   const [formData, setFormData] = useState({ title: '', description: '' })
 
   // Live Stats (simulated for demo)
@@ -129,23 +127,14 @@ export default function LiveExecutor() {
     }
   }
 
-  const generateTitles = async () => {
-    setGeneratingTitles(true)
-    setTitleModalOpen(true)
-
-    try {
-      const response = await aiAPI.suggestTitle({ category: 'Geral', niche: 'E-commerce' })
-      setSuggestedTitles(response.data.titles || [])
-    } catch (error) {
-      console.error('Erro ao gerar titulos:', error)
-      setSuggestedTitles(['Super Ofertas Imperdiveis!', 'Liquidacao Relampago', 'Descontos Exclusivos Ao Vivo'])
-    } finally {
-      setGeneratingTitles(false)
-    }
-  }
-
   const handleSelectTitle = (title) => {
     setFormData({ ...formData, title })
+    setTitleModalOpen(false)
+    setModalOpen(true)
+  }
+
+  const handleSelectDescription = (description) => {
+    setFormData({ ...formData, description })
     setTitleModalOpen(false)
     setModalOpen(true)
   }
@@ -205,7 +194,7 @@ export default function LiveExecutor() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-3"
           >
-            <Button onClick={generateTitles} variant="ghost" className="gap-2">
+            <Button onClick={() => setTitleModalOpen(true)} variant="ghost" className="gap-2">
               <Sparkles className="w-5 h-5 text-violet-500" />
               Gerar Titulo com IA
             </Button>
@@ -258,7 +247,7 @@ export default function LiveExecutor() {
 
             <motion.div
               whileHover={{ scale: 1.02, y: -2 }}
-              onClick={generateTitles}
+              onClick={() => setTitleModalOpen(true)}
               className="p-6 bg-gradient-to-br from-amber-500/10 to-yellow-500/10 rounded-2xl border-2 border-amber-200 cursor-pointer group"
             >
               <div className="flex items-center justify-between">
@@ -372,9 +361,9 @@ export default function LiveExecutor() {
       <AITitlesModal
         isOpen={titleModalOpen}
         onClose={() => setTitleModalOpen(false)}
-        titles={suggestedTitles}
-        isLoading={generatingTitles}
         onSelectTitle={handleSelectTitle}
+        onSelectDescription={handleSelectDescription}
+        currentTitle={formData.title}
       />
     </div>
   )

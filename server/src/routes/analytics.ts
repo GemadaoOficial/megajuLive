@@ -14,8 +14,8 @@ interface TrackEventBody {
   metadata?: Record<string, unknown>
 }
 
-// Track an analytics event (public - no auth required for tracking)
-router.post('/track', async (req: Request, res: Response): Promise<void> => {
+// Track an analytics event (requires auth)
+router.post('/track', authenticate, async (req: Request, res: Response): Promise<void> => {
   try {
     const { liveId, type, productId, amount, sessionId, metadata } = req.body as TrackEventBody
 

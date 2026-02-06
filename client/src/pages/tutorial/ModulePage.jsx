@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown'; // Se tiver instalado, senão usamos display simples
-import { api } from '../../services/api';
+import api from '../../services/api';
 import { ArrowLeft, CheckCircle, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 

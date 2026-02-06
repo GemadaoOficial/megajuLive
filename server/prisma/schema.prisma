@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -15,6 +15,7 @@ model User {
   role          String         @default("COLABORADOR")
   avatar        String?
   lives         Live[]
+  liveReports   LiveReport[]
   refreshTokens RefreshToken[]
   auditLogs     AuditLog[]
   createdAt     DateTime       @default(now())
@@ -42,6 +43,7 @@ model Live {
   products        Product[]
   analytics       Analytics?
   analyticsEvents AnalyticsEvent[]
+  report          LiveReport?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 }
@@ -110,6 +112,93 @@ model AuditLog {
   @@index([action])
   @@index([entity])
   @@index([createdAt])
+}
+
+// Relatório completo de uma live (dados do Shopee)
+model LiveReport {
+  id        String @id @default(uuid())
+  liveId    String? @unique
+  live      Live?  @relation(fields: [liveId], references: [id], onDelete: Cascade)
+
+  liveTitle String @default("")
+
+  // Transação
+  totalRevenue        Float @default(0)
+  totalOrders         Int   @default(0)
+  totalItemsSold      Int   @default(0)
+  avgOrderValue       Float @default(0)
+  avgRevenuePerBuyer  Float @default(0)
+
+  // Tráfego
+  totalViewers        Int   @default(0)
+  engagedViewers      Int   @default(0)
+  totalViews          Int   @default(0)
+  peakViewers         Int   @default(0)
+  avgWatchTime        Int   @default(0)
+  liveDuration        Int   @default(0)
+
+  // Conversão
+  clickRate           Float @default(0)
+  totalBuyers         Int   @default(0)
+  productClicks       Int   @default(0)
+  productClickRate    Float @default(0)
+  conversionRate      Float @default(0)
+  addToCart           Int   @default(0)
+  gpm                 Float @default(0)
+
+  // Engajamento
+  totalLikes          Int   @default(0)
+  totalShares         Int   @default(0)
+  totalComments       Int   @default(0)
+  commentRate         Float @default(0)
+  newFollowers        Int   @default(0)
+
+  // Marketing / Promoção
+  couponsUsed         Int   @default(0)
+  coinsUsed           Float @default(0)
+  coinsCost           Float @default(0)    // Custo em R$ das moedas (coinsUsed * 0.01)
+  coinRedemptions     Int   @default(0)
+  auctionRounds       Int   @default(0)
+
+  // Funil de tráfego
+  productImpressions    Int   @default(0)
+  orderRate             Float @default(0)    // Taxa de Pedido (%) - cliques → pedidos
+  impressionToOrderRate Float @default(0)
+
+  // Metadados
+  reportDate        DateTime
+  createdManually   Boolean @default(false)
+  aiAnalyzed        Boolean @default(false)
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Produtos apresentados na live
+  liveProducts      LiveProduct[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([userId])
+  @@index([reportDate])
+}
+
+// Produto apresentado em uma live específica
+model LiveProduct {
+  id              String     @id @default(uuid())
+  liveReportId    String
+  liveReport      LiveReport @relation(fields: [liveReportId], references: [id], onDelete: Cascade)
+
+  name            String
+  price           Float      @default(0)
+  productClicks   Int        @default(0)
+  clickRate       Float      @default(0)
+  orders          Int        @default(0)
+  itemsSold       Int        @default(0)
+  orderClickRate  Float      @default(0)
+  addToCart       Int        @default(0)
+  revenue         Float      @default(0)
+  shopeeItemId    String?
+  imageUrl        String?
 }
 
 // Snapshot diário de analytics - armazenado permanentemente para comparações históricas

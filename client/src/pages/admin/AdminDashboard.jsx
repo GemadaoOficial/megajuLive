@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { adminService } from '../../services/adminService';
-import { DollarSign, Video, Users, TrendingUp, Award, Activity, Copy, Shield, Crown, Zap, ArrowRight } from 'lucide-react';
+import { DollarSign, Video, Users, TrendingUp, Award, Activity, Copy, Shield, Crown, Zap, ArrowRight, BookOpen } from 'lucide-react';
 import TiltCard from '../../components/ui/TiltCard';
 import PremiumPageHeader from '../../components/ui/PremiumPageHeader';
 
@@ -31,7 +31,16 @@ export default function AdminDashboard() {
 
     if (!stats) return <div className="text-center p-10 text-slate-500">Erro ao carregar dados.</div>;
 
-    const { stats: metrics, topStreamers } = stats;
+    const { stats: metrics, topStreamers, recentActivity = [] } = stats;
+
+    const getActivityIcon = (type) => {
+        switch (type) {
+            case 'user': return Users
+            case 'live': return Video
+            case 'tutorial': return BookOpen
+            default: return Activity
+        }
+    };
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 pb-12">
@@ -257,18 +266,22 @@ export default function AdminDashboard() {
                         </div>
 
                         <div className="flex-1 space-y-6 z-10 relative">
-                            {/* Mock Activities */}
-                            {[1, 2, 3].map((_, i) => (
-                                <div key={i} className="flex gap-4 items-start">
-                                    <div className="mt-1 w-2 h-2 rounded-full bg-orange-500 shrink-0 shadow-[0_0_10px_rgba(249,115,22,0.8)]"></div>
-                                    <div>
-                                        <p className="text-sm font-medium text-slate-200 leading-snug">
-                                            <span className="text-white font-bold">Julia Silva</span> iniciou uma transmissão ao vivo.
-                                        </p>
-                                        <span className="text-xs text-slate-500 font-mono">Há {i * 15 + 2} min</span>
+                            {recentActivity.length > 0 ? recentActivity.map((activity) => {
+                                const Icon = getActivityIcon(activity.type)
+                                return (
+                                    <div key={activity.id} className="flex gap-4 items-start">
+                                        <div className="mt-1 w-2 h-2 rounded-full bg-orange-500 shrink-0 shadow-[0_0_10px_rgba(249,115,22,0.8)]"></div>
+                                        <div>
+                                            <p className="text-sm font-medium text-slate-200 leading-snug">
+                                                {activity.text}
+                                            </p>
+                                            <span className="text-xs text-slate-500 font-mono">{activity.time}</span>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                )
+                            }) : (
+                                <p className="text-sm text-slate-500">Nenhuma atividade recente</p>
+                            )}
                         </div>
 
                         <button className="w-full py-4 bg-white/10 hover:bg-white/20 rounded-2xl font-bold backdrop-blur-md transition-all text-sm mt-auto border border-white/5">

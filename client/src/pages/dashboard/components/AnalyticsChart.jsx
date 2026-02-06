@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
-import { TrendingUp, Eye, ShoppingCart } from 'lucide-react'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { TrendingUp, Eye, ShoppingCart, DollarSign } from 'lucide-react'
+import { liveReportsAPI } from '../../../services/api'
 
 export default function AnalyticsChart() {
   const [chartData, setChartData] = useState([])
-  const [period, setPeriod] = useState('7d')
+  const [period, setPeriod] = useState('30d')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -15,32 +16,42 @@ export default function AnalyticsChart() {
   const loadChartData = async () => {
     setLoading(true)
     try {
-      // Simulando dados para o gráfico (em produção, viria da API)
-      const generateMockData = () => {
-        const days = period === '7d' ? 7 : period === '30d' ? 30 : 90
-        const data = []
-        const today = new Date()
+      const days = period === '7d' ? 7 : period === '30d' ? 30 : 90
+      const startDate = new Date(Date.now() - days * 86400000).toISOString().split('T')[0]
+      const endDate = new Date().toISOString().split('T')[0]
 
-        for (let i = days - 1; i >= 0; i--) {
-          const date = new Date(today)
-          date.setDate(date.getDate() - i)
+      const response = await liveReportsAPI.getAll({
+        period: 'custom',
+        startDate,
+        endDate,
+        limit: 200,
+      })
+      const reports = response.data.data || []
 
-          data.push({
-            date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
-            views: Math.floor(Math.random() * 500) + 100,
-            sales: Math.floor(Math.random() * 50) + 10,
-            revenue: (Math.random() * 2000) + 500,
-          })
-        }
-        return data
+      // Group reports by date
+      const byDate = {}
+      const today = new Date()
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(today)
+        d.setDate(d.getDate() - i)
+        const key = d.toISOString().split('T')[0]
+        byDate[key] = { date: d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }), viewers: 0, orders: 0, revenue: 0 }
       }
 
-      setTimeout(() => {
-        setChartData(generateMockData())
-        setLoading(false)
-      }, 500)
+      reports.forEach(r => {
+        const key = new Date(r.reportDate).toISOString().split('T')[0]
+        if (byDate[key]) {
+          byDate[key].viewers += r.totalViewers || 0
+          byDate[key].orders += r.totalOrders || 0
+          byDate[key].revenue += r.totalRevenue || 0
+        }
+      })
+
+      setChartData(Object.values(byDate))
     } catch (error) {
-      console.error('Erro ao carregar dados do gráfico:', error)
+      console.error('Erro ao carregar dados do grafico:', error)
+      setChartData([])
+    } finally {
       setLoading(false)
     }
   }
@@ -52,7 +63,7 @@ export default function AnalyticsChart() {
           <p className="text-sm font-semibold text-slate-700 mb-2">{payload[0].payload.date}</p>
           {payload.map((entry, index) => (
             <p key={index} className="text-sm text-slate-600">
-              <span style={{ color: entry.color }}>●</span> {entry.name}: {entry.value.toLocaleString('pt-BR')}
+              <span style={{ color: entry.color }}>●</span> {entry.name}: {entry.name === 'Receita' ? `R$ ${entry.value.toFixed(2)}` : entry.value.toLocaleString('pt-BR')}
             </p>
           ))}
         </div>
@@ -60,6 +71,12 @@ export default function AnalyticsChart() {
     }
     return null
   }
+
+  const totals = chartData.reduce((acc, d) => ({
+    viewers: acc.viewers + d.viewers,
+    orders: acc.orders + d.orders,
+    revenue: acc.revenue + d.revenue,
+  }), { viewers: 0, orders: 0, revenue: 0 })
 
   return (
     <motion.div
@@ -76,7 +93,7 @@ export default function AnalyticsChart() {
           </div>
           <div>
             <h2 className="text-xl font-bold text-slate-800">Analytics</h2>
-            <p className="text-sm text-slate-500">Visualizações e vendas</p>
+            <p className="text-sm text-slate-500">Espectadores e pedidos por dia</p>
           </div>
         </div>
 
@@ -103,53 +120,33 @@ export default function AnalyticsChart() {
         <div className="flex items-center justify-center h-80">
           <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
-      ) : (
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
+      ) : chartData.some(d => d.viewers > 0 || d.orders > 0) ? (
+        <div className="h-80" style={{ minWidth: 0, minHeight: 0 }}>
+          <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
             <AreaChart data={chartData}>
               <defs>
-                <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="colorViewers" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
                   <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                 </linearGradient>
-                <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
                   <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis
-                dataKey="date"
-                stroke="#94a3b8"
-                style={{ fontSize: '12px' }}
-              />
-              <YAxis
-                stroke="#94a3b8"
-                style={{ fontSize: '12px' }}
-              />
+              <XAxis dataKey="date" stroke="#94a3b8" style={{ fontSize: '12px' }} />
+              <YAxis stroke="#94a3b8" style={{ fontSize: '12px' }} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend
-                wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }}
-                iconType="circle"
-              />
-              <Area
-                type="monotone"
-                dataKey="views"
-                name="Visualizações"
-                stroke="#8b5cf6"
-                strokeWidth={2}
-                fill="url(#colorViews)"
-              />
-              <Area
-                type="monotone"
-                dataKey="sales"
-                name="Vendas"
-                stroke="#10b981"
-                strokeWidth={2}
-                fill="url(#colorSales)"
-              />
+              <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }} iconType="circle" />
+              <Area type="monotone" dataKey="viewers" name="Espectadores" stroke="#8b5cf6" strokeWidth={2} fill="url(#colorViewers)" />
+              <Area type="monotone" dataKey="orders" name="Pedidos" stroke="#10b981" strokeWidth={2} fill="url(#colorOrders)" />
             </AreaChart>
           </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="flex items-center justify-center h-80 text-slate-400">
+          Nenhum dado disponivel para o periodo selecionado
         </div>
       )}
 
@@ -158,28 +155,28 @@ export default function AnalyticsChart() {
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 mb-1">
             <Eye className="w-4 h-4 text-violet-500" />
-            <p className="text-sm text-slate-500">Total Views</p>
+            <p className="text-sm text-slate-500">Espectadores</p>
           </div>
           <p className="text-2xl font-bold text-slate-800">
-            {chartData.reduce((acc, curr) => acc + curr.views, 0).toLocaleString('pt-BR')}
+            {totals.viewers.toLocaleString('pt-BR')}
           </p>
         </div>
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 mb-1">
             <ShoppingCart className="w-4 h-4 text-emerald-500" />
-            <p className="text-sm text-slate-500">Total Sales</p>
+            <p className="text-sm text-slate-500">Pedidos</p>
           </div>
           <p className="text-2xl font-bold text-slate-800">
-            {chartData.reduce((acc, curr) => acc + curr.sales, 0).toLocaleString('pt-BR')}
+            {totals.orders.toLocaleString('pt-BR')}
           </p>
         </div>
         <div className="text-center">
           <div className="flex items-center justify-center gap-2 mb-1">
-            <TrendingUp className="w-4 h-4 text-blue-500" />
-            <p className="text-sm text-slate-500">Média/dia</p>
+            <DollarSign className="w-4 h-4 text-emerald-500" />
+            <p className="text-sm text-slate-500">Receita</p>
           </div>
           <p className="text-2xl font-bold text-slate-800">
-            {Math.round(chartData.reduce((acc, curr) => acc + curr.views, 0) / chartData.length)}
+            R$ {totals.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
           </p>
         </div>
       </div>

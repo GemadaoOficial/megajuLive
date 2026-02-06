@@ -74,7 +74,14 @@ router.post('/video', authenticate, requireAdmin, upload.single('video'), async 
 router.delete('/video/:filename', authenticate, requireAdmin, async (req: Request, res: Response): Promise<void> => {
   try {
     const { filename } = req.params
-    const filepath = path.join(videosDir, filename)
+
+    // Sanitize filename to prevent path traversal
+    if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
+      res.status(400).json({ message: 'Nome de arquivo invalido' })
+      return
+    }
+
+    const filepath = path.join(videosDir, path.basename(filename))
 
     if (!fs.existsSync(filepath)) {
       res.status(404).json({ message: 'Arquivo nao encontrado' })

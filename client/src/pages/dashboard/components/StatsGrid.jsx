@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { DollarSign, Target, Eye, Video } from 'lucide-react'
 import StatCard from './StatCard'
-import { useAnalyticsData } from '../../../hooks/useAnalytics'
+import { liveReportsAPI } from '../../../services/api'
 
 const formatCurrency = (value) => {
   if (value >= 1000) {
@@ -19,20 +19,21 @@ const formatNumber = (value) => {
 }
 
 export default function StatsGrid() {
-  const [analytics, setAnalytics] = useState(null)
+  const [summary, setSummary] = useState(null)
+  const [count, setCount] = useState(0)
   const [loading, setLoading] = useState(true)
-  const { fetchDashboardAnalytics } = useAnalyticsData()
 
   useEffect(() => {
-    loadAnalytics()
+    loadStats()
   }, [])
 
-  const loadAnalytics = async () => {
+  const loadStats = async () => {
     try {
-      const data = await fetchDashboardAnalytics()
-      setAnalytics(data)
+      const response = await liveReportsAPI.getSummary({ period: '30d' })
+      setSummary(response.data.summary)
+      setCount(response.data.count || 0)
     } catch (error) {
-      console.error('Erro ao carregar analytics:', error)
+      console.error('Erro ao carregar stats:', error)
     } finally {
       setLoading(false)
     }
@@ -41,8 +42,8 @@ export default function StatsGrid() {
   const stats = [
     {
       label: 'Receita Total',
-      value: loading ? '...' : formatCurrency(analytics?.totals?.totalRevenue || 0),
-      change: analytics?.totals?.totalRevenue > 0 ? '+' : '',
+      value: loading ? '...' : formatCurrency(summary?.totalRevenue || 0),
+      change: summary?.totalRevenue > 0 ? '+' : '',
       icon: DollarSign,
       gradient: 'from-emerald-400 to-teal-500',
       bg: 'bg-emerald-500/10',
@@ -50,26 +51,26 @@ export default function StatsGrid() {
     },
     {
       label: 'Taxa de Conversao',
-      value: loading ? '...' : `${analytics?.totals?.avgConversion?.toFixed(1) || 0}%`,
-      change: analytics?.totals?.avgConversion > 0 ? '+' : '',
+      value: loading ? '...' : `${(summary?.avgConversionRate || 0).toFixed(1)}%`,
+      change: summary?.avgConversionRate > 0 ? '+' : '',
       icon: Target,
       gradient: 'from-blue-400 to-cyan-500',
       bg: 'bg-blue-500/10',
       iconBg: 'bg-blue-500',
     },
     {
-      label: 'Visualizacoes',
-      value: loading ? '...' : formatNumber(analytics?.totals?.totalViews || 0),
-      change: analytics?.totals?.totalViews > 0 ? '+' : '',
+      label: 'Espectadores',
+      value: loading ? '...' : formatNumber(summary?.totalViewers || 0),
+      change: summary?.totalViewers > 0 ? '+' : '',
       icon: Eye,
       gradient: 'from-violet-400 to-purple-500',
       bg: 'bg-violet-500/10',
       iconBg: 'bg-violet-500',
     },
     {
-      label: 'Total de Lives',
-      value: loading ? '...' : analytics?.livesCount || 0,
-      change: analytics?.livesCount > 0 ? '+' : '',
+      label: 'Lives no Periodo',
+      value: loading ? '...' : count,
+      change: count > 0 ? '+' : '',
       icon: Video,
       gradient: 'from-orange-400 to-amber-500',
       bg: 'bg-orange-500/10',

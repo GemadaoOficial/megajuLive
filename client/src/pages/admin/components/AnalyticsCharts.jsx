@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,6 +15,7 @@ import {
 import { Line, Bar, Doughnut } from 'react-chartjs-2'
 import { motion } from 'framer-motion'
 import { TrendingUp, BarChart3, PieChart } from 'lucide-react'
+import { liveReportsAPI } from '../../../services/api'
 
 ChartJS.register(
   CategoryScale,
@@ -35,45 +36,78 @@ const periods = [
   { label: '90 dias', value: '90d' },
 ]
 
-export default function AnalyticsCharts({ data }) {
+export default function AnalyticsCharts() {
   const [period, setPeriod] = useState('30d')
+  const [chartData, setChartData] = useState({ byDate: {}, statusCounts: { FINISHED: 0, SCHEDULED: 0, LIVE: 0 } })
+  const [loading, setLoading] = useState(true)
 
-  // Generate sample data based on period
-  const getDaysCount = () => {
-    switch (period) {
-      case '7d': return 7
-      case '30d': return 30
-      case '90d': return 90
-      default: return 30
+  useEffect(() => {
+    loadData()
+  }, [period])
+
+  const loadData = async () => {
+    setLoading(true)
+    try {
+      const days = period === '7d' ? 7 : period === '30d' ? 30 : 90
+      const startDate = new Date(Date.now() - days * 86400000).toISOString().split('T')[0]
+      const endDate = new Date().toISOString().split('T')[0]
+
+      const response = await liveReportsAPI.getAll({
+        period: 'custom',
+        startDate,
+        endDate,
+        limit: 500,
+      })
+      const reports = response.data.data || []
+
+      // Group by date
+      const byDate = {}
+      const today = new Date()
+      for (let i = days - 1; i >= 0; i--) {
+        const d = new Date(today)
+        d.setDate(d.getDate() - i)
+        const key = d.toISOString().split('T')[0]
+        byDate[key] = {
+          label: d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
+          revenue: 0,
+          viewers: 0,
+          lives: 0,
+        }
+      }
+
+      reports.forEach(r => {
+        const key = new Date(r.reportDate).toISOString().split('T')[0]
+        if (byDate[key]) {
+          byDate[key].revenue += r.totalRevenue || 0
+          byDate[key].viewers += r.totalViewers || 0
+          byDate[key].lives += 1
+        }
+      })
+
+      // Status counts (from all reports - use createdManually as proxy)
+      const statusCounts = {
+        FINISHED: reports.length,
+        SCHEDULED: 0,
+        LIVE: 0,
+      }
+
+      setChartData({ byDate, statusCounts })
+    } catch (error) {
+      console.error('Erro ao carregar dados dos graficos:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const generateLabels = () => {
-    const days = getDaysCount()
-    const labels = []
-    for (let i = days - 1; i >= 0; i--) {
-      const date = new Date()
-      date.setDate(date.getDate() - i)
-      labels.push(date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }))
-    }
-    return labels
-  }
-
-  const generateData = (base, variance) => {
-    const days = getDaysCount()
-    return Array.from({ length: days }, () =>
-      Math.floor(base + Math.random() * variance - variance / 2)
-    )
-  }
-
-  const labels = generateLabels()
+  const dates = Object.values(chartData.byDate)
+  const labels = dates.map(d => d.label)
 
   const salesData = {
     labels,
     datasets: [
       {
         label: 'Vendas (R$)',
-        data: generateData(1500, 1000),
+        data: dates.map(d => d.revenue),
         borderColor: '#EE4D2D',
         backgroundColor: 'rgba(238, 77, 45, 0.1)',
         fill: true,
@@ -86,8 +120,8 @@ export default function AnalyticsCharts({ data }) {
     labels,
     datasets: [
       {
-        label: 'Visualizacoes',
-        data: generateData(500, 300),
+        label: 'Espectadores',
+        data: dates.map(d => d.viewers),
         borderColor: '#8B5CF6',
         backgroundColor: 'rgba(139, 92, 246, 0.1)',
         fill: true,
@@ -96,12 +130,13 @@ export default function AnalyticsCharts({ data }) {
     ],
   }
 
+  const last7 = dates.slice(-7)
   const livesPerDayData = {
-    labels: labels.slice(-7),
+    labels: last7.map(d => d.label),
     datasets: [
       {
         label: 'Lives Realizadas',
-        data: generateData(5, 4).slice(-7),
+        data: last7.map(d => d.lives),
         backgroundColor: [
           'rgba(238, 77, 45, 0.8)',
           'rgba(139, 92, 246, 0.8)',
@@ -116,11 +151,13 @@ export default function AnalyticsCharts({ data }) {
     ],
   }
 
+  const { statusCounts } = chartData
+  const totalStatus = statusCounts.FINISHED + statusCounts.SCHEDULED + statusCounts.LIVE
   const statusData = {
-    labels: ['Finalizadas', 'Agendadas', 'Canceladas'],
+    labels: ['Finalizadas', 'Agendadas', 'Ao Vivo'],
     datasets: [
       {
-        data: [65, 25, 10],
+        data: [statusCounts.FINISHED, statusCounts.SCHEDULED, statusCounts.LIVE],
         backgroundColor: [
           'rgba(16, 185, 129, 0.8)',
           'rgba(59, 130, 246, 0.8)',
@@ -135,9 +172,7 @@ export default function AnalyticsCharts({ data }) {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        display: false,
-      },
+      legend: { display: false },
       tooltip: {
         backgroundColor: '#1E293B',
         titleColor: '#F8FAFC',
@@ -148,21 +183,12 @@ export default function AnalyticsCharts({ data }) {
     },
     scales: {
       x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          maxTicksLimit: 7,
-          color: '#94A3B8',
-        },
+        grid: { display: false },
+        ticks: { maxTicksLimit: 7, color: '#94A3B8' },
       },
       y: {
-        grid: {
-          color: '#E2E8F0',
-        },
-        ticks: {
-          color: '#94A3B8',
-        },
+        grid: { color: '#E2E8F0' },
+        ticks: { color: '#94A3B8' },
       },
     },
   }
@@ -170,28 +196,15 @@ export default function AnalyticsCharts({ data }) {
   const barOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
+    plugins: { legend: { display: false } },
     scales: {
       x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: '#94A3B8',
-        },
+        grid: { display: false },
+        ticks: { color: '#94A3B8' },
       },
       y: {
-        grid: {
-          color: '#E2E8F0',
-        },
-        ticks: {
-          color: '#94A3B8',
-          stepSize: 1,
-        },
+        grid: { color: '#E2E8F0' },
+        ticks: { color: '#94A3B8', stepSize: 1 },
       },
     },
   }
@@ -202,14 +215,21 @@ export default function AnalyticsCharts({ data }) {
     plugins: {
       legend: {
         position: 'bottom',
-        labels: {
-          padding: 20,
-          color: '#64748B',
-        },
+        labels: { padding: 20, color: '#64748B' },
       },
     },
     cutout: '70%',
   }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  const hasData = dates.some(d => d.revenue > 0 || d.viewers > 0 || d.lives > 0)
 
   return (
     <div className="space-y-6">
@@ -233,91 +253,96 @@ export default function AnalyticsCharts({ data }) {
         </div>
       </div>
 
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Sales Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-primary" />
+      {!hasData ? (
+        <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center text-slate-400">
+          Nenhum dado disponivel para o periodo selecionado
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Sales Chart */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">Vendas</h3>
+                <p className="text-sm text-slate-500">Receita por periodo</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-slate-800">Vendas</h3>
-              <p className="text-sm text-slate-500">Receita por periodo</p>
+            <div className="h-64">
+              <Line data={salesData} options={lineOptions} />
             </div>
-          </div>
-          <div className="h-64">
-            <Line data={salesData} options={lineOptions} />
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Views Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-violet-600" />
+          {/* Views Chart */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-violet-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">Espectadores</h3>
+                <p className="text-sm text-slate-500">Total de viewers</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-slate-800">Visualizacoes</h3>
-              <p className="text-sm text-slate-500">Total de views</p>
+            <div className="h-64">
+              <Line data={viewsData} options={lineOptions} />
             </div>
-          </div>
-          <div className="h-64">
-            <Line data={viewsData} options={lineOptions} />
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Lives per Day */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-emerald-600" />
+          {/* Lives per Day */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                <BarChart3 className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">Lives por Dia</h3>
+                <p className="text-sm text-slate-500">Ultimos 7 dias</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-slate-800">Lives por Dia</h3>
-              <p className="text-sm text-slate-500">Ultimos 7 dias</p>
+            <div className="h-64">
+              <Bar data={livesPerDayData} options={barOptions} />
             </div>
-          </div>
-          <div className="h-64">
-            <Bar data={livesPerDayData} options={barOptions} />
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Status Distribution */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
-              <PieChart className="w-5 h-5 text-amber-600" />
+          {/* Status Distribution */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                <PieChart className="w-5 h-5 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">Status das Lives</h3>
+                <p className="text-sm text-slate-500">Distribuicao ({totalStatus} lives)</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-slate-800">Status das Lives</h3>
-              <p className="text-sm text-slate-500">Distribuicao</p>
+            <div className="h-64">
+              <Doughnut data={statusData} options={doughnutOptions} />
             </div>
-          </div>
-          <div className="h-64">
-            <Doughnut data={statusData} options={doughnutOptions} />
-          </div>
-        </motion.div>
-      </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }

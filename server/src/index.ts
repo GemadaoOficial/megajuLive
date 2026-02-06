@@ -11,6 +11,7 @@ import analyticsRoutes from './routes/analytics.js'
 import analyticsHistoryRoutes from './routes/analytics-history.js'
 import uploadRoutes from './routes/upload.js'
 import auditRoutes from './routes/audit.js'
+import liveReportsRoutes from './routes/live-reports.js'
 
 dotenv.config()
 
@@ -38,6 +39,7 @@ app.use('/api/analytics', analyticsRoutes)
 app.use('/api/analytics-history', analyticsHistoryRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/audit', auditRoutes)
+app.use('/api/live-reports', liveReportsRoutes)
 
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {

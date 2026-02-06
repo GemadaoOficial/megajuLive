@@ -7,7 +7,7 @@ echo ========================================
 echo.
 
 :: Start backend server
-echo Iniciando Backend (porta 3001)...
+echo Iniciando Backend (porta 5000)...
 start "Shopee Live - Backend" cmd /k "cd /d %~dp0server && npm run dev"
 
 :: Wait a bit for backend to start
@@ -21,7 +21,7 @@ echo.
 echo ========================================
 echo Servidores iniciados!
 echo.
-echo Backend:  http://localhost:3001
+echo Backend:  http://localhost:5000
 echo Frontend: http://localhost:5173
 echo.
 echo Credenciais:

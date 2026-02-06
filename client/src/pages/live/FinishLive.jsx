@@ -1,237 +1,477 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useDropzone } from 'react-dropzone';
-import { liveService } from '../../services/liveService';
-import { Upload, CheckCircle, FileSpreadsheet, Image as ImageIcon, Loader2, X } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState, useEffect, useCallback } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useDropzone } from 'react-dropzone'
+import { motion } from 'framer-motion'
+import { Sparkles, Loader2, Image as ImageIcon, CheckCircle, ArrowLeft, AlertTriangle, Info } from 'lucide-react'
+import { liveService } from '../../services/liveService'
+import { liveReportsAPI, aiAPI } from '../../services/api'
+import { toast } from 'sonner'
+import ReportForm from './components/ReportForm'
 
-const schema = z.object({
-    followersEnd: z.number({ invalid_type_error: "Obrigatório" }).min(0),
-    coinsEnd: z.number({ invalid_type_error: "Obrigatório" }).min(0),
-});
+function DropArea({ onDrop, files, setFiles, label, max, disabled }) {
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+    accept: { 'image/*': [] },
+    maxFiles: max,
+    disabled,
+    noClick: false,
+    noKeyboard: false,
+    onDrop: (accepted) => onDrop(accepted),
+  })
+
+  const handlePaste = useCallback((e) => {
+    if (disabled) return
+    const items = e.clipboardData?.items
+    if (!items) return
+    const imageFiles = []
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith('image/')) {
+        const file = items[i].getAsFile()
+        if (file) imageFiles.push(file)
+      }
+    }
+    if (imageFiles.length > 0) {
+      e.preventDefault()
+      onDrop(imageFiles)
+    }
+  }, [disabled, onDrop])
+
+  return (
+    <div>
+      <label className="block text-sm font-medium text-slate-700 mb-2">{label} (max {max})</label>
+      <div
+        {...getRootProps()}
+        onPaste={handlePaste}
+        tabIndex={0}
+        className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-primary/30 ${
+          isDragActive ? 'border-primary bg-primary/5 scale-[1.02]' : 'border-slate-300 hover:border-primary hover:bg-slate-50'
+        } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      >
+        <input {...getInputProps()} />
+        <ImageIcon className="mx-auto w-8 h-8 text-slate-400 mb-2" />
+        <p className="text-sm text-slate-500">
+          {files.length > 0 ? `${files.length} arquivo(s)` : 'Arraste, clique ou cole (Ctrl+V)'}
+        </p>
+      </div>
+      {files.length > 0 && (
+        <div className="flex gap-2 mt-3 flex-wrap">
+          {files.map((f, i) => (
+            <div key={i} className="relative w-14 h-14 rounded-lg overflow-hidden border border-slate-200 shadow-sm">
+              <img src={URL.createObjectURL(f)} alt="" className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setFiles(prev => prev.filter((_, idx) => idx !== i)) }}
+                className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center shadow hover:bg-red-600"
+              >
+                x
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Campos que sempre aparecem no relatorio da Shopee (usados para avisos de nao-deteccao)
+const CORE_FIELDS = {
+  totalRevenue: 'Vendas (R$)',
+  totalOrders: 'Pedidos',
+  totalItemsSold: 'Itens Vendidos',
+  totalViewers: 'Espectadores',
+  engagedViewers: 'Engajados',
+  totalViews: 'Visualizações',
+  peakViewers: 'Pico Simultâneo',
+  avgWatchTime: 'Tempo Médio',
+  totalLikes: 'Curtidas',
+  totalComments: 'Comentários',
+  newFollowers: 'Novos Seguidores',
+}
+
+const AI_STEPS = [
+  { key: 'prepare', label: 'Preparando imagens...', progress: 15 },
+  { key: 'upload', label: 'Enviando para a IA...', progress: 35 },
+  { key: 'analyze', label: 'IA analisando screenshots...', progress: 60 },
+  { key: 'process', label: 'Processando resultados...', progress: 85 },
+  { key: 'done', label: 'Concluido!', progress: 100 },
+]
+
+const emptyReport = {
+  liveTitle: '', reportDate: new Date().toISOString().split('T')[0], reportTime: '',
+  totalRevenue: 0, totalOrders: 0, totalItemsSold: 0, avgOrderValue: 0, avgRevenuePerBuyer: 0,
+  totalViewers: 0, engagedViewers: 0, totalViews: 0, peakViewers: 0, avgWatchTime: 0, liveDuration: 0,
+  clickRate: 0, totalBuyers: 0, productClicks: 0, productClickRate: 0, conversionRate: 0, addToCart: 0, gpm: 0,
+  totalLikes: 0, totalShares: 0, totalComments: 0, commentRate: 0, newFollowers: 0,
+  couponsUsed: 0, coinsUsed: 0, coinsCost: 0, coinRedemptions: 0, auctionRounds: 0,
+  productImpressions: 0, orderRate: 0, impressionToOrderRate: 0,
+}
 
 export default function FinishLive() {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
-        resolver: zodResolver(schema)
-    });
+  const { id } = useParams()
+  const navigate = useNavigate()
 
-    const [screenshots, setScreenshots] = useState([]);
-    const [aiData, setAiData] = useState(null);
-    const [loadingAi, setLoadingAi] = useState(false);
-    const [finishing, setFinishing] = useState(false);
+  const [live, setLive] = useState(null)
+  const [data, setData] = useState({ ...emptyReport })
+  const [products, setProducts] = useState([])
+  const [saving, setSaving] = useState(false)
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiStep, setAiStep] = useState('')
+  const [aiProgress, setAiProgress] = useState(0)
+  const [aiError, setAiError] = useState('')
+  const [aiWarnings, setAiWarnings] = useState([])
+  const [undetectedFields, setUndetectedFields] = useState([])
+  const [statsFiles, setStatsFiles] = useState([])
+  const [productFiles, setProductFiles] = useState([])
+  const [trafficFiles, setTrafficFiles] = useState([])
 
-    const onDrop = async (acceptedFiles) => {
-        // Limit to 10 files
-        const newFiles = [...screenshots, ...acceptedFiles].slice(0, 10);
-        setScreenshots(newFiles);
+  useEffect(() => {
+    if (id) loadLive()
+  }, [id])
 
-        // Auto-extract data via AI if we have files
-        if (newFiles.length > 0) {
-            analyzeScreenshots(newFiles);
+  const loadLive = async () => {
+    try {
+      const response = await liveService.getDetails(id)
+      const l = response.live || response
+      setLive(l)
+      setData(prev => ({
+        ...prev,
+        liveTitle: l.title || '',
+        reportDate: new Date().toISOString().split('T')[0],
+      }))
+    } catch (error) {
+      console.error('Erro ao carregar live:', error)
+    }
+  }
+
+  const onDropStats = useCallback((f) => setStatsFiles(prev => [...prev, ...f].slice(0, 10)), [])
+  const onDropProducts = useCallback((f) => setProductFiles(prev => [...prev, ...f].slice(0, 10)), [])
+  const onDropTraffic = useCallback((f) => setTrafficFiles(prev => [...prev, ...f].slice(0, 5)), [])
+
+  const handleAiExtract = async () => {
+    if (statsFiles.length === 0 && productFiles.length === 0 && trafficFiles.length === 0) return
+    setAiLoading(true)
+    setAiProgress(0)
+    setAiError('')
+    setAiWarnings([])
+    setUndetectedFields([])
+    try {
+      const formData = new FormData()
+
+      setAiStep(AI_STEPS[0].label)
+      setAiProgress(AI_STEPS[0].progress)
+      statsFiles.forEach(f => formData.append('statsScreenshots', f))
+      productFiles.forEach(f => formData.append('productScreenshots', f))
+      trafficFiles.forEach(f => formData.append('trafficScreenshots', f))
+
+      setAiStep(AI_STEPS[1].label)
+      setAiProgress(AI_STEPS[1].progress)
+
+      // Simular progresso durante a espera da API
+      const progressInterval = setInterval(() => {
+        setAiProgress(prev => {
+          if (prev >= 75) { clearInterval(progressInterval); return prev }
+          return prev + 1
+        })
+      }, 800)
+
+      setAiStep(AI_STEPS[2].label)
+      const response = await aiAPI.extractLiveReport(formData)
+      clearInterval(progressInterval)
+
+      const result = response.data
+
+      setAiStep(AI_STEPS[3].label)
+      setAiProgress(AI_STEPS[3].progress)
+      const { products: aiProducts, ...aiStats } = result
+      setData(prev => ({ ...prev, ...aiStats }))
+      if (aiProducts?.length) setProducts(aiProducts)
+
+      // Detectar campos nao reconhecidos
+      const notDetected = []
+      const warnings = []
+      Object.entries(CORE_FIELDS).forEach(([field, label]) => {
+        if (!aiStats[field] || aiStats[field] === 0) {
+          notDetected.push(field)
+          warnings.push(label)
         }
-    };
+      })
+      setUndetectedFields(notDetected)
+      setAiWarnings(warnings)
 
-    const analyzeScreenshots = async (files) => {
-        setLoadingAi(true);
+      setAiStep(AI_STEPS[4].label)
+      setAiProgress(AI_STEPS[4].progress)
+
+      if (warnings.length > 0) {
+        toast.info(`${warnings.length} campo(s) nao detectados pela IA`)
+      } else {
+        toast.success('Todos os campos extraidos com sucesso!')
+      }
+
+      setTimeout(() => {
+        setAiStep('')
+        setAiProgress(0)
+      }, 2000)
+    } catch (error) {
+      console.error('Erro AI:', error)
+      const msg = error.response?.data?.message || error.message || 'Erro desconhecido ao processar imagens'
+      setAiError(msg)
+      toast.error('Falha ao processar imagens pela IA')
+      setAiStep('')
+      setAiProgress(0)
+    } finally {
+      setAiLoading(false)
+    }
+  }
+
+  const handleSave = async () => {
+    if (!data.liveTitle) { toast.error('Informe o nome da live'); return }
+    if (!data.reportTime) { toast.error('Informe o horario da live'); return }
+    setSaving(true)
+    try {
+      const { reportTime, ...rest } = data
+      const reportDate = reportTime ? `${data.reportDate}T${reportTime}:00` : data.reportDate
+      await liveReportsAPI.create({
+        ...rest,
+        reportDate,
+        liveId: id || undefined,
+        products,
+        aiAnalyzed: statsFiles.length > 0 || productFiles.length > 0 || trafficFiles.length > 0,
+      })
+
+      // Also finish the live if we have an id
+      if (id) {
         try {
-            const formData = new FormData();
-            files.forEach(file => {
-                formData.append('screenshots', file);
-            });
-
-            const data = await liveService.uploadScreenshot(formData);
-            setAiData(data);
-
-            // Auto-fill form fields if AI returns data (optional, but requested read-only fields for specific metrics)
-            if (data.totalRevenue) setValue('coinsEnd', parseFloat(data.totalRevenue)); // Example mapping if needed, but keeping explicit inputs separate
-
-            toast.success('Análise de IA concluída!');
-        } catch (error) {
-            console.error('Erro na IA:', error);
-            toast.error('Falha ao processar imagens pela IA.');
-        } finally {
-            setLoadingAi(false);
+          const formData = new FormData()
+          formData.append('followersEnd', data.newFollowers || 0)
+          formData.append('coinsEnd', data.coinsUsed || 0)
+          await liveService.finishLive(id, formData)
+        } catch (e) {
+          // Non-critical if this fails
+          console.warn('Aviso: nao foi possivel finalizar a live:', e)
         }
-    };
+      }
 
-    const removeScreenshot = (index) => {
-        const newFiles = [...screenshots];
-        newFiles.splice(index, 1);
-        setScreenshots(newFiles);
-    };
+      toast.success('Relatorio salvo com sucesso!')
+      navigate('/analytics')
+    } catch (error) {
+      console.error('Erro ao salvar:', error)
+      toast.error('Erro ao salvar relatorio')
+    } finally {
+      setSaving(false)
+    }
+  }
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-        accept: { 'image/*': [] },
-        maxFiles: 10,
-        disabled: loadingAi
-    });
-
-    const onSubmit = async (data) => {
-        setFinishing(true);
-        try {
-            const formData = new FormData();
-            // Append regular fields
-            formData.append('followersEnd', data.followersEnd);
-            formData.append('coinsEnd', data.coinsEnd);
-
-            // Append screenshots
-            screenshots.forEach(file => {
-                formData.append('screenshots', file);
-            });
-
-            // Append AI Data if exists
-            if (aiData) {
-                formData.append('aiExtractedData', JSON.stringify(aiData));
-                // Append metrics
-                formData.append('likes', aiData.likes);
-                formData.append('shares', aiData.shares);
-                formData.append('chatInteractions', aiData.comments);
-                formData.append('totalViews', aiData.totalViews);
-                formData.append('engagementRate', aiData.engagementRate);
-            }
-
-            // Correct usage: Pass formData
-            await liveService.finishLive(id, formData);
-
-            toast.success('Live finalizada com sucesso!');
-            navigate('/dashboard');
-        } catch (error) {
-            console.error(error);
-            toast.error('Erro ao finalizar live');
-        } finally {
-            setFinishing(false);
-        }
-    };
-
-    return (
-        <div className="max-w-4xl mx-auto pb-12">
-            <h1 className="text-2xl font-bold text-gray-800 mb-6">Finalizar e Relatório</h1>
-
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                {/* Upload Section */}
-                <div className="bg-white p-6 rounded-xl shadow-sm">
-                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                        <ImageIcon className="text-primary" /> Screenshots do Relatório Shopee (Máx 10)
-                    </h2>
-
-                    <div {...getRootProps()} className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary'} ${loadingAi ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                        <input {...getInputProps()} />
-                        {loadingAi ? (
-                            <div className="flex flex-col items-center justify-center py-4">
-                                <Loader2 className="animate-spin text-primary mb-2" size={40} />
-                                <p className="text-gray-600 font-medium animate-pulse">A Inteligência Artificial está analisando suas imagens...</p>
-                                <p className="text-xs text-gray-400 mt-2">Isso pode levar alguns segundos</p>
-                            </div>
-                        ) : (
-                            <div className="text-gray-500">
-                                <Upload className="mx-auto mb-2" size={32} />
-                                <p>Arraste até 10 prints ou clique para selecionar</p>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Screenshots Gallery */}
-                    {screenshots.length > 0 && (
-                        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {screenshots.map((file, index) => (
-                                <div key={index} className="relative group aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                                    <img
-                                        src={URL.createObjectURL(file)}
-                                        alt={`Print ${index + 1}`}
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => removeScreenshot(index)}
-                                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                        <X size={14} />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* AI Data Preview (Read Only Fields) */}
-                    {aiData && (
-                        <div className="mt-6 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-                            <h3 className="text-sm font-bold text-blue-800 mb-4 flex items-center gap-2">
-                                ✨ Dados Extraídos pela IA (Somente Leitura)
-                            </h3>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                <div>
-                                    <label className="text-xs font-bold text-blue-600 uppercase tracking-wider block mb-1">Curtidas</label>
-                                    <div className="text-2xl font-bold text-gray-800">{aiData.likes?.toLocaleString()}</div>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-blue-600 uppercase tracking-wider block mb-1">Comentários</label>
-                                    <div className="text-2xl font-bold text-gray-800">{aiData.comments?.toLocaleString()}</div>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-blue-600 uppercase tracking-wider block mb-1">Compartilhamentos</label>
-                                    <div className="text-2xl font-bold text-gray-800">{aiData.shares?.toLocaleString()}</div>
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-blue-600 uppercase tracking-wider block mb-1">Engajamento</label>
-                                    <div className="text-2xl font-bold text-gray-800">{aiData.engagementRate}%</div>
-                                </div>
-                            </div>
-                            <div className="mt-4 pt-4 border-t border-blue-200 grid grid-cols-3 gap-4 text-sm text-blue-700">
-                                <p>Visualizações: <span className="font-semibold">{aiData.totalViews?.toLocaleString()}</span></p>
-                                <p>Pedidos: <span className="font-semibold">{aiData.totalOrders}</span></p>
-                                <p>Receita Est.: <span className="font-semibold">R$ {parseFloat(aiData.totalRevenue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></p>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {/* Manual Input Section */}
-                <div className="bg-white p-6 rounded-xl shadow-sm">
-                    <h2 className="text-lg font-semibold mb-4">Dados Finais de Perfil</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Seguidores no Final</label>
-                            <input
-                                type="number"
-                                {...register('followersEnd', { valueAsNumber: true })}
-                                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
-                                placeholder="Digite o total de seguidores"
-                            />
-                            {errors.followersEnd && <p className="text-red-500 text-xs">{errors.followersEnd.message}</p>}
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-700">Saldo de Moedas Final</label>
-                            <input
-                                type="number"
-                                step="0.01"
-                                {...register('coinsEnd', { valueAsNumber: true })}
-                                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary outline-none"
-                                placeholder="Digite o saldo final"
-                            />
-                            {errors.coinsEnd && <p className="text-red-500 text-xs">{errors.coinsEnd.message}</p>}
-                        </div>
-                    </div>
-                </div>
-
-                <button
-                    type="submit"
-                    disabled={finishing || loadingAi}
-                    className="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition-colors shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                    {finishing ? (
-                        <>
-                            <Loader2 className="animate-spin" /> Salvando Relatório...
-                        </>
-                    ) : 'FINALIZAR E GERAR RELATÓRIO'}
-                </button>
-            </form>
+  return (
+    <div className="max-w-5xl mx-auto pb-12">
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-6">
+        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+          <ArrowLeft className="w-5 h-5 text-slate-600" />
+        </button>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Finalizar Live e Gerar Relatorio</h1>
+          <p className="text-sm text-slate-500">
+            {live ? `Live: ${live.title}` : 'Preencha os dados do relatorio da live'}
+          </p>
         </div>
-    );
+      </div>
+
+      <div className="space-y-6">
+        {/* Meta info */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Nome da Live *</label>
+              <input
+                type="text"
+                value={data.liveTitle}
+                onChange={(e) => setData(prev => ({ ...prev, liveTitle: e.target.value }))}
+                placeholder="Ex: Super Promo de Quinta"
+                className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Data da Live *</label>
+              <input
+                type="date"
+                value={data.reportDate}
+                onChange={(e) => setData(prev => ({ ...prev, reportDate: e.target.value }))}
+                className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Horario de Inicio *</label>
+              <input
+                type="time"
+                value={data.reportTime || ''}
+                onChange={(e) => setData(prev => ({ ...prev, reportTime: e.target.value }))}
+                className="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20"
+              />
+            </div>
+          </div>
+        </motion.div>
+
+        {/* AI Upload Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm"
+        >
+          <h2 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-primary" />
+            Preencher com IA (opcional)
+          </h2>
+          <p className="text-sm text-slate-500 mb-4">
+            Envie screenshots do relatorio da Shopee e a IA preenchera automaticamente todos os campos.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <DropArea onDrop={onDropStats} files={statsFiles} setFiles={setStatsFiles} label="Estatisticas" max={10} disabled={aiLoading} />
+            <DropArea onDrop={onDropProducts} files={productFiles} setFiles={setProductFiles} label="Produtos" max={10} disabled={aiLoading} />
+            <DropArea onDrop={onDropTraffic} files={trafficFiles} setFiles={setTrafficFiles} label="Trafego" max={5} disabled={aiLoading} />
+          </div>
+
+          {/* AI Progress */}
+          {aiLoading && aiProgress > 0 && (
+            <div className="mb-4">
+              <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                <span>{aiStep}</span>
+                <span>{aiProgress}%</span>
+              </div>
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${aiProgress}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={handleAiExtract}
+            disabled={aiLoading || (statsFiles.length === 0 && productFiles.length === 0 && trafficFiles.length === 0)}
+            className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-xl hover:opacity-90 disabled:opacity-50 transition-all shadow-md hover:shadow-lg"
+          >
+            {aiLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                {aiStep}
+              </>
+            ) : aiProgress === 100 ? (
+              <>
+                <CheckCircle className="w-4 h-4" />
+                Dados extraidos! Clique para re-analisar
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Analisar com IA
+              </>
+            )}
+          </button>
+        </motion.div>
+
+        {/* AI Error */}
+        {aiError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3"
+          >
+            <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-red-700 text-sm">Erro ao processar imagens</p>
+              <p className="text-xs text-red-600 mt-1">{aiError}</p>
+              <button
+                onClick={() => setAiError('')}
+                className="text-xs text-red-500 underline mt-2 hover:text-red-700"
+              >
+                Fechar
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* AI Warnings - Campos nao detectados */}
+        {aiWarnings.length > 0 && !aiLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3"
+          >
+            <Info className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-semibold text-amber-700 text-sm">
+                {aiWarnings.length} campo(s) nao detectados pela IA
+              </p>
+              <p className="text-xs text-amber-600 mt-1">
+                Os campos abaixo ficaram vazios. Verifique se estao visiveis nos screenshots ou preencha manualmente.
+              </p>
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {aiWarnings.map((w, i) => (
+                  <span key={i} className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
+                    {w}
+                  </span>
+                ))}
+              </div>
+              <button
+                onClick={() => setAiWarnings([])}
+                className="text-xs text-amber-500 underline mt-2 hover:text-amber-700"
+              >
+                Fechar
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Report Form */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <ReportForm data={data} onChange={setData} products={products} onProductsChange={setProducts} undetectedFields={undetectedFields} />
+        </motion.div>
+
+        {/* Save Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="flex items-center gap-4"
+        >
+          <button
+            onClick={() => navigate(-1)}
+            className="px-8 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50 transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving || !data.liveTitle}
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold text-lg hover:opacity-90 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl"
+          >
+            {saving ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Salvando Relatorio...
+              </>
+            ) : (
+              <>
+                <CheckCircle className="w-5 h-5" />
+                Finalizar e Salvar Relatorio
+              </>
+            )}
+          </button>
+        </motion.div>
+      </div>
+    </div>
+  )
 }

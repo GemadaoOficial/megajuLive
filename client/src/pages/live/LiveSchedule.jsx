@@ -3,7 +3,7 @@ import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInte
 import { ptBR } from 'date-fns/locale';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus, Clock, Package, X, Trash2, Edit2, Check, AlertCircle } from 'lucide-react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { api } from '../../services/api';
+import api from '../../services/api';
 import { toast } from 'sonner';
 import TiltCard from '../../components/ui/TiltCard';
 import PremiumPageHeader from '../../components/ui/PremiumPageHeader';

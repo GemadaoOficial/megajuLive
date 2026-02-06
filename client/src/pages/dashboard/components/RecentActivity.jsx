@@ -78,7 +78,7 @@ export default function RecentActivity() {
 
   const loadRecentActivity = async () => {
     try {
-      const response = await auditAPI.getLogs({ limit: 10, page: 1 })
+      const response = await auditAPI.getMyActivity(10)
       setActivities(response.data.data || [])
     } catch (error) {
       console.error('Erro ao carregar atividades:', error)

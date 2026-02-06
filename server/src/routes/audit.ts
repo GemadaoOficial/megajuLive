@@ -7,7 +7,28 @@ import '../types/index.js'
 
 const router = Router()
 
-// All routes require admin
+// Get own recent activity (any authenticated user)
+router.get('/my-activity', authenticate, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const limit = Math.min(Number(req.query.limit) || 10, 50)
+    const logs = await prisma.auditLog.findMany({
+      where: { userId: req.user.id },
+      include: {
+        user: {
+          select: { id: true, name: true, email: true, avatar: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+    })
+    res.json({ data: logs, total: logs.length })
+  } catch (error) {
+    console.error('Get my activity error:', error)
+    res.status(500).json({ message: 'Erro ao buscar atividades' })
+  }
+})
+
+// All routes below require admin
 router.use(authenticate, requireAdmin)
 
 // Get all audit logs with pagination and filters

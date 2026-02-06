@@ -36,19 +36,6 @@ export default function AdminPanel() {
       setRecentActivity(response.data.recentActivity || [])
     } catch (error) {
       console.error('Erro ao carregar analytics:', error)
-      setStats({
-        totalUsers: 24,
-        totalLives: 156,
-        totalRevenue: 45890,
-        totalViews: 234500,
-      })
-      setRecentActivity([
-        { id: 1, text: 'Novo usuario cadastrado: Maria Silva', time: '5 min atras', type: 'user' },
-        { id: 2, text: 'Live finalizada: Super Promocao', time: '15 min atras', type: 'live' },
-        { id: 3, text: 'Tutorial atualizado: Tecnicas de Venda', time: '1h atras', type: 'tutorial' },
-        { id: 4, text: 'Novo usuario cadastrado: Joao Santos', time: '2h atras', type: 'user' },
-        { id: 5, text: 'Live iniciada: Ofertas do Dia', time: '3h atras', type: 'live' },
-      ])
     } finally {
       setLoading(false)
     }
