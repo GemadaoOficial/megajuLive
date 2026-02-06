@@ -28,7 +28,6 @@ export default function AnalyticsChart() {
       })
       const reports = response.data.data || []
 
-      // Group reports by date
       const byDate = {}
       const today = new Date()
       for (let i = days - 1; i >= 0; i--) {
@@ -59,13 +58,21 @@ export default function AnalyticsChart() {
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white border border-slate-200 rounded-lg shadow-lg p-3">
-          <p className="text-sm font-semibold text-slate-700 mb-2">{payload[0].payload.date}</p>
-          {payload.map((entry, index) => (
-            <p key={index} className="text-sm text-slate-600">
-              <span style={{ color: entry.color }}>●</span> {entry.name}: {entry.name === 'Receita' ? `R$ ${entry.value.toFixed(2)}` : entry.value.toLocaleString('pt-BR')}
-            </p>
-          ))}
+        <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl shadow-xl p-4 min-w-[180px]">
+          <p className="text-sm font-bold text-slate-800 mb-3 pb-2 border-b border-slate-100">{payload[0].payload.date}</p>
+          <div className="space-y-2">
+            {payload.map((entry, index) => (
+              <div key={index} className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                  <span className="text-xs text-slate-500">{entry.name}</span>
+                </div>
+                <span className="text-sm font-bold text-slate-800">
+                  {entry.name === 'Receita' ? `R$ ${entry.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : entry.value.toLocaleString('pt-BR')}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       )
     }
@@ -78,107 +85,117 @@ export default function AnalyticsChart() {
     revenue: acc.revenue + d.revenue,
   }), { viewers: 0, orders: 0, revenue: 0 })
 
+  const hasData = chartData.some(d => d.viewers > 0 || d.orders > 0 || d.revenue > 0)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
+      className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between p-6 pb-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center shadow-sm">
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-800">Analytics</h2>
-            <p className="text-sm text-slate-500">Espectadores e pedidos por dia</p>
+            <h2 className="text-lg font-bold text-slate-800">Desempenho</h2>
+            <p className="text-sm text-slate-500">Espectadores, pedidos e receita por dia</p>
           </div>
         </div>
 
-        {/* Period Selector */}
-        <div className="flex gap-2">
+        <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
           {['7d', '30d', '90d'].map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                 period === p
-                  ? 'bg-gradient-to-r from-primary to-orange-500 text-white shadow-md'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'bg-white text-slate-800 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'
               }`}
             >
-              {p === '7d' ? '7 dias' : p === '30d' ? '30 dias' : '90 dias'}
+              {p === '7d' ? '7d' : p === '30d' ? '30d' : '90d'}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Chart */}
-      {loading ? (
-        <div className="flex items-center justify-center h-80">
-          <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
-      ) : chartData.some(d => d.viewers > 0 || d.orders > 0) ? (
-        <div className="h-80" style={{ minWidth: 0, minHeight: 0 }}>
-          <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient id="colorViewers" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="date" stroke="#94a3b8" style={{ fontSize: '12px' }} />
-              <YAxis stroke="#94a3b8" style={{ fontSize: '12px' }} />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ fontSize: '14px', paddingTop: '20px' }} iconType="circle" />
-              <Area type="monotone" dataKey="viewers" name="Espectadores" stroke="#8b5cf6" strokeWidth={2} fill="url(#colorViewers)" />
-              <Area type="monotone" dataKey="orders" name="Pedidos" stroke="#10b981" strokeWidth={2} fill="url(#colorOrders)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      ) : (
-        <div className="flex items-center justify-center h-80 text-slate-400">
-          Nenhum dado disponivel para o periodo selecionado
-        </div>
-      )}
-
       {/* Summary Stats */}
-      <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-slate-200">
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-1">
-            <Eye className="w-4 h-4 text-violet-500" />
-            <p className="text-sm text-slate-500">Espectadores</p>
+      <div className="grid grid-cols-3 gap-4 px-6 pt-5 pb-2">
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-violet-50/50">
+          <div className="w-9 h-9 rounded-lg bg-violet-500 flex items-center justify-center shadow-sm">
+            <Eye className="w-4 h-4 text-white" />
           </div>
-          <p className="text-2xl font-bold text-slate-800">
-            {totals.viewers.toLocaleString('pt-BR')}
-          </p>
-        </div>
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-1">
-            <ShoppingCart className="w-4 h-4 text-emerald-500" />
-            <p className="text-sm text-slate-500">Pedidos</p>
+          <div>
+            <p className="text-xs text-slate-500 font-medium">Espectadores</p>
+            <p className="text-lg font-bold text-slate-800">{totals.viewers.toLocaleString('pt-BR')}</p>
           </div>
-          <p className="text-2xl font-bold text-slate-800">
-            {totals.orders.toLocaleString('pt-BR')}
-          </p>
         </div>
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-1">
-            <DollarSign className="w-4 h-4 text-emerald-500" />
-            <p className="text-sm text-slate-500">Receita</p>
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50/50">
+          <div className="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center shadow-sm">
+            <ShoppingCart className="w-4 h-4 text-white" />
           </div>
-          <p className="text-2xl font-bold text-slate-800">
-            R$ {totals.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-          </p>
+          <div>
+            <p className="text-xs text-slate-500 font-medium">Pedidos</p>
+            <p className="text-lg font-bold text-slate-800">{totals.orders.toLocaleString('pt-BR')}</p>
+          </div>
         </div>
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50/50">
+          <div className="w-9 h-9 rounded-lg bg-emerald-500 flex items-center justify-center shadow-sm">
+            <DollarSign className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <p className="text-xs text-slate-500 font-medium">Receita</p>
+            <p className="text-lg font-bold text-emerald-600">R$ {totals.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Chart */}
+      <div className="px-6 pb-6">
+        {loading ? (
+          <div className="flex items-center justify-center h-72">
+            <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : hasData ? (
+          <div className="h-72" style={{ minWidth: 0, minHeight: 0 }}>
+            <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="colorViewers" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <XAxis dataKey="date" stroke="#94a3b8" style={{ fontSize: '11px' }} tickLine={false} axisLine={false} />
+                <YAxis stroke="#94a3b8" style={{ fontSize: '11px' }} tickLine={false} axisLine={false} />
+                <Tooltip content={<CustomTooltip />} />
+                <Legend wrapperStyle={{ fontSize: '13px', paddingTop: '16px' }} iconType="circle" iconSize={8} />
+                <Area type="monotone" dataKey="viewers" name="Espectadores" stroke="#8b5cf6" strokeWidth={2.5} fill="url(#colorViewers)" dot={false} activeDot={{ r: 5, fill: '#8b5cf6', stroke: '#fff', strokeWidth: 2 }} />
+                <Area type="monotone" dataKey="orders" name="Pedidos" stroke="#3b82f6" strokeWidth={2.5} fill="url(#colorOrders)" dot={false} activeDot={{ r: 5, fill: '#3b82f6', stroke: '#fff', strokeWidth: 2 }} />
+                <Area type="monotone" dataKey="revenue" name="Receita" stroke="#10b981" strokeWidth={2.5} fill="url(#colorRevenue)" dot={false} activeDot={{ r: 5, fill: '#10b981', stroke: '#fff', strokeWidth: 2 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-72 text-slate-400">
+            <TrendingUp className="w-12 h-12 text-slate-200 mb-3" />
+            <p className="font-medium">Nenhum dado disponivel</p>
+            <p className="text-sm">Finalize uma live para ver os dados aqui</p>
+          </div>
+        )}
       </div>
     </motion.div>
   )

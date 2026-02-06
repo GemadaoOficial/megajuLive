@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Video, Calendar, Sparkles, Zap } from 'lucide-react'
+import { Video, Calendar, Sparkles, Zap, BarChart3 } from 'lucide-react'
 
 export default function QuickActions() {
   return (
@@ -49,10 +49,25 @@ export default function QuickActions() {
           </Link>
 
           <Link
-            to="/tutorials"
+            to="/analytics"
             className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:bg-slate-100 transition-all group"
           >
             <div className="w-11 h-11 rounded-xl bg-gradient-to-r from-violet-500 to-purple-500 flex items-center justify-center">
+              <BarChart3 className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">
+                Ver Relatorios
+              </p>
+              <p className="text-xs text-slate-500">Analise detalhada das lives</p>
+            </div>
+          </Link>
+
+          <Link
+            to="/tutorials"
+            className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-slate-300 hover:bg-slate-100 transition-all group"
+          >
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -62,20 +77,6 @@ export default function QuickActions() {
               <p className="text-xs text-slate-500">Aprenda novas tecnicas</p>
             </div>
           </Link>
-        </div>
-
-        {/* Mini Stats */}
-        <div className="mt-6 pt-6 border-t border-slate-200">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-3 rounded-xl bg-emerald-50">
-              <p className="text-2xl font-bold text-emerald-600">98%</p>
-              <p className="text-xs text-slate-500 mt-1">Satisfacao</p>
-            </div>
-            <div className="text-center p-3 rounded-xl bg-blue-50">
-              <p className="text-2xl font-bold text-blue-600">#12</p>
-              <p className="text-xs text-slate-500 mt-1">Ranking</p>
-            </div>
-          </div>
         </div>
       </div>
     </motion.div>

@@ -222,12 +222,12 @@ router.post(
         (files.trafficScreenshots?.length || 0) > 0,
       ].filter(Boolean).length
 
-      // If user used exactly 1 dropzone, they probably dumped all images there → send to all prompts
-      // If user used multiple dropzones, respect their categorization → only process filled dropzones
+      // Stats and traffic share overlapping fields, so fallback makes sense for them
+      // Products NEVER fallback - only extract from explicit product screenshots to avoid overwriting existing products
       const fallbackToAll = usedDropzones <= 1
 
       const statsImages = files.statsScreenshots?.length ? files.statsScreenshots : (fallbackToAll ? allImages : [])
-      const productImages = files.productScreenshots?.length ? files.productScreenshots : (fallbackToAll ? allImages : [])
+      const productImages = files.productScreenshots?.length ? files.productScreenshots : []
       const trafficImages = files.trafficScreenshots?.length ? files.trafficScreenshots : (fallbackToAll ? allImages : [])
 
       // Run all extractions in PARALLEL for speed (GPT-5-nano is slow)

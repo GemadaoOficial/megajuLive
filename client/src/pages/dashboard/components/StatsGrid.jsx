@@ -5,17 +5,13 @@ import StatCard from './StatCard'
 import { liveReportsAPI } from '../../../services/api'
 
 const formatCurrency = (value) => {
-  if (value >= 1000) {
-    return `R$ ${(value / 1000).toFixed(1)}K`
-  }
+  if (value >= 1000) return `R$ ${(value / 1000).toFixed(1)}K`
   return `R$ ${value.toFixed(0)}`
 }
 
 const formatNumber = (value) => {
-  if (value >= 1000) {
-    return `${(value / 1000).toFixed(1)}K`
-  }
-  return value.toString()
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}K`
+  return value.toLocaleString('pt-BR')
 }
 
 export default function StatsGrid() {
@@ -43,37 +39,33 @@ export default function StatsGrid() {
     {
       label: 'Receita Total',
       value: loading ? '...' : formatCurrency(summary?.totalRevenue || 0),
-      change: summary?.totalRevenue > 0 ? '+' : '',
+      subtitle: 'ultimos 30 dias',
       icon: DollarSign,
       gradient: 'from-emerald-400 to-teal-500',
-      bg: 'bg-emerald-500/10',
       iconBg: 'bg-emerald-500',
     },
     {
       label: 'Taxa de Conversao',
       value: loading ? '...' : `${(summary?.avgConversionRate || 0).toFixed(1)}%`,
-      change: summary?.avgConversionRate > 0 ? '+' : '',
+      subtitle: 'media do periodo',
       icon: Target,
       gradient: 'from-blue-400 to-cyan-500',
-      bg: 'bg-blue-500/10',
       iconBg: 'bg-blue-500',
     },
     {
       label: 'Espectadores',
       value: loading ? '...' : formatNumber(summary?.totalViewers || 0),
-      change: summary?.totalViewers > 0 ? '+' : '',
+      subtitle: 'total acumulado',
       icon: Eye,
       gradient: 'from-violet-400 to-purple-500',
-      bg: 'bg-violet-500/10',
       iconBg: 'bg-violet-500',
     },
     {
       label: 'Lives no Periodo',
-      value: loading ? '...' : count,
-      change: count > 0 ? '+' : '',
+      value: loading ? '...' : count.toString(),
+      subtitle: 'ultimos 30 dias',
       icon: Video,
       gradient: 'from-orange-400 to-amber-500',
-      bg: 'bg-orange-500/10',
       iconBg: 'bg-orange-500',
     },
   ]

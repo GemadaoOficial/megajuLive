@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import { ArrowUpRight } from 'lucide-react'
 
 export default function StatCard({ stat, index }) {
   const Icon = stat.icon
@@ -24,12 +23,9 @@ export default function StatCard({ stat, index }) {
             >
               {stat.value}
             </p>
-            <div className="flex items-center gap-1 mt-3">
-              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-100 text-emerald-600 text-xs font-medium">
-                <ArrowUpRight className="w-3 h-3" />
-                {stat.change}
-              </div>
-            </div>
+            {stat.subtitle && (
+              <p className="text-xs text-slate-400 mt-2">{stat.subtitle}</p>
+            )}
           </div>
           <div
             className={`w-12 h-12 rounded-xl ${stat.iconBg} flex items-center justify-center shadow-lg`}

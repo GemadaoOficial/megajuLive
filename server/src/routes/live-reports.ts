@@ -373,8 +373,8 @@ router.put('/:id', async (req: Request<{ id: string }>, res: Response): Promise<
     const { products, reportDate } = req.body
     const data = sanitizeReportData(req.body)
 
-    // Delete old products and recreate
-    if (products) {
+    // Delete old products and recreate only when new products are provided
+    if (products && products.length > 0) {
       await prisma.liveProduct.deleteMany({
         where: { liveReportId: req.params.id },
       })

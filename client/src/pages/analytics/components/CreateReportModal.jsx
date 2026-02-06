@@ -1,66 +1,10 @@
 import { useState, useCallback } from 'react'
-import { X, Loader2, Sparkles, Image as ImageIcon, AlertTriangle, Info } from 'lucide-react'
+import { X, Loader2, Sparkles, AlertTriangle, Info } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
 import { liveReportsAPI, aiAPI } from '../../../services/api'
 import ReportForm from '../../live/components/ReportForm'
-
-function DropArea({ onDrop, files, setFiles, label, max, disabled }) {
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { 'image/*': [] },
-    maxFiles: max,
-    disabled,
-    noClick: false,
-    noKeyboard: false,
-    onDrop: (accepted) => onDrop(accepted),
-  })
-
-  const handlePaste = useCallback((e) => {
-    if (disabled) return
-    const items = e.clipboardData?.items
-    if (!items) return
-    const imageFiles = []
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].type.startsWith('image/')) {
-        const file = items[i].getAsFile()
-        if (file) imageFiles.push(file)
-      }
-    }
-    if (imageFiles.length > 0) {
-      e.preventDefault()
-      onDrop(imageFiles)
-    }
-  }, [disabled, onDrop])
-
-  return (
-    <div>
-      <label className="block text-sm font-medium text-slate-700 mb-2">{label} (max {max})</label>
-      <div
-        {...getRootProps()}
-        onPaste={handlePaste}
-        tabIndex={0}
-        className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30 ${
-          isDragActive ? 'border-primary bg-primary/5' : 'border-slate-300 hover:border-primary'
-        } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-      >
-        <input {...getInputProps()} />
-        <ImageIcon className="mx-auto w-6 h-6 text-slate-400 mb-1" />
-        <p className="text-xs text-slate-500">{files.length > 0 ? `${files.length} arquivo(s)` : 'Arraste, clique ou cole (Ctrl+V)'}</p>
-      </div>
-      {files.length > 0 && (
-        <div className="flex gap-2 mt-2 flex-wrap">
-          {files.map((f, i) => (
-            <div key={i} className="relative w-12 h-12 rounded overflow-hidden border border-slate-200">
-              <img src={URL.createObjectURL(f)} alt="" className="w-full h-full object-cover" />
-              <button type="button" onClick={(e) => { e.stopPropagation(); setFiles(prev => prev.filter((_, idx) => idx !== i)) }} className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs flex items-center justify-center">x</button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
+import ImageDropZone from '../../live/components/ImageDropZone'
 
 // Campos que sempre aparecem no relatorio da Shopee (usados para avisos de nao-deteccao)
 const CORE_FIELDS = {
@@ -161,17 +105,30 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
       setAiStep('Processando resultados...')
       setAiProgress(85)
       const { products: aiProducts, ...aiStats } = result
-      setData(prev => ({ ...prev, ...aiStats }))
-      if (aiProducts?.length) setProducts(aiProducts)
+      // So sobrescreve campos que a IA realmente detectou (valor != 0, != null, != '')
+      setData(prev => {
+        const merged = { ...prev }
+        Object.entries(aiStats).forEach(([key, value]) => {
+          if (value !== null && value !== undefined && value !== '' && value !== 0) {
+            merged[key] = value
+          }
+        })
+        return merged
+      })
+      // So atualiza produtos se screenshots de produtos foram enviados explicitamente
+      if (productFiles.length > 0 && aiProducts?.length) setProducts(aiProducts)
 
-      // Detectar campos nao reconhecidos
+      // Detectar campos nao reconhecidos (verifica estado final, nao so a IA)
       const notDetected = []
       const warnings = []
-      Object.entries(CORE_FIELDS).forEach(([field, label]) => {
-        if (!aiStats[field] || aiStats[field] === 0) {
-          notDetected.push(field)
-          warnings.push(label)
-        }
+      setData(current => {
+        Object.entries(CORE_FIELDS).forEach(([field, label]) => {
+          if (!current[field] || current[field] === 0) {
+            notDetected.push(field)
+            warnings.push(label)
+          }
+        })
+        return current
       })
       setUndetectedFields(notDetected)
       setAiWarnings(warnings)
@@ -249,7 +206,32 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
             <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg"><X className="w-5 h-5" /></button>
           </div>
 
-          <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+          <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto relative">
+            {/* Sticky AI Loading Bar - always visible when scrolling */}
+            {aiLoading && (
+              <div className="sticky top-0 z-20 -mx-6 -mt-6 mb-2">
+                <div className="bg-white/95 backdrop-blur-sm border-b border-slate-200 px-5 py-2.5 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <Loader2 className="w-4 h-4 text-indigo-500 animate-spin flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-medium text-slate-700 truncate">{aiStep}</span>
+                        <span className="text-xs font-bold text-indigo-600 ml-2">{aiProgress}%</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${aiProgress}%` }}
+                          transition={{ duration: 0.5 }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Meta info */}
             <div className="bg-white border border-slate-200 rounded-xl p-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -291,9 +273,9 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
                 Preencher com IA (opcional)
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <DropArea onDrop={onDropStats} files={statsFiles} setFiles={setStatsFiles} label="Estatisticas" max={10} disabled={aiLoading} />
-                <DropArea onDrop={onDropProducts} files={productFiles} setFiles={setProductFiles} label="Produtos" max={10} disabled={aiLoading} />
-                <DropArea onDrop={onDropTraffic} files={trafficFiles} setFiles={setTrafficFiles} label="Trafego" max={5} disabled={aiLoading} />
+                <ImageDropZone onDrop={onDropStats} files={statsFiles} setFiles={setStatsFiles} label="Estatisticas" max={10} disabled={aiLoading} category="stats" />
+                <ImageDropZone onDrop={onDropProducts} files={productFiles} setFiles={setProductFiles} label="Produtos" max={10} disabled={aiLoading} category="products" />
+                <ImageDropZone onDrop={onDropTraffic} files={trafficFiles} setFiles={setTrafficFiles} label="Trafego" max={5} disabled={aiLoading} category="traffic" />
               </div>
 
               {/* Progress bar */}
