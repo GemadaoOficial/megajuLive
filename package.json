@@ -13,6 +13,10 @@
     "build:all": "npm run build:server && npm run build:client",
     "build:server": "cd server && npm run build",
     "build:client": "cd client && npm run build",
+    "postinstall": "cd server && npm install && cd ../client && npm install && cd .. && npm run build:all",
+    "build": "npm run build:all",
+    "start:prod": "cd server && npm start",
+    "deploy:seed": "cd server && npm run seed",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
