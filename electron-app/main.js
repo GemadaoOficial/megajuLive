@@ -64,24 +64,90 @@ function initDatabase(dbPath) {
   }
 }
 
-// Iniciar servidor Express
-function startServer() {
+// Run Prisma DB Push to create tables
+function runPrismaDbPush(dbPath, schemaPath) {
   return new Promise((resolve, reject) => {
+    log('📊 Running Prisma DB Push to create tables...');
+
+    const prismaPath = isDev
+      ? path.join(__dirname, '..', 'server', 'node_modules', '.bin', 'prisma')
+      : path.join(process.resourcesPath, 'server', 'node_modules', '.bin', 'prisma');
+
+    log(`Prisma path: ${prismaPath}`);
+    log(`Schema path: ${schemaPath}`);
+
+    const prismaProcess = spawn(prismaPath, ['db', 'push', '--skip-generate'], {
+      env: {
+        ...process.env,
+        DATABASE_URL: `file:${dbPath}`,
+        PRISMA_SCHEMA: schemaPath
+      },
+      stdio: 'pipe',
+      shell: true
+    });
+
+    let output = '';
+
+    prismaProcess.stdout.on('data', (data) => {
+      output += data.toString();
+      log(`[PRISMA] ${data.toString().trim()}`);
+    });
+
+    prismaProcess.stderr.on('data', (data) => {
+      output += data.toString();
+      log(`[PRISMA] ${data.toString().trim()}`);
+    });
+
+    prismaProcess.on('close', (code) => {
+      if (code === 0) {
+        log('✅ Prisma DB Push completed successfully');
+        resolve();
+      } else {
+        log(`❌ Prisma DB Push failed with code ${code}`);
+        log(`Output: ${output}`);
+        // Don't reject, try to continue anyway
+        resolve();
+      }
+    });
+
+    prismaProcess.on('error', (error) => {
+      log(`❌ Error running Prisma: ${error.message}`);
+      // Don't reject, try to continue anyway
+      resolve();
+    });
+  });
+}
+
+// Iniciar servidor Express
+async function startServer() {
+  return new Promise(async (resolve, reject) => {
     log('🚀 Iniciando servidor Express...');
 
     const serverPath = getServerPath();
     const userDataPath = app.getPath('userData');
     const dbPath = path.join(userDataPath, 'database.db');
 
+    const schemaPath = isDev
+      ? path.join(__dirname, '..', 'server', 'prisma', 'schema.prisma')
+      : path.join(process.resourcesPath, 'server', 'prisma', 'schema.prisma');
+
     log(`📁 Caminho do servidor: ${serverPath}`);
     log(`📁 Server exists: ${fs.existsSync(serverPath)}`);
     log(`📁 Caminho do banco: ${dbPath}`);
+    log(`📁 Schema exists: ${fs.existsSync(schemaPath)}`);
 
     // Inicializar banco de dados
     try {
       initDatabase(dbPath);
     } catch (e) {
       log(`❌ Erro ao inicializar banco: ${e.message}`);
+    }
+
+    // Run Prisma DB Push to create tables
+    try {
+      await runPrismaDbPush(dbPath, schemaPath);
+    } catch (e) {
+      log(`❌ Erro ao rodar Prisma DB Push: ${e.message}`);
     }
 
     // Configurar caminhos do cliente
@@ -93,6 +159,8 @@ function startServer() {
     log(`📁 Client exists: ${fs.existsSync(clientPath)}`);
 
     // Configurar variáveis de ambiente
+    const OPENAI_KEY = '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';
+
     const env = {
       ...process.env,
       DATABASE_URL: `file:${dbPath}`,
@@ -100,8 +168,10 @@ function startServer() {
       PORT: '5000',
       NODE_ENV: 'production',
       CLIENT_PATH: clientPath,
-      OPENAI_API_KEY: process.env.OPENAI_API_KEY || ''
+      OPENAI_API_KEY: OPENAI_KEY
     };
+
+    log(`📁 OpenAI Key configured: ${OPENAI_KEY ? 'Yes' : 'No'}`);
 
     log('Spawning Node.js process...');
 
