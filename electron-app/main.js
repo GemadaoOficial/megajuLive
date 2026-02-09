@@ -76,11 +76,16 @@ function runPrismaDbPush(dbPath, schemaPath) {
     log(`Prisma path: ${prismaPath}`);
     log(`Schema path: ${schemaPath}`);
 
-    const prismaProcess = spawn(prismaPath, ['db', 'push', '--skip-generate'], {
+    const prismaProcess = spawn(prismaPath, [
+      'db',
+      'push',
+      '--skip-generate',
+      '--schema',
+      schemaPath
+    ], {
       env: {
         ...process.env,
-        DATABASE_URL: `file:${dbPath}`,
-        PRISMA_SCHEMA: schemaPath
+        DATABASE_URL: `file:${dbPath}`
       },
       stdio: 'pipe',
       shell: true
