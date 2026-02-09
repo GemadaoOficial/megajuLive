@@ -2,6 +2,8 @@ import express, { Request, Response, NextFunction } from 'express'
 import cors from 'cors'
 import path from 'path'
 import dotenv from 'dotenv'
+import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 import authRoutes from './routes/auth.js'
 import livesRoutes from './routes/lives.js'
 import modulesRoutes from './routes/modules.js'
@@ -17,6 +19,49 @@ dotenv.config()
 
 const app = express()
 const PORT = process.env.PORT || 5000
+const prisma = new PrismaClient()
+
+// Seed database on first run (Electron mode)
+async function seedDatabase() {
+  try {
+    const existingAdmin = await prisma.user.findUnique({
+      where: { email: 'admin@megaju.com' }
+    })
+
+    if (!existingAdmin) {
+      console.log('🌱 Creating default users...')
+
+      const hashedAdminPassword = await bcrypt.hash('admin123', 10)
+      await prisma.user.create({
+        data: {
+          email: 'admin@megaju.com',
+          password: hashedAdminPassword,
+          name: 'Administrador',
+          role: 'ADMIN'
+        }
+      })
+
+      const hashedUserPassword = await bcrypt.hash('user123', 10)
+      await prisma.user.create({
+        data: {
+          email: 'user@megaju.com',
+          password: hashedUserPassword,
+          name: 'Colaborador',
+          role: 'COLABORADOR'
+        }
+      })
+
+      console.log('✅ Default users created')
+    }
+  } catch (error) {
+    console.error('⚠️  Seed error:', error)
+  }
+}
+
+// Run seed if in production (Electron)
+if (process.env.NODE_ENV === 'production') {
+  seedDatabase().catch(console.error)
+}
 
 // Middlewares
 app.use(cors())
@@ -47,8 +92,9 @@ app.get('/api/health', (req: Request, res: Response) => {
 })
 
 // Serve frontend static files in production (Electron mode)
-if (process.env.NODE_ENV === 'production') {
-  const clientPath = path.join(process.cwd(), '..', 'client', 'dist')
+if (process.env.NODE_ENV === 'production' && process.env.CLIENT_PATH) {
+  const clientPath = process.env.CLIENT_PATH
+  console.log('📁 Serving static files from:', clientPath)
   app.use(express.static(clientPath))
 
   // Serve index.html for all non-API routes (SPA fallback)

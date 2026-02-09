@@ -6,6 +6,31 @@ const isDev = process.env.NODE_ENV === 'development';
 
 let mainWindow;
 let serverProcess;
+let logFile;
+
+// Setup logging
+function log(message) {
+  if (!logFile) {
+    logFile = path.join(app.getPath('userData'), 'electron-log.txt');
+  }
+  const timestamp = new Date().toISOString();
+  const logMessage = `[${timestamp}] ${message}\n`;
+  console.log(message);
+  try {
+    fs.appendFileSync(logFile, logMessage);
+  } catch (e) {
+    console.error('Failed to write log:', e);
+  }
+}
+
+app.on('ready', () => {
+  log('========== MegaJu Live Starting ==========');
+  log(`isDev: ${isDev}`);
+  log(`Node version: ${process.version}`);
+  log(`Electron version: ${process.versions.electron}`);
+  log(`UserData path: ${app.getPath('userData')}`);
+  log(`Log file: ${logFile}`);
+});
 
 // Configurar caminhos para produção
 const getServerPath = () => {
@@ -18,37 +43,54 @@ const getServerPath = () => {
 
 // Inicializar banco de dados (copiar template se não existir)
 function initDatabase(dbPath) {
+  log(`initDatabase called with: ${dbPath}`);
   if (!fs.existsSync(dbPath)) {
-    console.log('📦 Primeira execução - criando banco de dados...');
+    log('📦 Primeira execução - criando banco de dados...');
     const templatePath = isDev
       ? path.join(__dirname, '..', 'server', 'database-initial.db')
       : path.join(process.resourcesPath, 'server', 'database-initial.db');
 
+    log(`Template path: ${templatePath}`);
+    log(`Template exists: ${fs.existsSync(templatePath)}`);
+
     if (fs.existsSync(templatePath)) {
       fs.copyFileSync(templatePath, dbPath);
-      console.log('✅ Banco de dados inicial criado');
+      log('✅ Banco de dados inicial criado');
     } else {
-      console.warn('⚠️  Template do banco não encontrado, será criado vazio');
+      log('⚠️  Template do banco não encontrado, será criado vazio');
     }
   } else {
-    console.log('✅ Banco de dados existente encontrado');
+    log('✅ Banco de dados existente encontrado');
   }
 }
 
 // Iniciar servidor Express
 function startServer() {
   return new Promise((resolve, reject) => {
-    console.log('🚀 Iniciando servidor Express...');
+    log('🚀 Iniciando servidor Express...');
 
     const serverPath = getServerPath();
     const userDataPath = app.getPath('userData');
     const dbPath = path.join(userDataPath, 'database.db');
 
-    console.log('📁 Caminho do servidor:', serverPath);
-    console.log('📁 Caminho do banco:', dbPath);
+    log(`📁 Caminho do servidor: ${serverPath}`);
+    log(`📁 Server exists: ${fs.existsSync(serverPath)}`);
+    log(`📁 Caminho do banco: ${dbPath}`);
 
     // Inicializar banco de dados
-    initDatabase(dbPath);
+    try {
+      initDatabase(dbPath);
+    } catch (e) {
+      log(`❌ Erro ao inicializar banco: ${e.message}`);
+    }
+
+    // Configurar caminhos do cliente
+    const clientPath = isDev
+      ? path.join(__dirname, '..', 'client', 'dist')
+      : path.join(process.resourcesPath, 'client', 'dist');
+
+    log(`📁 Caminho do cliente: ${clientPath}`);
+    log(`📁 Client exists: ${fs.existsSync(clientPath)}`);
 
     // Configurar variáveis de ambiente
     const env = {
@@ -57,25 +99,40 @@ function startServer() {
       JWT_SECRET: 'shopee-live-secret-key-change-in-production',
       PORT: '5000',
       NODE_ENV: 'production',
+      CLIENT_PATH: clientPath,
       OPENAI_API_KEY: process.env.OPENAI_API_KEY || ''
     };
+
+    log('Spawning Node.js process...');
 
     // Em produção, o servidor está empacotado no resources
     serverProcess = spawn('node', [serverPath], {
       env,
-      stdio: 'inherit'
+      stdio: 'pipe'
+    });
+
+    serverProcess.stdout.on('data', (data) => {
+      log(`[SERVER] ${data.toString().trim()}`);
+    });
+
+    serverProcess.stderr.on('data', (data) => {
+      log(`[SERVER ERROR] ${data.toString().trim()}`);
     });
 
     serverProcess.on('error', (error) => {
-      console.error('❌ Erro ao iniciar servidor:', error);
+      log(`❌ Erro ao iniciar servidor: ${error.message}`);
       reject(error);
+    });
+
+    serverProcess.on('exit', (code) => {
+      log(`❌ Servidor fechou com código: ${code}`);
     });
 
     // Aguardar o servidor ficar pronto
     setTimeout(() => {
-      console.log('✅ Servidor Express iniciado na porta 5000');
+      log('✅ Servidor Express iniciado na porta 5000');
       resolve();
-    }, 3000);
+    }, 5000);
   });
 }
 
@@ -109,6 +166,8 @@ function createWindow() {
   } else {
     // Em produção, carregar o build do Vite
     mainWindow.loadURL('http://localhost:5000');
+    // Abrir DevTools para debug
+    mainWindow.webContents.openDevTools();
   }
 
   // Mostrar janela quando estiver pronta
