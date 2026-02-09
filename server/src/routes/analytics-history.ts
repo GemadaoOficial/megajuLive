@@ -261,7 +261,7 @@ router.get('/snapshots', async (req: Request, res: Response): Promise<void> => {
 // Get single snapshot by date
 router.get('/snapshot/:date', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { date } = req.params
+    const date = req.params.date as string
     const targetDate = startOfDay(new Date(date))
 
     const snapshot = await prisma.analyticsSnapshot.findUnique({

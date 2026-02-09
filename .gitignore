@@ -56,3 +56,6 @@ server/uploads/
 tmp/
 temp/
 nul
+dist-electron/
+server/database.db
+server/database-initial.db

@@ -73,7 +73,7 @@ router.post('/video', authenticate, requireAdmin, upload.single('video'), async 
 // Delete video endpoint (admin only)
 router.delete('/video/:filename', authenticate, requireAdmin, async (req: Request, res: Response): Promise<void> => {
   try {
-    const { filename } = req.params
+    const filename = req.params.filename as string
 
     // Sanitize filename to prevent path traversal
     if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {

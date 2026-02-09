@@ -46,6 +46,19 @@ app.get('/api/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
 
+// Serve frontend static files in production (Electron mode)
+if (process.env.NODE_ENV === 'production') {
+  const clientPath = path.join(process.cwd(), '..', 'client', 'dist')
+  app.use(express.static(clientPath))
+
+  // Serve index.html for all non-API routes (SPA fallback)
+  app.get('*', (req: Request, res: Response) => {
+    if (!req.url.startsWith('/api') && !req.url.startsWith('/uploads')) {
+      res.sendFile(path.join(clientPath, 'index.html'))
+    }
+  })
+}
+
 // Error handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack)
