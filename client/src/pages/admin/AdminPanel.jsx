@@ -13,6 +13,8 @@ import {
   Settings,
   FileText,
   Activity,
+  HardDrive,
+  Shield,
 } from 'lucide-react'
 
 export default function AdminPanel() {
@@ -108,6 +110,20 @@ export default function AdminPanel() {
       icon: FileText,
       to: '/admin/logs',
       color: 'amber',
+    },
+    {
+      label: 'Backup',
+      description: 'Exportar e restaurar dados do sistema',
+      icon: HardDrive,
+      to: '/admin/backup',
+      color: 'sky',
+    },
+    {
+      label: 'Configuracoes',
+      description: 'Chaves e segredos criptografados',
+      icon: Shield,
+      to: '/admin/settings',
+      color: 'rose',
     },
   ]
 
@@ -219,6 +235,8 @@ export default function AdminPanel() {
                 action.color === 'primary' ? 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white' :
                 action.color === 'violet' ? 'bg-violet-100 text-violet-600 group-hover:bg-violet-500 group-hover:text-white' :
                 action.color === 'emerald' ? 'bg-emerald-100 text-emerald-600 group-hover:bg-emerald-500 group-hover:text-white' :
+                action.color === 'sky' ? 'bg-sky-100 text-sky-600 group-hover:bg-sky-500 group-hover:text-white' :
+                action.color === 'rose' ? 'bg-rose-100 text-rose-600 group-hover:bg-rose-500 group-hover:text-white' :
                 'bg-amber-100 text-amber-600 group-hover:bg-amber-500 group-hover:text-white'
               }`}>
                 <action.icon className="w-6 h-6" />
