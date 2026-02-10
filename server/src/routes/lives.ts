@@ -46,6 +46,41 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
   }
 })
 
+// Start a new live (from StartLive form)
+router.post('/start', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { followersStart, coinsStart, liveLink, store } = req.body
+
+    const live = await prisma.live.create({
+      data: {
+        title: '',
+        scheduledAt: new Date(),
+        followersStart: parseInt(followersStart) || 0,
+        coinsStart: parseFloat(coinsStart) || 0,
+        liveLink: liveLink || null,
+        store: store || '',
+        status: 'IN_PROGRESS',
+        userId: req.user.id,
+      },
+    })
+
+    await createAuditLog({
+      userId: req.user.id,
+      action: 'START_LIVE',
+      entity: 'LIVE',
+      entityId: live.id,
+      details: { store: live.store },
+      ipAddress: req.ip || req.socket.remoteAddress,
+      userAgent: req.headers['user-agent'],
+    })
+
+    res.status(201).json(live)
+  } catch (error) {
+    console.error('Start live error:', error)
+    res.status(500).json({ message: 'Erro ao iniciar live' })
+  }
+})
+
 // Get live by ID
 router.get('/:id', async (req: Request<{ id: string }>, res: Response): Promise<void> => {
   try {
@@ -76,7 +111,7 @@ router.get('/:id', async (req: Request<{ id: string }>, res: Response): Promise<
 // Create live
 router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { title, description, scheduledAt, duration, status } = req.body
+    const { title, description, scheduledAt, duration, status, store } = req.body
 
     if (!title || !scheduledAt) {
       res.status(400).json({ message: 'Titulo e data sao obrigatorios' })
@@ -90,6 +125,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
         scheduledAt: new Date(scheduledAt),
         duration,
         status: status || 'SCHEDULED',
+        store: store || '',
         userId: req.user.id,
       },
       include: {
@@ -119,7 +155,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
 router.put('/:id', async (req: Request<{ id: string }>, res: Response): Promise<void> => {
   try {
     const { id } = req.params
-    const { title, description, scheduledAt, duration, status } = req.body
+    const { title, description, scheduledAt, duration, status, store } = req.body
 
     const existingLive = await prisma.live.findFirst({
       where: {
@@ -141,6 +177,7 @@ router.put('/:id', async (req: Request<{ id: string }>, res: Response): Promise<
         scheduledAt: scheduledAt ? new Date(scheduledAt) : undefined,
         duration,
         status,
+        store,
       },
       include: {
         products: true,

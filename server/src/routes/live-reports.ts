@@ -55,6 +55,7 @@ function getDateRange(query: Record<string, string | undefined>) {
 router.get('/summary', async (req: Request, res: Response): Promise<void> => {
   try {
     const { start, end } = getDateRange(req.query as Record<string, string>)
+    const store = (req.query as any).store as string | undefined
 
     const where: Prisma.LiveReportWhereInput = {
       userId: req.user.id,
@@ -64,6 +65,7 @@ router.get('/summary', async (req: Request, res: Response): Promise<void> => {
           ...(end && { lte: end }),
         },
       } : {}),
+      ...(store && { store }),
     }
 
     const reports = await prisma.liveReport.findMany({
@@ -210,6 +212,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
     const params = parsePaginationParams(req.query as Record<string, unknown>)
     const { page, limit, search, sortOrder } = params
     const { start, end } = getDateRange(req.query as Record<string, string>)
+    const store = (req.query as any).store as string | undefined
 
     const where: Prisma.LiveReportWhereInput = {
       userId: req.user.id,
@@ -222,6 +225,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
       ...(search && {
         liveTitle: { contains: search },
       }),
+      ...(store && { store }),
     }
 
     const [reports, total] = await Promise.all([
@@ -266,6 +270,7 @@ router.get('/:id', async (req: Request<{ id: string }>, res: Response): Promise<
 function sanitizeReportData(body: any) {
   return {
     liveTitle: body.liveTitle || '',
+    store: body.store || '',
     totalRevenue: parseFloat(body.totalRevenue) || 0,
     totalOrders: parseInt(body.totalOrders) || 0,
     totalItemsSold: parseInt(body.totalItemsSold) || 0,

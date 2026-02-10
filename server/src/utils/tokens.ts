@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import prisma from './prisma.js'
+import { getConfig } from './config.js'
 
 const ACCESS_TOKEN_EXPIRY = '15m'
 const REFRESH_TOKEN_EXPIRY_DAYS = 30
@@ -13,7 +14,7 @@ interface TokenPayload {
 export function generateAccessToken(userId: string): string {
   return jwt.sign(
     { userId, type: 'access' } as TokenPayload,
-    process.env.JWT_SECRET!,
+    getConfig('JWT_SECRET')!,
     { expiresIn: ACCESS_TOKEN_EXPIRY }
   )
 }

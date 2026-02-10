@@ -22,7 +22,7 @@ const CORE_FIELDS = {
 }
 
 const emptyReport = {
-  liveTitle: '', reportDate: new Date().toISOString().split('T')[0], reportTime: '',
+  liveTitle: '', store: 'MADA', reportDate: new Date().toISOString().split('T')[0], reportTime: '',
   totalRevenue: 0, totalOrders: 0, totalItemsSold: 0, avgOrderValue: 0, avgRevenuePerBuyer: 0,
   totalViewers: 0, engagedViewers: 0, totalViews: 0, peakViewers: 0, avgWatchTime: 0, liveDuration: 0,
   clickRate: 0, totalBuyers: 0, productClicks: 0, productClickRate: 0, conversionRate: 0, addToCart: 0, gpm: 0,
@@ -245,6 +245,34 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
                     className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-primary"
                   />
                 </div>
+                {/* Loja */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Loja *</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setData(prev => ({ ...prev, store: 'MADA' }))}
+                        className={`px-3 py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${
+                          data.store === 'MADA'
+                            ? 'border-[#EE4D2D] bg-[#EE4D2D]/10 text-[#EE4D2D]'
+                            : 'border-slate-200 text-slate-500 hover:border-slate-300'
+                        }`}
+                      >
+                        Mada
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setData(prev => ({ ...prev, store: 'STAR_IMPORT' }))}
+                        className={`px-3 py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${
+                          data.store === 'STAR_IMPORT'
+                            ? 'border-[#EE4D2D] bg-[#EE4D2D]/10 text-[#EE4D2D]'
+                            : 'border-slate-200 text-slate-500 hover:border-slate-300'
+                        }`}
+                      >
+                        Star Import
+                      </button>
+                    </div>
+                  </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Data da Live *</label>
                   <input

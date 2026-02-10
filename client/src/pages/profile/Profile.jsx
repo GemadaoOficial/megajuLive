@@ -1,7 +1,9 @@
 import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../../contexts/AuthContext'
+import { authAPI } from '../../services/api'
 import { useTraining } from '../../contexts/TrainingContext'
+import { toast } from 'sonner'
 import {
   User,
   Mail,
@@ -82,10 +84,45 @@ export default function Profile() {
     }
   }
 
-  const handleSave = () => {
-    // In a real app, this would call an API
-    updateUser(formData)
-    setIsEditing(false)
+  const [saving, setSaving] = useState(false)
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      const response = await authAPI.updateProfile({ name: formData.name })
+      updateUser(response.data.user)
+      setIsEditing(false)
+      toast.success('Perfil atualizado com sucesso!')
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Erro ao atualizar perfil')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleChangePassword = async () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword) {
+      toast.error('Preencha a senha atual e a nova senha')
+      return
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error('As senhas nao coincidem')
+      return
+    }
+    if (passwordData.newPassword.length < 6) {
+      toast.error('Nova senha deve ter pelo menos 6 caracteres')
+      return
+    }
+    try {
+      await authAPI.changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      })
+      toast.success('Senha alterada com sucesso!')
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' })
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Erro ao alterar senha')
+    }
   }
 
   const handleCancel = () => {
@@ -548,7 +585,7 @@ export default function Profile() {
                     />
                   </div>
 
-                  <Button className="w-full mt-4">
+                  <Button className="w-full mt-4" onClick={handleChangePassword}>
                     <Key className="w-5 h-5 mr-2" />
                     Alterar Senha
                   </Button>

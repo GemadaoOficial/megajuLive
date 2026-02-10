@@ -7,6 +7,7 @@ import PremiumPageHeader from '../../components/ui/PremiumPageHeader'
 import StatsGrid from './components/StatsGrid'
 import RecentLives from './components/RecentLives'
 import QuickActions from './components/QuickActions'
+import NotesWidget from './components/NotesWidget'
 import AnalyticsChart from './components/AnalyticsChart'
 import UpcomingLives from './components/UpcomingLives'
 import RecentActivity from './components/RecentActivity'
@@ -115,7 +116,10 @@ export default function Dashboard() {
       {/* Recent Lives and Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <RecentLives lives={recentLives} loading={loading} />
-        <QuickActions />
+        <div className="space-y-6">
+          <NotesWidget />
+          <QuickActions />
+        </div>
       </div>
     </div>
   )

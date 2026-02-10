@@ -173,4 +173,75 @@ router.get('/me', authenticate, (req: Request, res: Response): void => {
   res.json({ user: req.user })
 })
 
+// Update profile
+router.put('/profile', authenticate, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { name } = req.body
+
+    if (!name || !name.trim()) {
+      res.status(400).json({ message: 'Nome e obrigatorio' })
+      return
+    }
+
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { name: name.trim() },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        avatar: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    })
+
+    res.json({ user })
+  } catch (error) {
+    console.error('Update profile error:', error)
+    res.status(500).json({ message: 'Erro ao atualizar perfil' })
+  }
+})
+
+// Change password
+router.put('/password', authenticate, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { currentPassword, newPassword } = req.body
+
+    if (!currentPassword || !newPassword) {
+      res.status(400).json({ message: 'Senha atual e nova senha sao obrigatorias' })
+      return
+    }
+
+    if (newPassword.length < 6) {
+      res.status(400).json({ message: 'Nova senha deve ter pelo menos 6 caracteres' })
+      return
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: req.user.id } })
+    if (!user) {
+      res.status(404).json({ message: 'Usuario nao encontrado' })
+      return
+    }
+
+    const validPassword = await bcrypt.compare(currentPassword, user.password)
+    if (!validPassword) {
+      res.status(401).json({ message: 'Senha atual incorreta' })
+      return
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10)
+    await prisma.user.update({
+      where: { id: req.user.id },
+      data: { password: hashedPassword },
+    })
+
+    res.json({ message: 'Senha alterada com sucesso' })
+  } catch (error) {
+    console.error('Change password error:', error)
+    res.status(500).json({ message: 'Erro ao alterar senha' })
+  }
+})
+
 export default router

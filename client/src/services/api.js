@@ -102,6 +102,8 @@ export const authAPI = {
   refresh: (refreshToken) => api.post('/auth/refresh', { refreshToken }),
   logout: (refreshToken) => api.post('/auth/logout', { refreshToken }),
   logoutAll: () => api.post('/auth/logout-all'),
+  updateProfile: (data) => api.put('/auth/profile', data),
+  changePassword: (data) => api.put('/auth/password', data),
 }
 
 export const livesAPI = {
@@ -229,4 +231,20 @@ export const liveReportsAPI = {
   create: (data) => api.post('/live-reports', data),
   update: (id, data) => api.put(`/live-reports/${id}`, data),
   delete: (id) => api.delete(`/live-reports/${id}`),
+}
+
+export const notesAPI = {
+  getAll: () => api.get('/notes'),
+  create: (data) => api.post('/notes', data),
+  update: (id, data) => api.put(`/notes/${id}`, data),
+  delete: (id) => api.delete(`/notes/${id}`),
+}
+
+export const settingsAPI = {
+  getAll: () => api.get('/admin/settings'),
+  get: (key) => api.get(`/admin/settings/${key}`),
+  set: (key, data) => api.put(`/admin/settings/${key}`, data),
+  delete: (key) => api.delete(`/admin/settings/${key}`),
+  migrate: () => api.post('/admin/settings/migrate'),
+  reload: () => api.post('/admin/settings/reload'),
 }

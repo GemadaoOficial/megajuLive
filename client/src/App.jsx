@@ -14,6 +14,8 @@ import UserManagement from './pages/admin/UserManagement'
 import TutorialEditor from './pages/admin/TutorialEditor'
 import LivesManagement from './pages/admin/LivesManagement'
 import AuditLogs from './pages/admin/AuditLogs'
+import Backup from './pages/admin/Backup'
+import Settings from './pages/admin/Settings'
 import Profile from './pages/profile/Profile'
 
 function PrivateRoute({ children, adminOnly = false }) {
@@ -141,6 +143,22 @@ function AppRoutes() {
           element={
             <PrivateRoute adminOnly>
               <AuditLogs />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="admin/backup"
+          element={
+            <PrivateRoute adminOnly>
+              <Backup />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="admin/settings"
+          element={
+            <PrivateRoute adminOnly>
+              <Settings />
             </PrivateRoute>
           }
         />

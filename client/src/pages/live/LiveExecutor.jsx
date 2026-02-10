@@ -33,8 +33,8 @@ export default function LiveExecutor() {
   const [titleModalOpen, setTitleModalOpen] = useState(false)
   const [formData, setFormData] = useState({ title: '', description: '' })
 
-  // Live Stats (simulated for demo)
-  const [stats, setStats] = useState({ views: 0, sales: 0, revenue: 0 })
+  // Live Stats (calculated when live ends via report)
+  const stats = { views: '-', sales: '-', revenue: '-' }
 
   // Custom hooks
   const { elapsedTime, isRunning, start: startTimer, pause: pauseTimer, stop: stopTimer } = useLiveTimer()
@@ -43,21 +43,6 @@ export default function LiveExecutor() {
   useEffect(() => {
     if (id) loadLive()
   }, [id])
-
-  // Simulate live stats updates
-  useEffect(() => {
-    if (!isRunning) return
-
-    const interval = setInterval(() => {
-      setStats((prev) => ({
-        views: prev.views + Math.floor(Math.random() * 10),
-        sales: prev.sales + (Math.random() > 0.85 ? 1 : 0),
-        revenue: prev.revenue + (Math.random() > 0.85 ? Math.floor(Math.random() * 100) + 20 : 0),
-      }))
-    }, 2000)
-
-    return () => clearInterval(interval)
-  }, [isRunning])
 
   const loadLive = async () => {
     try {
@@ -91,8 +76,6 @@ export default function LiveExecutor() {
         setLive({ ...live, status: 'LIVE' })
       }
       startTimer()
-      // Reset stats when starting
-      setStats({ views: Math.floor(Math.random() * 50) + 10, sales: 0, revenue: 0 })
     } catch (error) {
       console.error('Erro ao iniciar live:', error)
     }
@@ -110,7 +93,7 @@ export default function LiveExecutor() {
       if (live) await livesAPI.end(live.id)
       stopTimer()
       stopProductTimer()
-      navigate('/dashboard')
+      navigate('/analytics')
     } catch (error) {
       console.error('Erro ao encerrar live:', error)
     }

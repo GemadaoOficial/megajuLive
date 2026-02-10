@@ -236,14 +236,18 @@ router.get('/snapshots', async (req: Request, res: Response): Promise<void> => {
     const { startDate, endDate, period = 'daily' } = req.query
 
     const where: any = { period: period as string }
+    const dateFilter: any = {}
 
     if (startDate) {
-      where.date = { ...where.date, gte: startOfDay(new Date(startDate as string)) }
+      dateFilter.gte = startOfDay(new Date(startDate as string))
     }
     if (endDate) {
       const end = new Date(endDate as string)
       end.setDate(end.getDate() + 1)
-      where.date = { ...where.date, lt: startOfDay(end) }
+      dateFilter.lt = startOfDay(end)
+    }
+    if (Object.keys(dateFilter).length > 0) {
+      where.date = dateFilter
     }
 
     const snapshots = await prisma.analyticsSnapshot.findMany({

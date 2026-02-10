@@ -21,6 +21,10 @@ import analyticsHistoryRoutes from './routes/analytics-history.js'
 import uploadRoutes from './routes/upload.js'
 import auditRoutes from './routes/audit.js'
 import liveReportsRoutes from './routes/live-reports.js'
+import notesRoutes from './routes/notes.js'
+import backupRoutes from './routes/backup.js'
+import settingsRoutes from './routes/settings.js'
+import { loadConfig } from './utils/config.js'
 
 dotenv.config()
 
@@ -65,10 +69,10 @@ async function seedDatabase() {
   }
 }
 
-// Run seed if in production (Electron)
-if (process.env.NODE_ENV === 'production') {
-  seedDatabase().catch(console.error)
-}
+// Load encrypted configs from database, then seed
+loadConfig()
+  .then(() => seedDatabase())
+  .catch(console.error)
 
 // Middlewares
 app.use(cors())
@@ -92,6 +96,9 @@ app.use('/api/analytics-history', analyticsHistoryRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/audit', auditRoutes)
 app.use('/api/live-reports', liveReportsRoutes)
+app.use('/api/notes', notesRoutes)
+app.use('/api/admin/backup', backupRoutes)
+app.use('/api/admin/settings', settingsRoutes)
 
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {

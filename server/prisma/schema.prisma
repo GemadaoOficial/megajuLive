@@ -18,6 +18,7 @@ model User {
   liveReports   LiveReport[]
   refreshTokens RefreshToken[]
   auditLogs     AuditLog[]
+  notes         Note[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -33,11 +34,17 @@ model RefreshToken {
 
 model Live {
   id              String           @id @default(uuid())
-  title           String
+  title           String           @default("")
   description     String?
-  scheduledAt     DateTime
+  scheduledAt     DateTime         @default(now())
   duration        Int?
   status          String           @default("SCHEDULED")
+  store           String           @default("")
+  followersStart  Int              @default(0)
+  followersEnd    Int?
+  coinsStart      Float            @default(0)
+  coinsEnd        Float?
+  liveLink        String?
   userId          String
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   products        Product[]
@@ -121,6 +128,7 @@ model LiveReport {
   live      Live?  @relation(fields: [liveId], references: [id], onDelete: Cascade)
 
   liveTitle String @default("")
+  store     String @default("")
 
   // Transação
   totalRevenue        Float @default(0)
@@ -180,6 +188,7 @@ model LiveReport {
 
   @@index([userId])
   @@index([reportDate])
+  @@index([store])
 }
 
 // Produto apresentado em uma live específica
@@ -246,4 +255,26 @@ model AnalyticsSnapshot {
   @@index([date])
   @@index([period])
   @@index([createdAt])
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  content   String   @default("")
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Configuracoes do sistema armazenadas no banco com criptografia AES-256-GCM
+model SystemConfig {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String   // Valor criptografado (iv:authTag:ciphertext) ou texto plano
+  encrypted   Boolean  @default(true)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

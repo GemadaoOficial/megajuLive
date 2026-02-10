@@ -11,6 +11,7 @@ import {
   Shield,
   Sparkles,
   BarChart3,
+  HardDrive,
 } from 'lucide-react'
 
 const navItems = [
@@ -25,6 +26,7 @@ const adminItems = [
   { to: '/admin', icon: Shield, label: 'Painel Admin' },
   { to: '/admin/users', icon: Users, label: 'Usuarios' },
   { to: '/admin/tutorials', icon: Settings, label: 'Gerenciar Tutoriais' },
+  { to: '/admin/backup', icon: HardDrive, label: 'Backup' },
 ]
 
 export default function Sidebar() {

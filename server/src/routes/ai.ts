@@ -4,6 +4,7 @@ import multer from 'multer'
 import fs from 'fs'
 import path from 'path'
 import { authenticate } from '../middlewares/auth.js'
+import { getConfig } from '../utils/config.js'
 import '../types/index.js'
 
 const router = Router()
@@ -11,7 +12,7 @@ const router = Router()
 // Test endpoint (no auth required) to diagnose OpenAI connection
 router.get('/test', async (req: Request, res: Response): Promise<void> => {
   try {
-    const key = process.env.OPENAI_API_KEY
+    const key = getConfig('OPENAI_API_KEY')
     if (!key || key === 'your-openai-api-key-here') {
       res.json({ status: 'no_key', message: 'OPENAI_API_KEY nao configurada' })
       return
@@ -72,7 +73,7 @@ router.post('/suggest-title', async (req: Request, res: Response): Promise<void>
   try {
     const { prompt, category, niche } = req.body
 
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
+    if (!getConfig('OPENAI_API_KEY') || getConfig('OPENAI_API_KEY') === 'your-openai-api-key-here') {
       res.json({
         titles: [
           `Super Promocao ${category || 'Especial'}!`,
@@ -85,7 +86,7 @@ router.post('/suggest-title', async (req: Request, res: Response): Promise<void>
       return
     }
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    const openai = new OpenAI({ apiKey: getConfig('OPENAI_API_KEY') })
 
     const userPrompt = prompt
       ? `O usuario quer uma live sobre: "${prompt}". Gere 5 titulos atrativos para essa live na Shopee. Os titulos devem ser curtos (max 60 caracteres), impactantes, usar emojis quando apropriado, e respeitar os termos da Shopee (sem palavras proibidas como "gratis total", "garantido", enganosas). Retorne apenas os titulos, um por linha, sem numeracao.`
@@ -130,7 +131,7 @@ router.post('/suggest-description', async (req: Request, res: Response): Promise
   try {
     const { prompt, title } = req.body
 
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
+    if (!getConfig('OPENAI_API_KEY') || getConfig('OPENAI_API_KEY') === 'your-openai-api-key-here') {
       res.json({
         descriptions: [
           'Venha conferir as melhores ofertas ao vivo! Descontos exclusivos, frete gratis e cupons especiais esperando por voce. Nao perca!',
@@ -141,7 +142,7 @@ router.post('/suggest-description', async (req: Request, res: Response): Promise
       return
     }
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    const openai = new OpenAI({ apiKey: getConfig('OPENAI_API_KEY') })
 
     const userPrompt = prompt
       ? `Crie 3 descricoes para uma live da Shopee sobre: "${prompt}"${title ? `. Titulo da live: "${title}"` : ''}. Cada descricao deve ter NO MAXIMO 250 caracteres, ser persuasiva, usar emojis com moderacao, e respeitar os termos da Shopee (sem promessas enganosas). Retorne cada descricao em uma linha separada, sem numeracao.`
@@ -197,14 +198,14 @@ router.post(
         return
       }
 
-      if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
+      if (!getConfig('OPENAI_API_KEY') || getConfig('OPENAI_API_KEY') === 'your-openai-api-key-here') {
         const mockData = getMockExtractedData()
         cleanupFiles(files)
         res.json(mockData)
         return
       }
 
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+      const openai = new OpenAI({ apiKey: getConfig('OPENAI_API_KEY') })
 
       const result: any = { stats: {}, products: [], traffic: {} }
 
@@ -302,7 +303,7 @@ router.post(
         return
       }
 
-      if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
+      if (!getConfig('OPENAI_API_KEY') || getConfig('OPENAI_API_KEY') === 'your-openai-api-key-here') {
         files.forEach(f => fs.unlink(f.path, () => {}))
         res.json({
           likes: 30699, comments: 246, shares: 9,
@@ -311,7 +312,7 @@ router.post(
         return
       }
 
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+      const openai = new OpenAI({ apiKey: getConfig('OPENAI_API_KEY') })
       const result = await extractFromImages(openai, files, STATS_PROMPT)
       files.forEach(f => fs.unlink(f.path, () => {}))
       res.json(result)

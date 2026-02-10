@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import prisma from '../utils/prisma.js'
+import { getConfig } from '../utils/config.js'
 import '../types/index.js'
 
 interface TokenPayload {
@@ -21,7 +22,7 @@ export const authenticate = async (
     }
 
     const token = authHeader.split(' ')[1]
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload
+    const decoded = jwt.verify(token, getConfig('JWT_SECRET')!) as TokenPayload
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },

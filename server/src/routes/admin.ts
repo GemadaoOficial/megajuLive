@@ -32,7 +32,8 @@ router.get('/dashboard', async (req: Request, res: Response): Promise<void> => {
     })
 
     const recentActivity = recentLogs.map(log => {
-      const details = log.details ? JSON.parse(log.details) : {}
+      let details: any = {}
+      try { if (log.details) details = JSON.parse(log.details) } catch { /* corrupted JSON */ }
       const actionMap: Record<string, string> = {
         CREATE: 'Criou', UPDATE: 'Atualizou', DELETE: 'Excluiu',
         LOGIN: 'Login', LOGOUT: 'Logout', START_LIVE: 'Iniciou live', END_LIVE: 'Encerrou live',
@@ -346,7 +347,8 @@ router.get('/analytics', async (req: Request, res: Response): Promise<void> => {
     })
 
     const recentActivity = recentLogs.map(log => {
-      const details = log.details ? JSON.parse(log.details) : {}
+      let details: any = {}
+      try { if (log.details) details = JSON.parse(log.details) } catch { /* corrupted JSON */ }
       const actionMap: Record<string, string> = {
         CREATE: 'Criou', UPDATE: 'Atualizou', DELETE: 'Excluiu',
         LOGIN: 'Login', LOGOUT: 'Logout', START_LIVE: 'Iniciou live', END_LIVE: 'Encerrou live',
