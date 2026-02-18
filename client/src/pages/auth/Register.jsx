@@ -43,7 +43,7 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-[#050507] via-[#0a0a12] to-[#050507] flex">
       {/* Left Side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary via-orange-500 to-amber-500 p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)', backgroundSize: '24px 24px'}} />
@@ -92,12 +92,12 @@ export default function Register() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-orange-500 mb-4 shadow-lg shadow-primary/30">
               <Flame className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-800">MegaJu</h1>
+            <h1 className="text-2xl font-bold text-white">MegaJu</h1>
           </div>
 
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-slate-800">Criar conta</h2>
-            <p className="text-slate-500 mt-2">Junte-se a plataforma MegaJu</p>
+            <h2 className="text-3xl font-bold text-white">Criar conta</h2>
+            <p className="text-slate-400 mt-2">Junte-se a plataforma MegaJu</p>
           </div>
 
           {/* Form */}
@@ -106,7 +106,7 @@ export default function Register() {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-center gap-2"
+                className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2"
               >
                 <div className="w-2 h-2 rounded-full bg-red-500" />
                 {error}
@@ -164,7 +164,7 @@ export default function Register() {
           </form>
 
           {/* Login link */}
-          <p className="text-center mt-6 text-slate-600">
+          <p className="text-center mt-6 text-slate-400">
             Ja tem uma conta?{' '}
             <Link to="/login" className="text-primary hover:text-orange-600 font-semibold">
               Entrar

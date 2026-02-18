@@ -99,8 +99,8 @@ export default function AdminModules() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Gerenciar Tutoriais</h1>
-                    <p className="text-gray-500">Crie e edite os módulos de treinamento.</p>
+                    <h1 className="text-2xl font-bold text-white">Gerenciar Tutoriais</h1>
+                    <p className="text-slate-400">Crie e edite os módulos de treinamento.</p>
                 </div>
                 <button
                     onClick={() => handleOpenModal()}
@@ -112,19 +112,19 @@ export default function AdminModules() {
 
             <div className="grid gap-4">
                 {modules.map((module) => (
-                    <div key={module.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div key={module.id} className="bg-white/[0.05] p-6 rounded-2xl border border-white/[0.08] flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="text-2xl">{module.icon}</div>
                             <div>
-                                <h3 className="font-bold text-gray-900">{module.order}. {module.title}</h3>
-                                <p className="text-sm text-gray-500">{module.description}</p>
+                                <h3 className="font-bold text-white">{module.order}. {module.title}</h3>
+                                <p className="text-sm text-slate-400">{module.description}</p>
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <button onClick={() => handleOpenModal(module)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
+                            <button onClick={() => handleOpenModal(module)} className="p-2 text-blue-400 hover:bg-blue-500/10 rounded-lg">
                                 <Edit size={20} />
                             </button>
-                            <button onClick={() => handleDelete(module.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
+                            <button onClick={() => handleDelete(module.id)} className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg">
                                 <Trash2 size={20} />
                             </button>
                         </div>
@@ -135,39 +135,39 @@ export default function AdminModules() {
             {/* Modal Simples */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-                        <h2 className="text-xl font-bold mb-4">{editingModule ? 'Editar Módulo' : 'Novo Módulo'}</h2>
+                    <div className="bg-[#0a0a12] border border-white/[0.08] rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                        <h2 className="text-xl font-bold text-white mb-4">{editingModule ? 'Editar Módulo' : 'Novo Módulo'}</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium mb-1">Título</label>
-                                <input required className="w-full border p-2 rounded-lg" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
+                                <label className="block text-sm font-medium text-slate-300 mb-1">Título</label>
+                                <input required className="w-full bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Slug (URL)</label>
-                                    <input required className="w-full border p-2 rounded-lg" value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })} />
+                                    <label className="block text-sm font-medium text-slate-300 mb-1">Slug (URL)</label>
+                                    <input required className="w-full bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium mb-1">Ordem</label>
-                                    <input type="number" required className="w-full border p-2 rounded-lg" value={formData.order} onChange={e => setFormData({ ...formData, order: e.target.value })} />
+                                    <label className="block text-sm font-medium text-slate-300 mb-1">Ordem</label>
+                                    <input type="number" required className="w-full bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value={formData.order} onChange={e => setFormData({ ...formData, order: e.target.value })} />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1">Descrição Curta</label>
-                                <input required className="w-full border p-2 rounded-lg" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
+                                <label className="block text-sm font-medium text-slate-300 mb-1">Descrição Curta</label>
+                                <input required className="w-full bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1">URL do Vídeo (Embed)</label>
-                                <input className="w-full border p-2 rounded-lg" value={formData.videoUrl} onChange={e => setFormData({ ...formData, videoUrl: e.target.value })} />
+                                <label className="block text-sm font-medium text-slate-300 mb-1">URL do Vídeo (Embed)</label>
+                                <input className="w-full bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value={formData.videoUrl} onChange={e => setFormData({ ...formData, videoUrl: e.target.value })} />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1">Conteúdo (Markdown)</label>
-                                <textarea required rows={5} className="w-full border p-2 rounded-lg" value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} />
+                                <label className="block text-sm font-medium text-slate-300 mb-1">Conteúdo (Markdown)</label>
+                                <textarea required rows={5} className="w-full bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} />
                             </div>
 
                             <div className="flex justify-end gap-2 mt-6">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-500">Cancelar</button>
-                                <button type="submit" className="px-4 py-2 bg-orange-600 text-white rounded-lg">Salvar</button>
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-slate-400 hover:text-slate-200">Cancelar</button>
+                                <button type="submit" className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">Salvar</button>
                             </div>
                         </form>
                     </div>

@@ -296,12 +296,12 @@ export default function Profile() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
             whileHover={{ scale: 1.02, y: -5 }}
-            className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm"
+            className="bg-white/[0.05] rounded-2xl p-5 border border-white/[0.08]"
           >
             <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-4`}>
               <stat.icon className="w-6 h-6 text-white" />
             </div>
-            <p className="text-3xl font-bold text-slate-800">{stat.value}</p>
+            <p className="text-3xl font-bold text-white">{stat.value}</p>
             <p className="text-sm text-slate-500">{stat.label}</p>
           </motion.div>
         ))}
@@ -312,14 +312,14 @@ export default function Profile() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm"
+        className="bg-white/[0.05] rounded-2xl p-6 border border-white/[0.08]"
       >
         <div className="flex items-center gap-3 mb-6">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center">
             <GraduationCap className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-800">Progresso do Treinamento</h2>
+            <h2 className="text-xl font-bold text-white">Progresso do Treinamento</h2>
             <p className="text-slate-500">Analista de Conteudo ao Vivo</p>
           </div>
           <div className="ml-auto text-right">
@@ -334,7 +334,7 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="relative h-4 bg-slate-100 rounded-full overflow-hidden mb-4">
+        <div className="relative h-4 bg-white/[0.08] rounded-full overflow-hidden mb-4">
           <motion.div
             className={`h-full rounded-full ${
               isTrainingComplete
@@ -361,9 +361,9 @@ export default function Profile() {
       </motion.div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-white/[0.05] rounded-2xl border border-white/[0.08] overflow-hidden">
         {/* Tab Header */}
-        <div className="flex border-b border-slate-200">
+        <div className="flex border-b border-white/[0.08]">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -371,7 +371,7 @@ export default function Profile() {
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 font-medium transition-colors ${
                 activeTab === tab.id
                   ? 'text-primary border-b-2 border-primary bg-primary/5'
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                  : 'text-slate-500 hover:text-white hover:bg-white/[0.03]'
               }`}
             >
               <tab.icon className="w-5 h-5" />
@@ -395,7 +395,7 @@ export default function Profile() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Name */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       <User className="w-4 h-4 inline mr-2" />
                       Nome Completo
                     </label>
@@ -404,25 +404,25 @@ export default function Profile() {
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                       />
                     ) : (
-                      <p className="px-4 py-3 rounded-xl bg-slate-50 text-slate-800">{user?.name || '-'}</p>
+                      <p className="px-4 py-3 rounded-xl bg-white/[0.03] text-white">{user?.name || '-'}</p>
                     )}
                   </div>
 
                   {/* Email */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       <Mail className="w-4 h-4 inline mr-2" />
                       E-mail
                     </label>
-                    <p className="px-4 py-3 rounded-xl bg-slate-50 text-slate-800">{user?.email || '-'}</p>
+                    <p className="px-4 py-3 rounded-xl bg-white/[0.03] text-white">{user?.email || '-'}</p>
                   </div>
 
                   {/* Phone */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       <Phone className="w-4 h-4 inline mr-2" />
                       Telefone
                     </label>
@@ -432,16 +432,16 @@ export default function Profile() {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="(00) 00000-0000"
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                       />
                     ) : (
-                      <p className="px-4 py-3 rounded-xl bg-slate-50 text-slate-800">{user?.phone || 'Nao informado'}</p>
+                      <p className="px-4 py-3 rounded-xl bg-white/[0.03] text-white">{user?.phone || 'Nao informado'}</p>
                     )}
                   </div>
 
                   {/* Birthdate */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       <Cake className="w-4 h-4 inline mr-2" />
                       Data de Nascimento
                     </label>
@@ -450,10 +450,10 @@ export default function Profile() {
                         type="date"
                         value={formData.birthdate}
                         onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                       />
                     ) : (
-                      <p className="px-4 py-3 rounded-xl bg-slate-50 text-slate-800">
+                      <p className="px-4 py-3 rounded-xl bg-white/[0.03] text-white">
                         {user?.birthdate ? new Date(user.birthdate).toLocaleDateString('pt-BR') : 'Nao informado'}
                       </p>
                     )}
@@ -461,7 +461,7 @@ export default function Profile() {
 
                   {/* Address */}
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       <MapPin className="w-4 h-4 inline mr-2" />
                       Endereco
                     </label>
@@ -471,16 +471,16 @@ export default function Profile() {
                         value={formData.address}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         placeholder="Rua, numero, bairro, cidade"
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                       />
                     ) : (
-                      <p className="px-4 py-3 rounded-xl bg-slate-50 text-slate-800">{user?.address || 'Nao informado'}</p>
+                      <p className="px-4 py-3 rounded-xl bg-white/[0.03] text-white">{user?.address || 'Nao informado'}</p>
                     )}
                   </div>
 
                   {/* Bio */}
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       <FileText className="w-4 h-4 inline mr-2" />
                       Biografia
                     </label>
@@ -493,30 +493,30 @@ export default function Profile() {
                         className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none resize-none transition-all"
                       />
                     ) : (
-                      <p className="px-4 py-3 rounded-xl bg-slate-50 text-slate-800">{user?.bio || 'Nenhuma biografia adicionada'}</p>
+                      <p className="px-4 py-3 rounded-xl bg-white/[0.03] text-white">{user?.bio || 'Nenhuma biografia adicionada'}</p>
                     )}
                   </div>
                 </div>
 
                 {/* Role & Dates */}
-                <div className="pt-6 border-t border-slate-200">
-                  <h3 className="font-semibold text-slate-800 mb-4">Informacoes da Conta</h3>
+                <div className="pt-6 border-t border-white/[0.08]">
+                  <h3 className="font-semibold text-white mb-4">Informacoes da Conta</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 rounded-xl bg-slate-50">
+                    <div className="p-4 rounded-xl bg-white/[0.03]">
                       <p className="text-sm text-slate-500 mb-1">Funcao</p>
-                      <p className="font-semibold text-slate-800 flex items-center gap-2">
+                      <p className="font-semibold text-white flex items-center gap-2">
                         <Briefcase className="w-4 h-4 text-slate-400" />
                         {user?.role === 'ADMIN' ? 'Administrador' : 'Analista de Conteudo ao Vivo'}
                       </p>
                     </div>
-                    <div className="p-4 rounded-xl bg-slate-50">
+                    <div className="p-4 rounded-xl bg-white/[0.03]">
                       <p className="text-sm text-slate-500 mb-1">Membro desde</p>
-                      <p className="font-semibold text-slate-800 flex items-center gap-2">
+                      <p className="font-semibold text-white flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-slate-400" />
                         {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : 'N/A'}
                       </p>
                     </div>
-                    <div className="p-4 rounded-xl bg-slate-50">
+                    <div className="p-4 rounded-xl bg-white/[0.03]">
                       <p className="text-sm text-slate-500 mb-1">Status</p>
                       <p className="font-semibold text-emerald-600 flex items-center gap-2">
                         <CheckCircle className="w-4 h-4" />
@@ -537,11 +537,11 @@ export default function Profile() {
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-6"
               >
-                <h3 className="font-semibold text-slate-800">Alterar Senha</h3>
+                <h3 className="font-semibold text-white">Alterar Senha</h3>
 
                 <div className="space-y-4 max-w-md">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       Senha Atual
                     </label>
                     <div className="relative">
@@ -549,12 +549,12 @@ export default function Profile() {
                         type={showPassword ? 'text' : 'password'}
                         value={passwordData.currentPassword}
                         onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                        className="w-full px-4 py-3 pr-12 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                        className="w-full px-4 py-3 pr-12 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
                       >
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
@@ -562,26 +562,26 @@ export default function Profile() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       Nova Senha
                     </label>
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={passwordData.newPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       Confirmar Nova Senha
                     </label>
                     <input
                       type={showPassword ? 'text' : 'password'}
                       value={passwordData.confirmPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                     />
                   </div>
 
@@ -591,14 +591,14 @@ export default function Profile() {
                   </Button>
                 </div>
 
-                <div className="pt-6 border-t border-slate-200">
-                  <h3 className="font-semibold text-slate-800 mb-4">Sessoes Ativas</h3>
-                  <div className="p-4 rounded-xl bg-slate-50 flex items-center justify-between">
+                <div className="pt-6 border-t border-white/[0.08]">
+                  <h3 className="font-semibold text-white mb-4">Sessoes Ativas</h3>
+                  <div className="p-4 rounded-xl bg-white/[0.03] flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-slate-800">Sessao Atual</p>
+                      <p className="font-medium text-white">Sessao Atual</p>
                       <p className="text-sm text-slate-500">Este dispositivo • Ultima atividade agora</p>
                     </div>
-                    <span className="px-3 py-1 bg-emerald-100 text-emerald-600 text-sm font-medium rounded-full">
+                    <span className="px-3 py-1 bg-emerald-500/15 text-emerald-400 text-sm font-medium rounded-full">
                       Ativa
                     </span>
                   </div>
@@ -615,7 +615,7 @@ export default function Profile() {
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-6"
               >
-                <h3 className="font-semibold text-slate-800">Preferencias de Notificacao</h3>
+                <h3 className="font-semibold text-white">Preferencias de Notificacao</h3>
 
                 <div className="space-y-4">
                   {[
@@ -626,16 +626,16 @@ export default function Profile() {
                   ].map((item) => (
                     <div
                       key={item.key}
-                      className="flex items-center justify-between p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors"
+                      className="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] transition-colors"
                     >
                       <div>
-                        <p className="font-medium text-slate-800">{item.label}</p>
+                        <p className="font-medium text-white">{item.label}</p>
                         <p className="text-sm text-slate-500">{item.description}</p>
                       </div>
                       <button
                         onClick={() => setNotifications({ ...notifications, [item.key]: !notifications[item.key] })}
                         className={`relative w-12 h-6 rounded-full transition-colors ${
-                          notifications[item.key] ? 'bg-primary' : 'bg-slate-300'
+                          notifications[item.key] ? 'bg-primary' : 'bg-white/[0.15]'
                         }`}
                       >
                         <motion.div

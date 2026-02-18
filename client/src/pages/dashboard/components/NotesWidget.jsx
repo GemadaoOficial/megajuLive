@@ -76,25 +76,25 @@ export default function NotesWidget() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
     >
-      <div className="bg-amber-50/70 border border-amber-200/60 rounded-2xl p-6 shadow-sm">
+      <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 flex items-center justify-center">
               <StickyNote className="w-5 h-5 text-white" />
             </div>
-            <h2 className="text-xl font-bold text-slate-800">Lembretes</h2>
+            <h2 className="text-xl font-bold text-white">Lembretes</h2>
           </div>
 
           {/* Save status indicator */}
           <div className="flex items-center gap-1.5 text-xs font-medium">
             {saving && (
-              <span className="flex items-center gap-1 text-amber-600">
+              <span className="flex items-center gap-1 text-amber-400">
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 Salvando...
               </span>
             )}
             {saved && !saving && (
-              <span className="flex items-center gap-1 text-emerald-600">
+              <span className="flex items-center gap-1 text-emerald-400">
                 <Check className="w-3.5 h-3.5" />
                 Salvo
               </span>
@@ -107,7 +107,7 @@ export default function NotesWidget() {
           onChange={handleChange}
           onBlur={handleBlur}
           placeholder={"Escreva seus lembretes aqui...\n\nEx: Nao falar sobre desconto de concorrente\nLembrar de mostrar produto X..."}
-          className="w-full h-40 bg-transparent text-slate-700 placeholder-amber-400/70 text-sm leading-relaxed resize-none outline-none"
+          className="w-full h-40 bg-transparent text-slate-200 placeholder-amber-400/40 text-sm leading-relaxed resize-none outline-none"
         />
       </div>
     </motion.div>

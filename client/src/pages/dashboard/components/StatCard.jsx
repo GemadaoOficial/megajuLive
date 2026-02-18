@@ -14,17 +14,17 @@ export default function StatCard({ stat, index }) {
       <div
         className={`absolute inset-0 bg-gradient-to-r ${stat.gradient} rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity`}
       />
-      <div className="relative bg-white border border-slate-200 rounded-2xl p-5 hover:border-slate-300 hover:shadow-lg transition-all shadow-sm">
+      <div className="relative bg-white/[0.05] border border-white/[0.08] rounded-2xl p-5 hover:border-white/[0.12] transition-all">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-slate-500 text-sm font-medium">{stat.label}</p>
+            <p className="text-slate-400 text-sm font-medium">{stat.label}</p>
             <p
               className={`text-3xl font-bold mt-2 bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}
             >
               {stat.value}
             </p>
             {stat.subtitle && (
-              <p className="text-xs text-slate-400 mt-2">{stat.subtitle}</p>
+              <p className="text-xs text-slate-500 mt-2">{stat.subtitle}</p>
             )}
           </div>
           <div

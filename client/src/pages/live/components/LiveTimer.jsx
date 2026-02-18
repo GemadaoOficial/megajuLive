@@ -21,7 +21,7 @@ export default function LiveTimer({
       <div className={`relative rounded-3xl p-8 shadow-xl border-2 transition-all duration-500 ${
         isRunning
           ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-red-500/50'
-          : 'bg-gradient-to-br from-slate-100 to-white border-slate-200'
+          : 'bg-gradient-to-br from-white/[0.05] to-white/[0.02] border-white/[0.08]'
       }`}>
         {/* Animated Background Effects */}
         {isRunning && (
@@ -77,7 +77,7 @@ export default function LiveTimer({
         <div className="relative text-center mb-8">
           <motion.div
             className={`text-8xl font-mono font-black tracking-wider ${
-              isRunning ? 'text-white' : 'text-slate-800'
+              isRunning ? 'text-white' : 'text-white'
             }`}
             animate={isRunning ? { textShadow: ['0 0 20px rgba(238,77,45,0.5)', '0 0 40px rgba(238,77,45,0.3)', '0 0 20px rgba(238,77,45,0.5)'] } : {}}
             transition={{ duration: 2, repeat: Infinity }}
@@ -85,7 +85,7 @@ export default function LiveTimer({
             {formatTime(elapsedTime)}
           </motion.div>
           <p className={`mt-2 flex items-center justify-center gap-2 ${
-            isRunning ? 'text-slate-400' : 'text-slate-500'
+            isRunning ? 'text-slate-400' : 'text-slate-400'
           }`}>
             <Clock className="w-4 h-4" />
             Tempo de transmissao
@@ -229,10 +229,10 @@ export default function LiveTimer({
         {/* Idle State */}
         {!isRunning && !currentProduct && (
           <div className="text-center py-4">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
-              <Radio className="w-10 h-10 text-slate-400" />
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/[0.05] flex items-center justify-center">
+              <Radio className="w-10 h-10 text-slate-500" />
             </div>
-            <p className="text-slate-500">Clique em "Iniciar Live" para comecar</p>
+            <p className="text-slate-400">Clique em "Iniciar Live" para comecar</p>
           </div>
         )}
       </div>

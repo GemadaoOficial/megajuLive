@@ -74,79 +74,79 @@ export default function AdminUsers() {
         <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Gestão de Streamers</h1>
-                    <p className="text-gray-500 text-sm">Gerencie o acesso e monitore os colaboradores.</p>
+                    <h1 className="text-2xl font-bold text-white">Gestão de Streamers</h1>
+                    <p className="text-slate-400 text-sm">Gerencie o acesso e monitore os colaboradores.</p>
                 </div>
 
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                     <input
                         type="text"
                         placeholder="Buscar por nome ou email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 w-full md:w-80"
+                        className="pl-10 pr-4 py-2 bg-white/[0.05] border border-white/[0.08] rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-orange-500 w-full md:w-80"
                     />
                 </div>
             </div>
 
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50 border-b border-gray-100">
+                        <thead className="bg-white/[0.03] border-b border-white/[0.06]">
                             <tr>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Usuário</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Cargo</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Tutorial</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Data Cadastro</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Lives</th>
-                                <th className="px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Ações</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Usuário</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Cargo</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Tutorial</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Data Cadastro</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Lives</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-white/[0.06]">
                             {filteredUsers.map((user) => (
-                                <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
+                                <tr key={user.id} className="hover:bg-white/[0.03] transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleEditClick(user)}>
-                                            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 border border-slate-200 hover:border-orange-300 transition-colors">
+                                            <div className="w-10 h-10 rounded-full bg-white/[0.05] flex items-center justify-center text-slate-400 border border-white/[0.08] hover:border-orange-500/30 transition-colors">
                                                 <User size={20} />
                                             </div>
                                             <div>
-                                                <p className="font-semibold text-gray-900 hover:text-orange-600 transition-colors">{user.name}</p>
-                                                <p className="text-sm text-gray-500">{user.email}</p>
+                                                <p className="font-semibold text-white hover:text-orange-400 transition-colors">{user.name}</p>
+                                                <p className="text-sm text-slate-400">{user.email}</p>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium border ${user.role === 'ADMIN' ? 'bg-red-50 text-red-700 border-red-100' : 'bg-blue-50 text-blue-700 border-blue-100'
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-medium border ${user.role === 'ADMIN' ? 'bg-red-500/15 text-red-400 border-red-500/20' : 'bg-blue-500/15 text-blue-400 border-blue-500/20'
                                             }`}>
                                             {user.roleTitle || (user.role === 'ADMIN' ? 'Administrador' : 'Colaborador')}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
                                         {user.skipTutorial ? (
-                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500/15 text-purple-400">
                                                 <CheckCircle size={12} /> Pulou
                                             </span>
                                         ) : (
-                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/[0.05] text-slate-400">
                                                 Obrigatório
                                             </span>
                                         )}
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
+                                    <td className="px-6 py-4 text-sm text-slate-300">
                                         {format(new Date(user.createdAt), "d 'de' MMM, yyyy", { locale: ptBR })}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2 text-sm text-gray-700 bg-gray-100 px-3 py-1 rounded-full w-fit">
-                                            <Video size={14} className="text-gray-500" />
+                                        <div className="flex items-center gap-2 text-sm text-slate-300 bg-white/[0.05] px-3 py-1 rounded-full w-fit">
+                                            <Video size={14} className="text-slate-400" />
                                             <span className="font-medium">{user._count?.lives || 0}</span>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <button
                                             onClick={() => handleEditClick(user)}
-                                            className="text-gray-400 hover:text-orange-500 p-2 hover:bg-orange-50 rounded-lg transition-colors"
+                                            className="text-slate-400 hover:text-orange-400 p-2 hover:bg-orange-500/10 rounded-lg transition-colors"
                                             title="Editar Usuário"
                                         >
                                             <Edit2 size={18} />
@@ -162,13 +162,13 @@ export default function AdminUsers() {
             {/* Edit User Modal */}
             {editingUser && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-                        <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white rounded-t-2xl z-10">
+                    <div className="bg-[#0a0a12] border border-white/[0.08] rounded-2xl shadow-xl w-full max-w-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+                        <div className="p-6 border-b border-white/[0.06] flex justify-between items-center sticky top-0 bg-[#0a0a12] rounded-t-2xl z-10">
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900">Detalhes do Usuário</h2>
-                                <p className="text-sm text-gray-500">Edite informações e visualize histórico.</p>
+                                <h2 className="text-xl font-bold text-white">Detalhes do Usuário</h2>
+                                <p className="text-sm text-slate-400">Edite informações e visualize histórico.</p>
                             </div>
-                            <button onClick={() => setEditingUser(null)} className="text-gray-400 hover:text-gray-600">
+                            <button onClick={() => setEditingUser(null)} className="text-slate-400 hover:text-slate-200">
                                 <XCircle size={24} />
                             </button>
                         </div>
@@ -182,39 +182,39 @@ export default function AdminUsers() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     {/* Column 1: Edit Form */}
                                     <div className="space-y-6">
-                                        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2">Configurações</h3>
+                                        <h3 className="text-sm font-bold text-white uppercase tracking-wider border-b border-white/[0.06] pb-2">Configurações</h3>
 
                                         <form id="editUserForm" onSubmit={handleUpdateUser} className="space-y-4">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                                                <label className="block text-sm font-medium text-slate-300 mb-1">Nome</label>
                                                 <input
                                                     type="text"
                                                     value={editingUser.name}
                                                     disabled
-                                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+                                                    className="w-full px-4 py-2 border border-white/[0.08] rounded-lg bg-white/[0.03] text-slate-400 cursor-not-allowed"
                                                 />
                                             </div>
 
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Cargo / Título</label>
+                                                <label className="block text-sm font-medium text-slate-300 mb-1">Cargo / Título</label>
                                                 <input
                                                     type="text"
                                                     value={editingUser.roleTitle || ''}
                                                     onChange={(e) => setEditingUser({ ...editingUser, roleTitle: e.target.value })}
                                                     placeholder="Ex: Streamer Senior"
-                                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                                    className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-orange-500"
                                                 />
                                             </div>
 
-                                            <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl border border-purple-100">
+                                            <div className="flex items-center gap-3 p-4 bg-purple-500/10 rounded-xl border border-purple-500/20">
                                                 <input
                                                     type="checkbox"
                                                     id="skipTutorial"
                                                     checked={editingUser.skipTutorial || false}
                                                     onChange={(e) => setEditingUser({ ...editingUser, skipTutorial: e.target.checked })}
-                                                    className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 border-gray-300"
+                                                    className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 border-white/[0.08]"
                                                 />
-                                                <label htmlFor="skipTutorial" className="text-sm font-medium text-gray-900 cursor-pointer select-none">
+                                                <label htmlFor="skipTutorial" className="text-sm font-medium text-white cursor-pointer select-none">
                                                     Pular Tutorial Obrigatório
                                                 </label>
                                             </div>
@@ -223,44 +223,44 @@ export default function AdminUsers() {
 
                                     {/* Column 2: History & Live Link */}
                                     <div className="space-y-6">
-                                        <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider border-b pb-2">Última Transmissão</h3>
+                                        <h3 className="text-sm font-bold text-white uppercase tracking-wider border-b border-white/[0.06] pb-2">Última Transmissão</h3>
 
                                         {editingUser.lives && editingUser.lives.length > 0 ? (
-                                            <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                            <div className="bg-white/[0.03] rounded-xl p-4 border border-white/[0.08]">
                                                 <div className="mb-4">
-                                                    <span className="text-xs font-semibold text-gray-500 uppercase">Link da Live</span>
+                                                    <span className="text-xs font-semibold text-slate-400 uppercase">Link da Live</span>
                                                     {editingUser.lives[0].liveLink ? (
                                                         <a
                                                             href={editingUser.lives[0].liveLink}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium break-all mt-1 p-2 bg-blue-50/50 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors"
+                                                            className="flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium break-all mt-1 p-2 bg-blue-500/10 rounded-lg border border-blue-500/20 hover:bg-blue-500/15 transition-colors"
                                                         >
                                                             <Share2 size={16} />
                                                             {editingUser.lives[0].liveLink}
                                                         </a>
                                                     ) : (
-                                                        <p className="text-sm text-gray-400 italic mt-1">Nenhum link fornecido.</p>
+                                                        <p className="text-sm text-slate-500 italic mt-1">Nenhum link fornecido.</p>
                                                     )}
                                                 </div>
 
                                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                                     <div>
-                                                        <span className="text-xs text-gray-500">Data</span>
-                                                        <p className="font-medium text-gray-900">
+                                                        <span className="text-xs text-slate-400">Data</span>
+                                                        <p className="font-medium text-white">
                                                             {new Date(editingUser.lives[0].createdAt).toLocaleDateString('pt-BR')}
                                                         </p>
                                                     </div>
                                                     <div>
-                                                        <span className="text-xs text-gray-500">Duração</span>
-                                                        <p className="font-medium text-gray-900">
+                                                        <span className="text-xs text-slate-400">Duração</span>
+                                                        <p className="font-medium text-white">
                                                             {editingUser.lives[0].duration ? `${editingUser.lives[0].duration} min` : 'Em andamento'}
                                                         </p>
                                                     </div>
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="text-center py-8 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-gray-400 text-sm">
+                                            <div className="text-center py-8 bg-white/[0.03] rounded-xl border border-dashed border-white/[0.08] text-slate-500 text-sm">
                                                 Nenhuma live registrada ainda.
                                             </div>
                                         )}
@@ -269,11 +269,11 @@ export default function AdminUsers() {
                             )}
                         </div>
 
-                        <div className="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end gap-3">
+                        <div className="p-6 border-t border-white/[0.06] bg-white/[0.03] rounded-b-2xl flex justify-end gap-3">
                             <button
                                 type="button"
                                 onClick={() => setEditingUser(null)}
-                                className="px-4 py-2 text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 rounded-lg font-medium transition-colors"
+                                className="px-4 py-2 text-slate-300 bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] rounded-lg font-medium transition-colors"
                             >
                                 Cancelar
                             </button>

@@ -59,7 +59,7 @@ export default function Header() {
       {/* Gradient line on top */}
       <div className="h-1 bg-gradient-to-r from-primary via-orange-500 to-amber-500" />
 
-      <div className="bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-sm">
+      <div className="bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-white/[0.06]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
 
@@ -72,14 +72,14 @@ export default function Header() {
                 <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-slate-800">Mega<span className="text-primary">Ju</span></h1>
-                <p className="text-[10px] text-slate-500 -mt-1">Live Management</p>
+                <h1 className="text-lg font-bold text-white">Mega<span className="text-primary">Ju</span></h1>
+                <p className="text-[10px] text-slate-400 -mt-1">Live Management</p>
               </div>
             </NavLink>
 
             {/* Main Navigation */}
             <nav className="hidden md:flex items-center">
-              <div className="flex items-center bg-slate-100 rounded-2xl p-1.5">
+              <div className="flex items-center bg-white/[0.05] rounded-2xl p-1.5">
                 {mainTabs.map((tab) => {
                   const isLocked = tab.requiresTraining && !canAccessLive
 
@@ -93,18 +93,18 @@ export default function Header() {
                       {isActive(tab.to) && !isLocked && (
                         <motion.div
                           layoutId="activeTab"
-                          className={`absolute inset-0 ${tab.highlight ? 'bg-gradient-to-r from-primary to-orange-500' : 'bg-white shadow-sm'} rounded-xl`}
+                          className={`absolute inset-0 ${tab.highlight ? 'bg-gradient-to-r from-primary to-orange-500' : 'bg-white/[0.1]'} rounded-xl`}
                           transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                         />
                       )}
                       <div className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-colors
                         ${isLocked
-                          ? 'text-slate-400 cursor-not-allowed'
+                          ? 'text-slate-500 cursor-not-allowed'
                           : isActive(tab.to)
-                            ? tab.highlight ? 'text-white' : 'text-slate-800'
+                            ? tab.highlight ? 'text-white' : 'text-white'
                             : tab.highlight
                               ? 'text-primary hover:text-orange-400'
-                              : 'text-slate-500 hover:text-slate-800'
+                              : 'text-slate-400 hover:text-white'
                         }
                         ${tab.highlight && !isActive(tab.to) && !isLocked ? 'hover:bg-primary/10' : ''}
                       `}>
@@ -115,7 +115,7 @@ export default function Header() {
                         )}
                         {tab.label}
                         {isLocked && (
-                          <span className="text-[10px] bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded-full">
+                          <span className="text-[10px] bg-white/10 text-slate-400 px-1.5 py-0.5 rounded-full">
                             {progressPercent}%
                           </span>
                         )}
@@ -141,15 +141,15 @@ export default function Header() {
 
               {/* Admin Tabs */}
               {user?.role === 'ADMIN' && (
-                <div className="flex items-center ml-3 pl-3 border-l border-slate-200">
+                <div className="flex items-center ml-3 pl-3 border-l border-white/[0.08]">
                   {adminTabs.map((tab) => (
                     <NavLink
                       key={tab.to}
                       to={tab.to}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all
                         ${isActive(tab.to)
-                          ? 'text-amber-600 bg-amber-100'
-                          : 'text-slate-500 hover:text-amber-600 hover:bg-amber-50'
+                          ? 'text-amber-400 bg-amber-500/15'
+                          : 'text-slate-400 hover:text-amber-400 hover:bg-amber-500/10'
                         }`
                       }
                     >
@@ -165,14 +165,14 @@ export default function Header() {
             <div className="flex items-center gap-4">
               <NavLink
                 to="/profile"
-                className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
+                className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] transition-colors cursor-pointer"
               >
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
                   {user?.name?.charAt(0).toUpperCase()}
                 </div>
                 <div className="hidden md:block">
-                  <p className="text-sm font-medium text-slate-800">{user?.name?.split(' ')[0]}</p>
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-sm font-medium text-white">{user?.name?.split(' ')[0]}</p>
+                  <p className="text-[10px] text-slate-400">
                     {user?.role === 'ADMIN' ? 'Administrador' : 'Analista'}
                   </p>
                 </div>
@@ -180,7 +180,7 @@ export default function Header() {
 
               <button
                 onClick={handleLogout}
-                className="p-2.5 rounded-xl bg-red-100 text-red-500 hover:bg-red-200 hover:text-red-600 transition-all"
+                className="p-2.5 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 hover:text-red-300 transition-all"
                 title="Sair"
               >
                 <LogOut className="w-5 h-5" />

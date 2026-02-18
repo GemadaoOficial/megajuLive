@@ -63,15 +63,15 @@ export default function LivesManagement() {
   const getStatusStyle = (status) => {
     switch (status) {
       case 'LIVE':
-        return 'bg-red-100 text-red-600 animate-pulse'
+        return 'bg-red-500/100/100/20 text-red-400 animate-pulse'
       case 'COMPLETED':
-        return 'bg-emerald-100 text-emerald-600'
+        return 'bg-emerald-500/100/100/20 text-emerald-400'
       case 'SCHEDULED':
-        return 'bg-blue-100 text-blue-600'
+        return 'bg-blue-500/100/100/20 text-blue-400'
       case 'CANCELLED':
-        return 'bg-slate-100 text-slate-600'
+        return 'bg-white/[0.05] text-slate-300'
       default:
-        return 'bg-slate-100 text-slate-600'
+        return 'bg-white/[0.05] text-slate-300'
     }
   }
 
@@ -116,53 +116,53 @@ export default function LivesManagement() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-800">Gestao de Lives</h1>
-        <p className="text-slate-500 mt-1">Visualize e gerencie todas as transmissoes</p>
+        <h1 className="text-3xl font-bold text-white">Gestao de Lives</h1>
+        <p className="text-slate-400 mt-1">Visualize e gerencie todas as transmissoes</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-slate-100">
-              <Video className="w-5 h-5 text-slate-600" />
+            <div className="p-2 rounded-lg bg-white/[0.05]">
+              <Video className="w-5 h-5 text-slate-300" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-800">{stats.total}</p>
-              <p className="text-xs text-slate-500">Total</p>
+              <p className="text-2xl font-bold text-white">{stats.total}</p>
+              <p className="text-xs text-slate-400">Total</p>
             </div>
           </div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-red-100">
-              <Play className="w-5 h-5 text-red-600" />
+            <div className="p-2 rounded-lg bg-red-500/100/100/20">
+              <Play className="w-5 h-5 text-red-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-red-600">{stats.live}</p>
-              <p className="text-xs text-slate-500">Ao Vivo</p>
+              <p className="text-2xl font-bold text-red-400">{stats.live}</p>
+              <p className="text-xs text-slate-400">Ao Vivo</p>
             </div>
           </div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-100">
-              <Calendar className="w-5 h-5 text-blue-600" />
+            <div className="p-2 rounded-lg bg-blue-500/100/100/20">
+              <Calendar className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-blue-600">{stats.scheduled}</p>
-              <p className="text-xs text-slate-500">Agendadas</p>
+              <p className="text-2xl font-bold text-blue-400">{stats.scheduled}</p>
+              <p className="text-xs text-slate-400">Agendadas</p>
             </div>
           </div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-100">
-              <StopCircle className="w-5 h-5 text-emerald-600" />
+            <div className="p-2 rounded-lg bg-emerald-500/100/100/20">
+              <StopCircle className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-emerald-600">{stats.completed}</p>
-              <p className="text-xs text-slate-500">Finalizadas</p>
+              <p className="text-2xl font-bold text-emerald-400">{stats.completed}</p>
+              <p className="text-xs text-slate-400">Finalizadas</p>
             </div>
           </div>
         </div>
@@ -177,7 +177,7 @@ export default function LivesManagement() {
             placeholder="Buscar por titulo ou usuario..."
             value={searchTerm}
             onChange={handleSearch}
-            className="w-full pl-12 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -185,7 +185,7 @@ export default function LivesManagement() {
           <select
             value={statusFilter}
             onChange={handleStatusFilter}
-            className="px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
             <option value="all">Todos os status</option>
             <option value="LIVE">Ao Vivo</option>
@@ -198,7 +198,7 @@ export default function LivesManagement() {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-600">
+        <div className="bg-red-500/100/10 border border-red-500/20 rounded-xl p-4 text-red-400">
           {error}
         </div>
       )}
@@ -207,7 +207,7 @@ export default function LivesManagement() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm"
+        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
       >
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -216,27 +216,27 @@ export default function LivesManagement() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-50">
+              <thead className="bg-white/[0.03]">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Live</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Usuario</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Status</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Data</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Duracao</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Views</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Vendas</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-slate-600">Acoes</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Live</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Usuario</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Status</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Data</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Duracao</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Views</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Vendas</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-slate-300">Acoes</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-white/[0.06]">
                 {lives.map((live) => (
-                  <tr key={live.id} className="hover:bg-slate-50 transition-colors">
+                  <tr key={live.id} className="hover:bg-white/[0.03] transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center">
                           <Video className="w-5 h-5 text-white" />
                         </div>
-                        <span className="font-medium text-slate-800 truncate max-w-[200px]">
+                        <span className="font-medium text-white truncate max-w-[200px]">
                           {live.title}
                         </span>
                       </div>
@@ -244,7 +244,7 @@ export default function LivesManagement() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4 text-slate-400" />
-                        <span className="text-slate-600">{live.user?.name || 'Usuario'}</span>
+                        <span className="text-slate-300">{live.user?.name || 'Usuario'}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -252,7 +252,7 @@ export default function LivesManagement() {
                         {getStatusLabel(live.status)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-slate-600">
+                    <td className="px-6 py-4 text-slate-300">
                       {new Date(live.scheduledAt).toLocaleDateString('pt-BR', {
                         day: '2-digit',
                         month: 'short',
@@ -260,20 +260,20 @@ export default function LivesManagement() {
                         minute: '2-digit',
                       })}
                     </td>
-                    <td className="px-6 py-4 text-slate-600">
+                    <td className="px-6 py-4 text-slate-300">
                       <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4 text-slate-400" />
                         {formatDuration(live.duration)}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-slate-600">
+                    <td className="px-6 py-4 text-slate-300">
                       <div className="flex items-center gap-1">
                         <Eye className="w-4 h-4 text-slate-400" />
                         {(live.analytics?.views || 0).toLocaleString()}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-emerald-600 font-medium">
+                      <div className="text-emerald-400 font-medium">
                         R$ {(live.analytics?.revenue || 0).toLocaleString()}
                       </div>
                       <div className="text-xs text-slate-400">{live.analytics?.sales || 0} vendas</div>
@@ -282,21 +282,21 @@ export default function LivesManagement() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => setSelectedLive(live)}
-                          className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-colors"
+                          className="p-2 rounded-lg hover:bg-white/[0.05] text-slate-400 hover:text-slate-200 transition-colors"
                           title="Ver detalhes"
                         >
                           <BarChart3 className="w-5 h-5" />
                         </button>
                         {live.status === 'LIVE' && (
                           <button
-                            className="p-2 rounded-lg hover:bg-red-100 text-slate-500 hover:text-red-500 transition-colors"
+                            className="p-2 rounded-lg hover:bg-red-500/100/100/100/100/20 text-slate-400 hover:text-red-500 transition-colors"
                             title="Encerrar live"
                           >
                             <StopCircle className="w-5 h-5" />
                           </button>
                         )}
                         <button
-                          className="p-2 rounded-lg hover:bg-red-100 text-slate-500 hover:text-red-500 transition-colors"
+                          className="p-2 rounded-lg hover:bg-red-500/100/100/100/100/20 text-slate-400 hover:text-red-500 transition-colors"
                           title="Excluir"
                         >
                           <Trash2 className="w-5 h-5" />
@@ -312,34 +312,34 @@ export default function LivesManagement() {
 
         {!loading && lives.length === 0 && (
           <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-white/[0.05] flex items-center justify-center mb-4">
               <Video className="w-8 h-8 text-slate-400" />
             </div>
-            <p className="text-slate-500">Nenhuma live encontrada</p>
+            <p className="text-slate-400">Nenhuma live encontrada</p>
           </div>
         )}
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-            <p className="text-sm text-slate-500">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-white/[0.04]">
+            <p className="text-sm text-slate-400">
               Mostrando {(page - 1) * livesPerPage + 1} a {Math.min(page * livesPerPage, total)} de {total}
             </p>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg hover:bg-white/[0.05] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <span className="text-sm text-slate-600">
+              <span className="text-sm text-slate-300">
                 Pagina {page} de {totalPages}
               </span>
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg hover:bg-white/[0.05] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -368,41 +368,41 @@ export default function LivesManagement() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 rounded-xl bg-slate-50">
-                <p className="text-sm text-slate-500">Status</p>
+              <div className="p-4 rounded-xl bg-white/[0.03]">
+                <p className="text-sm text-slate-400">Status</p>
                 <span className={`inline-flex items-center px-2 py-1 mt-1 rounded-full text-xs font-semibold ${getStatusStyle(selectedLive.status)}`}>
                   {getStatusLabel(selectedLive.status)}
                 </span>
               </div>
-              <div className="p-4 rounded-xl bg-slate-50">
-                <p className="text-sm text-slate-500">Visualizacoes</p>
-                <p className="text-xl font-bold text-slate-800">{(selectedLive.analytics?.views || 0).toLocaleString()}</p>
+              <div className="p-4 rounded-xl bg-white/[0.03]">
+                <p className="text-sm text-slate-400">Visualizacoes</p>
+                <p className="text-xl font-bold text-white">{(selectedLive.analytics?.views || 0).toLocaleString()}</p>
               </div>
-              <div className="p-4 rounded-xl bg-slate-50">
-                <p className="text-sm text-slate-500">Vendas</p>
-                <p className="text-xl font-bold text-slate-800">{selectedLive.analytics?.sales || 0}</p>
+              <div className="p-4 rounded-xl bg-white/[0.03]">
+                <p className="text-sm text-slate-400">Vendas</p>
+                <p className="text-xl font-bold text-white">{selectedLive.analytics?.sales || 0}</p>
               </div>
-              <div className="p-4 rounded-xl bg-slate-50">
-                <p className="text-sm text-slate-500">Receita</p>
-                <p className="text-xl font-bold text-emerald-600">R$ {(selectedLive.analytics?.revenue || 0).toLocaleString()}</p>
+              <div className="p-4 rounded-xl bg-white/[0.03]">
+                <p className="text-sm text-slate-400">Receita</p>
+                <p className="text-xl font-bold text-emerald-400">R$ {(selectedLive.analytics?.revenue || 0).toLocaleString()}</p>
               </div>
             </div>
 
             {selectedLive.description && (
-              <div className="p-4 rounded-xl bg-slate-50">
-                <p className="text-sm text-slate-500 mb-2">Descricao</p>
-                <p className="text-slate-700">{selectedLive.description}</p>
+              <div className="p-4 rounded-xl bg-white/[0.03]">
+                <p className="text-sm text-slate-400 mb-2">Descricao</p>
+                <p className="text-slate-200">{selectedLive.description}</p>
               </div>
             )}
 
             {selectedLive.products && selectedLive.products.length > 0 && (
-              <div className="p-4 rounded-xl bg-slate-50">
-                <p className="text-sm text-slate-500 mb-2">Produtos ({selectedLive.products.length})</p>
+              <div className="p-4 rounded-xl bg-white/[0.03]">
+                <p className="text-sm text-slate-400 mb-2">Produtos ({selectedLive.products.length})</p>
                 <div className="space-y-2">
                   {selectedLive.products.map((product) => (
-                    <div key={product.id} className="flex items-center justify-between bg-white rounded-lg p-3">
-                      <span className="text-slate-700">{product.name}</span>
-                      <span className="text-emerald-600 font-medium">R$ {product.price.toLocaleString()}</span>
+                    <div key={product.id} className="flex items-center justify-between bg-white/[0.05] rounded-lg p-3">
+                      <span className="text-slate-200">{product.name}</span>
+                      <span className="text-emerald-400 font-medium">R$ {product.price.toLocaleString()}</span>
                     </div>
                   ))}
                 </div>
@@ -412,7 +412,7 @@ export default function LivesManagement() {
             <div className="flex gap-3">
               <button
                 onClick={() => setSelectedLive(null)}
-                className="flex-1 px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors"
+                className="flex-1 px-6 py-3 bg-white/[0.05] text-slate-200 font-semibold rounded-xl hover:bg-white/[0.08] transition-colors"
               >
                 Fechar
               </button>

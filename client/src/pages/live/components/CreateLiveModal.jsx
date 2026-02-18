@@ -45,46 +45,46 @@ export default function CreateLiveModal({
         {/* Form Fields */}
         <div className="space-y-4">
           <div className="relative">
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-slate-200 mb-2">
               Titulo da Live
             </label>
             <div className="relative">
-              <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
               <input
                 type="text"
                 placeholder="Ex: Super Promocao de Verao"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 required
-                className="w-full pl-12 pr-4 py-4 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
+                className="w-full pl-12 pr-4 py-4 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all"
               />
             </div>
           </div>
 
           <div className="relative">
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-slate-200 mb-2">
               Descricao (opcional)
             </label>
             <div className="relative">
-              <FileText className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
+              <FileText className="absolute left-4 top-4 w-5 h-5 text-slate-500" />
               <textarea
                 placeholder="Descreva o conteudo da sua live..."
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
-                className="w-full pl-12 pr-4 py-4 rounded-xl bg-slate-50 border-2 border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 resize-none transition-all"
+                className="w-full pl-12 pr-4 py-4 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 resize-none transition-all"
               />
             </div>
           </div>
         </div>
 
         {/* Quick Tips */}
-        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200">
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
           <div className="flex items-start gap-3">
-            <Zap className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+            <Zap className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-medium text-amber-800">Dica rapida</p>
-              <p className="text-sm text-amber-700">
+              <p className="font-medium text-amber-400">Dica rapida</p>
+              <p className="text-sm text-amber-400/80">
                 Titulos com palavras como "Promocao", "Desconto" ou "Oferta" atraem mais espectadores!
               </p>
             </div>

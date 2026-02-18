@@ -58,16 +58,16 @@ export default function AnalyticsChart() {
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl shadow-xl p-4 min-w-[180px]">
-          <p className="text-sm font-bold text-slate-800 mb-3 pb-2 border-b border-slate-100">{payload[0].payload.date}</p>
+        <div className="bg-[#0a0a12]/95 backdrop-blur-sm border border-white/[0.08] rounded-xl shadow-xl p-4 min-w-[180px]">
+          <p className="text-sm font-bold text-white mb-3 pb-2 border-b border-white/[0.06]">{payload[0].payload.date}</p>
           <div className="space-y-2">
             {payload.map((entry, index) => (
               <div key={index} className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
-                  <span className="text-xs text-slate-500">{entry.name}</span>
+                  <span className="text-xs text-slate-400">{entry.name}</span>
                 </div>
-                <span className="text-sm font-bold text-slate-800">
+                <span className="text-sm font-bold text-white">
                   {entry.name === 'Receita' ? `R$ ${entry.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : entry.value.toLocaleString('pt-BR')}
                 </span>
               </div>
@@ -92,29 +92,29 @@ export default function AnalyticsChart() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
+      className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-6 pb-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center shadow-sm">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-800">Desempenho</h2>
-            <p className="text-sm text-slate-500">Espectadores, pedidos e receita por dia</p>
+            <h2 className="text-lg font-bold text-white">Desempenho</h2>
+            <p className="text-sm text-slate-400">Espectadores, pedidos e receita por dia</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+        <div className="flex items-center gap-1 bg-white/[0.05] rounded-xl p-1">
           {['7d', '30d', '90d'].map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                 period === p
-                  ? 'bg-white text-slate-800 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-white/[0.1] text-white'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               {p === '7d' ? '7d' : p === '30d' ? '30d' : '90d'}
@@ -125,31 +125,31 @@ export default function AnalyticsChart() {
 
       {/* Summary Stats */}
       <div className="grid grid-cols-3 gap-4 px-6 pt-5 pb-2">
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-violet-50/50">
-          <div className="w-9 h-9 rounded-lg bg-violet-500 flex items-center justify-center shadow-sm">
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-violet-500/15">
+          <div className="w-9 h-9 rounded-lg bg-violet-500 flex items-center justify-center">
             <Eye className="w-4 h-4 text-white" />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Espectadores</p>
-            <p className="text-lg font-bold text-slate-800">{totals.viewers.toLocaleString('pt-BR')}</p>
+            <p className="text-xs text-slate-400 font-medium">Espectadores</p>
+            <p className="text-lg font-bold text-white">{totals.viewers.toLocaleString('pt-BR')}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-50/50">
-          <div className="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center shadow-sm">
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-500/15">
+          <div className="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center">
             <ShoppingCart className="w-4 h-4 text-white" />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Pedidos</p>
-            <p className="text-lg font-bold text-slate-800">{totals.orders.toLocaleString('pt-BR')}</p>
+            <p className="text-xs text-slate-400 font-medium">Pedidos</p>
+            <p className="text-lg font-bold text-white">{totals.orders.toLocaleString('pt-BR')}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50/50">
-          <div className="w-9 h-9 rounded-lg bg-emerald-500 flex items-center justify-center shadow-sm">
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/15">
+          <div className="w-9 h-9 rounded-lg bg-emerald-500 flex items-center justify-center">
             <DollarSign className="w-4 h-4 text-white" />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium">Receita</p>
-            <p className="text-lg font-bold text-emerald-600">R$ {totals.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+            <p className="text-xs text-slate-400 font-medium">Receita</p>
+            <p className="text-lg font-bold text-emerald-400">R$ {totals.revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
           </div>
         </div>
       </div>
@@ -178,7 +178,7 @@ export default function AnalyticsChart() {
                     <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
                 <XAxis dataKey="date" stroke="#94a3b8" style={{ fontSize: '11px' }} tickLine={false} axisLine={false} />
                 <YAxis stroke="#94a3b8" style={{ fontSize: '11px' }} tickLine={false} axisLine={false} />
                 <Tooltip content={<CustomTooltip />} />
@@ -190,8 +190,8 @@ export default function AnalyticsChart() {
             </ResponsiveContainer>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-72 text-slate-400">
-            <TrendingUp className="w-12 h-12 text-slate-200 mb-3" />
+          <div className="flex flex-col items-center justify-center h-72 text-slate-500">
+            <TrendingUp className="w-12 h-12 text-slate-600 mb-3" />
             <p className="font-medium">Nenhum dado disponivel</p>
             <p className="text-sm">Finalize uma live para ver os dados aqui</p>
           </div>

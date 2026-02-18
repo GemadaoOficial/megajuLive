@@ -68,12 +68,12 @@ export default function LiveControls({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onPause}
-            className="group relative px-8 py-4 bg-gradient-to-br from-slate-100 to-slate-200 text-slate-700 font-semibold rounded-2xl flex items-center gap-3 shadow-lg border-2 border-slate-200 overflow-hidden"
+            className="group relative px-8 py-4 bg-white/[0.05] text-white font-semibold rounded-2xl flex items-center gap-3 shadow-lg border-2 border-white/[0.08] overflow-hidden"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-amber-100 to-yellow-100 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
-                <Pause className="w-5 h-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center group-hover:bg-amber-500/30 transition-colors">
+                <Pause className="w-5 h-5 text-amber-400" />
               </div>
               <span>Pausar</span>
             </div>

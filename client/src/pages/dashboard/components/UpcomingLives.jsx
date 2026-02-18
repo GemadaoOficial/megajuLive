@@ -52,7 +52,7 @@ export default function UpcomingLives() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
-      className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
+      className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -61,8 +61,8 @@ export default function UpcomingLives() {
             <Calendar className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-800">Próximas Lives</h2>
-            <p className="text-sm text-slate-500">Suas próximas transmissões</p>
+            <h2 className="text-xl font-bold text-white">Próximas Lives</h2>
+            <p className="text-sm text-slate-400">Suas próximas transmissões</p>
           </div>
         </div>
         <Link
@@ -89,7 +89,7 @@ export default function UpcomingLives() {
               transition={{ delay: 0.5 + index * 0.1 }}
               className="group"
             >
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-slate-50 to-slate-50/50 hover:from-violet-50 hover:to-violet-50/50 border border-slate-100 hover:border-violet-200 transition-all cursor-pointer">
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] hover:bg-violet-500/10 border border-white/[0.04] hover:border-violet-500/30 transition-all cursor-pointer">
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-md">
                     <Video className="w-5 h-5 text-white" />
@@ -97,18 +97,18 @@ export default function UpcomingLives() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-slate-800 group-hover:text-violet-600 transition-colors truncate">
+                  <p className="font-semibold text-white group-hover:text-violet-400 transition-colors truncate">
                     {live.title}
                   </p>
                   <div className="flex items-center gap-3 mt-1">
-                    <span className="text-sm text-slate-500 flex items-center gap-1">
+                    <span className="text-sm text-slate-400 flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5" />
                       {new Date(live.scheduledAt).toLocaleDateString('pt-BR', {
                         day: '2-digit',
                         month: 'short',
                       })}
                     </span>
-                    <span className="text-sm text-slate-500 flex items-center gap-1">
+                    <span className="text-sm text-slate-400 flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5" />
                       {new Date(live.scheduledAt).toLocaleTimeString('pt-BR', {
                         hour: '2-digit',
@@ -119,7 +119,7 @@ export default function UpcomingLives() {
                 </div>
 
                 <div className="flex-shrink-0">
-                  <span className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-100 text-blue-600">
+                  <span className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-500/20 text-blue-400">
                     {getTimeUntil(live.scheduledAt)}
                   </span>
                 </div>
@@ -129,10 +129,10 @@ export default function UpcomingLives() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <div className="w-16 h-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-3">
-            <Calendar className="w-8 h-8 text-slate-400" />
+          <div className="w-16 h-16 mx-auto rounded-full bg-white/[0.05] flex items-center justify-center mb-3">
+            <Calendar className="w-8 h-8 text-slate-500" />
           </div>
-          <p className="text-slate-500 mb-4">Nenhuma live agendada</p>
+          <p className="text-slate-400 mb-4">Nenhuma live agendada</p>
           <Link
             to="/live"
             className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-orange-500 text-white font-medium rounded-xl hover:opacity-90 transition-opacity text-sm"

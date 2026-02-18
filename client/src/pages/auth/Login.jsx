@@ -30,7 +30,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-[#050507] via-[#0a0a12] to-[#050507] flex">
       {/* Left Side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary via-orange-500 to-amber-500 p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)', backgroundSize: '24px 24px'}} />
@@ -90,12 +90,12 @@ export default function Login() {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-orange-500 mb-4 shadow-lg shadow-primary/30">
               <Flame className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-800">MegaJu</h1>
+            <h1 className="text-2xl font-bold text-white">MegaJu</h1>
           </div>
 
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-slate-800">Bem-vindo de volta!</h2>
-            <p className="text-slate-500 mt-2">Entre na sua conta para continuar</p>
+            <h2 className="text-3xl font-bold text-white">Bem-vindo de volta!</h2>
+            <p className="text-slate-400 mt-2">Entre na sua conta para continuar</p>
           </div>
 
           {/* Form */}
@@ -104,7 +104,7 @@ export default function Login() {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-center gap-2"
+                className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2"
               >
                 <div className="w-2 h-2 rounded-full bg-red-500" />
                 {error}
@@ -133,8 +133,8 @@ export default function Login() {
 
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
-                <span className="text-slate-600">Lembrar de mim</span>
+                <input type="checkbox" className="w-4 h-4 rounded border-white/[0.08] bg-white/[0.05] text-primary focus:ring-primary" />
+                <span className="text-slate-400">Lembrar de mim</span>
               </label>
               <a href="#" className="text-primary hover:text-orange-600 font-medium">
                 Esqueceu a senha?
@@ -153,13 +153,13 @@ export default function Login() {
 
           {/* Divider */}
           <div className="my-8 flex items-center gap-4">
-            <div className="flex-1 h-px bg-slate-200" />
-            <span className="text-slate-400 text-sm">ou</span>
-            <div className="flex-1 h-px bg-slate-200" />
+            <div className="flex-1 h-px bg-white/[0.08]" />
+            <span className="text-slate-500 text-sm">ou</span>
+            <div className="flex-1 h-px bg-white/[0.08]" />
           </div>
 
           {/* Register link */}
-          <p className="text-center text-slate-600">
+          <p className="text-center text-slate-400">
             Nao tem uma conta?{' '}
             <Link to="/register" className="text-primary hover:text-orange-600 font-semibold">
               Cadastre-se gratis
@@ -167,9 +167,9 @@ export default function Login() {
           </p>
 
           {/* Demo credentials */}
-          <div className="mt-8 p-4 rounded-xl bg-slate-100 border border-slate-200">
-            <p className="text-xs text-slate-600 font-medium mb-2">Credenciais de teste:</p>
-            <div className="space-y-1 text-xs text-slate-700">
+          <div className="mt-8 p-4 rounded-xl bg-white/[0.05] border border-white/[0.08]">
+            <p className="text-xs text-slate-400 font-medium mb-2">Credenciais de teste:</p>
+            <div className="space-y-1 text-xs text-slate-300">
               <p><span className="font-semibold">Admin:</span> admin@megaju.com / admin123</p>
               <p><span className="font-semibold">User:</span> user@megaju.com / user123</p>
             </div>

@@ -15,11 +15,18 @@ const TABS = [
   { id: 'products', label: 'Lista de Produtos', icon: Package },
 ]
 
+const STORE_FILTERS = [
+  { value: '',            label: 'Todas as Lojas' },
+  { value: 'MADA',        label: 'Mada'           },
+  { value: 'STAR_IMPORT', label: 'Star Import'    },
+]
+
 export default function Analytics() {
   const [activeTab, setActiveTab] = useState('overview')
   const [period, setPeriod] = useState('30d')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const [store, setStore] = useState('')
   const [summary, setSummary] = useState(null)
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -30,12 +37,12 @@ export default function Analytics() {
     if (activeTab === 'overview') {
       loadSummary()
     }
-  }, [period, startDate, endDate, activeTab])
+  }, [period, startDate, endDate, store, activeTab])
 
   const loadSummary = async () => {
     setLoading(true)
     try {
-      const params = { period }
+      const params = { period, ...(store && { store }) }
       if (period === 'custom') {
         params.startDate = startDate
         params.endDate = endDate
@@ -85,7 +92,7 @@ export default function Analytics() {
 
       {/* Tabs + Date Picker */}
       <div className="flex items-center justify-between flex-wrap gap-4">
-        <div className="flex gap-1 bg-white border border-slate-200 rounded-2xl p-1.5 shadow-sm">
+        <div className="flex gap-1 bg-white/[0.05] border border-white/[0.08] rounded-2xl p-1.5">
           {TABS.map((tab) => {
             const TabIcon = tab.icon
             const isActive = activeTab === tab.id
@@ -96,7 +103,7 @@ export default function Analytics() {
                 className={`relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                   isActive
                     ? 'bg-gradient-to-r from-primary to-orange-500 text-white shadow-md shadow-orange-200'
-                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                    : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
                 }`}
               >
                 <TabIcon className="w-4 h-4" />
@@ -116,6 +123,27 @@ export default function Analytics() {
         />
       </div>
 
+      {/* Store Filter */}
+      <div className="flex gap-2">
+        {STORE_FILTERS.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => setStore(opt.value)}
+            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all border ${
+              store === opt.value
+                ? opt.value === 'MADA'
+                  ? 'bg-orange-500 text-white border-orange-500 shadow-sm shadow-orange-200'
+                  : opt.value === 'STAR_IMPORT'
+                  ? 'bg-violet-600 text-white border-violet-600 shadow-sm shadow-violet-200'
+                  : 'bg-white/[0.15] text-white border-white/[0.15]'
+                : 'bg-white/[0.05] text-slate-400 border-white/[0.08] hover:border-white/[0.12] hover:text-white'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
       {/* Tab Content */}
       <AnimatePresence mode="wait">
         {activeTab === 'overview' && (
@@ -125,12 +153,12 @@ export default function Analytics() {
         )}
         {activeTab === 'lives' && (
           <motion.div key="lives" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
-            <LivesListTab key={livesListKey} period={period} startDate={startDate} endDate={endDate} onEdit={handleEditReport} />
+            <LivesListTab key={livesListKey} period={period} startDate={startDate} endDate={endDate} store={store} onEdit={handleEditReport} />
           </motion.div>
         )}
         {activeTab === 'products' && (
           <motion.div key="products" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
-            <ProductsListTab period={period} startDate={startDate} endDate={endDate} />
+            <ProductsListTab period={period} startDate={startDate} endDate={endDate} store={store} />
           </motion.div>
         )}
       </AnimatePresence>

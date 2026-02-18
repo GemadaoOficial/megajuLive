@@ -161,10 +161,10 @@ export default function LiveExecutor() {
               )}
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-slate-800">
+              <h1 className="text-3xl font-bold text-white">
                 {live ? live.title : 'Nova Live'}
               </h1>
-              <p className="text-slate-500">
+              <p className="text-slate-400">
                 {isRunning ? 'Transmissao ao vivo' : 'Prepare sua transmissao'}
               </p>
             </div>
@@ -204,44 +204,44 @@ export default function LiveExecutor() {
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center mb-4">
                     <Video className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-bold text-slate-800">Live Rapida</h3>
-                  <p className="text-sm text-slate-500">Comece agora mesmo</p>
+                  <h3 className="font-bold text-white">Live Rapida</h3>
+                  <p className="text-sm text-slate-400">Comece agora mesmo</p>
                 </div>
-                <ChevronRight className="w-6 h-6 text-slate-400 group-hover:text-primary transition-colors" />
+                <ChevronRight className="w-6 h-6 text-slate-500 group-hover:text-primary transition-colors" />
               </div>
             </motion.div>
 
             <motion.div
               whileHover={{ scale: 1.02, y: -2 }}
               onClick={() => navigate('/calendar')}
-              className="p-6 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-2xl border-2 border-violet-200 cursor-pointer group"
+              className="p-6 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-2xl border-2 border-violet-500/30 cursor-pointer group"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-4">
                     <Calendar className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-bold text-slate-800">Agendar Live</h3>
-                  <p className="text-sm text-slate-500">Planeje com antecedencia</p>
+                  <h3 className="font-bold text-white">Agendar Live</h3>
+                  <p className="text-sm text-slate-400">Planeje com antecedencia</p>
                 </div>
-                <ChevronRight className="w-6 h-6 text-slate-400 group-hover:text-violet-500 transition-colors" />
+                <ChevronRight className="w-6 h-6 text-slate-500 group-hover:text-violet-400 transition-colors" />
               </div>
             </motion.div>
 
             <motion.div
               whileHover={{ scale: 1.02, y: -2 }}
               onClick={() => setTitleModalOpen(true)}
-              className="p-6 bg-gradient-to-br from-amber-500/10 to-yellow-500/10 rounded-2xl border-2 border-amber-200 cursor-pointer group"
+              className="p-6 bg-gradient-to-br from-amber-500/10 to-yellow-500/10 rounded-2xl border-2 border-amber-500/30 cursor-pointer group"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center mb-4">
                     <Wand2 className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-bold text-slate-800">Assistente IA</h3>
-                  <p className="text-sm text-slate-500">Gere titulos criativos</p>
+                  <h3 className="font-bold text-white">Assistente IA</h3>
+                  <p className="text-sm text-slate-400">Gere titulos criativos</p>
                 </div>
-                <ChevronRight className="w-6 h-6 text-slate-400 group-hover:text-amber-500 transition-colors" />
+                <ChevronRight className="w-6 h-6 text-slate-500 group-hover:text-amber-400 transition-colors" />
               </div>
             </motion.div>
           </motion.div>

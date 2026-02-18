@@ -16,7 +16,7 @@ export default function AdminLayout() {
     const isActive = (path) => location.pathname === path;
 
     return (
-        <div className="flex h-screen bg-gray-100 font-sans">
+        <div className="flex h-screen bg-[#050507] font-sans">
             {/* Sidebar */}
             <aside className="w-64 bg-slate-900 text-white shadow-xl flex flex-col">
                 <div className="p-6 flex items-center justify-center border-b border-slate-800">
@@ -93,9 +93,9 @@ export default function AdminLayout() {
 
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto">
-                <header className="bg-white shadow-sm p-4 flex justify-between items-center md:hidden">
+                <header className="bg-white/[0.05] p-4 flex justify-between items-center md:hidden">
                     {/* Mobile header placeholder */}
-                    <span className="font-bold text-gray-800">Admin Panel</span>
+                    <span className="font-bold text-white">Admin Panel</span>
                 </header>
                 <div className="p-8">
                     <Outlet />

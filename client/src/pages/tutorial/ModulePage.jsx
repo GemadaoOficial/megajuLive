@@ -46,7 +46,7 @@ export default function ModulePage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-screen bg-gray-50">
+            <div className="flex items-center justify-center h-screen">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
@@ -58,18 +58,18 @@ export default function ModulePage() {
         <div className="max-w-4xl mx-auto space-y-6">
             <button
                 onClick={() => navigate('/tutorials')}
-                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+                className="flex items-center text-slate-400 hover:text-white transition-colors"
             >
                 <ArrowLeft size={20} className="mr-2" />
                 Voltar para Tutoriais
             </button>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white/[0.05] rounded-xl border border-white/[0.08] overflow-hidden">
                 <div className="p-8">
                     <div className="flex items-center justify-between mb-6">
-                        <h1 className="text-3xl font-bold text-gray-900">{module.title}</h1>
+                        <h1 className="text-3xl font-bold text-white">{module.title}</h1>
                         {module.completed && (
-                            <span className="flex items-center text-green-600 bg-green-50 px-3 py-1 rounded-full text-sm font-medium">
+                            <span className="flex items-center text-emerald-400 bg-emerald-500/15 px-3 py-1 rounded-full text-sm font-medium">
                                 <CheckCircle size={16} className="mr-1" />
                                 Concluído
                             </span>
@@ -82,16 +82,16 @@ export default function ModulePage() {
                                 h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mb-4 mt-8" {...props} />,
                                 h2: ({ node, ...props }) => <h2 className="text-xl font-bold mb-3 mt-6" {...props} />,
                                 h3: ({ node, ...props }) => <h3 className="text-lg font-bold mb-2 mt-4" {...props} />,
-                                p: ({ node, ...props }) => <p className="mb-4 text-gray-700 leading-relaxed" {...props} />,
+                                p: ({ node, ...props }) => <p className="mb-4 text-slate-300 leading-relaxed" {...props} />,
                                 ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-4 space-y-2" {...props} />,
-                                li: ({ node, ...props }) => <li className="text-gray-700" {...props} />,
+                                li: ({ node, ...props }) => <li className="text-slate-300" {...props} />,
                                 code: ({ node, inline, className, children, ...props }) => {
                                     return !inline ? (
                                         <div className="bg-gray-800 text-white p-4 rounded-lg my-4 overflow-x-auto">
                                             <code className={className} {...props}>{children}</code>
                                         </div>
                                     ) : (
-                                        <code className="bg-gray-100 px-1 py-0.5 rounded text-sm font-mono text-red-500" {...props}>
+                                        <code className="bg-white/[0.08] px-1 py-0.5 rounded text-sm font-mono text-red-400" {...props}>
                                             {children}
                                         </code>
                                     )
@@ -103,11 +103,11 @@ export default function ModulePage() {
                     </div>
                 </div>
 
-                <div className="bg-gray-50 px-8 py-6 border-t flex justify-end">
+                <div className="bg-white/[0.03] px-8 py-6 border-t border-white/[0.06] flex justify-end">
                     {module.completed ? (
                         <button
                             disabled
-                            className="flex items-center px-6 py-3 bg-green-100 text-green-700 rounded-lg font-medium cursor-default"
+                            className="flex items-center px-6 py-3 bg-emerald-500/15 text-emerald-400 rounded-lg font-medium cursor-default"
                         >
                             <CheckCircle size={20} className="mr-2" />
                             Módulo Concluído
@@ -126,7 +126,7 @@ export default function ModulePage() {
                     {module.completed && module.nextModuleSlug && (
                         <button
                             onClick={() => navigate(`/tutorials/${module.nextModuleSlug}`)}
-                            className="flex items-center px-6 py-3 ml-4 bg-orange-100 text-orange-700 rounded-lg font-medium hover:bg-orange-200 transition-colors"
+                            className="flex items-center px-6 py-3 ml-4 bg-orange-500/15 text-orange-400 rounded-lg font-medium hover:bg-orange-500/25 transition-colors"
                         >
                             Próximo Módulo
                             <ArrowLeft size={20} className="ml-2 rotate-180" />

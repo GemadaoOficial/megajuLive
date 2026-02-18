@@ -250,7 +250,7 @@ export default function Tutorials() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
+          className="lg:col-span-2 bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6"
         >
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
@@ -270,12 +270,12 @@ export default function Tutorials() {
               </motion.div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-bold text-slate-800">
+                  <h2 className="text-xl font-bold text-white">
                     {isTrainingComplete ? 'Concluido!' : `Nivel ${currentLevel.level}`}
                   </h2>
                   <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
                     isTrainingComplete
-                      ? 'bg-emerald-100 text-emerald-700'
+                      ? 'bg-emerald-500/15 text-emerald-400'
                       : 'bg-primary/10 text-primary'
                   }`}>
                     {isTrainingComplete ? 'LIBERADO' : currentLevel.title}
@@ -305,7 +305,7 @@ export default function Tutorials() {
 
           {/* XP-like Progress Bar */}
           <div className="relative">
-            <div className="w-full h-4 bg-slate-100 rounded-full overflow-hidden">
+            <div className="w-full h-4 bg-white/[0.08] rounded-full overflow-hidden">
               <motion.div
                 className={`h-full rounded-full relative ${
                   isTrainingComplete
@@ -329,7 +329,7 @@ export default function Tutorials() {
                 <div
                   key={mark}
                   className={`w-0.5 h-full ${
-                    progressPercent >= mark ? 'bg-white/50' : 'bg-slate-300'
+                    progressPercent >= mark ? 'bg-white/50' : 'bg-white/[0.08]'
                   }`}
                 />
               ))}
@@ -337,24 +337,24 @@ export default function Tutorials() {
           </div>
 
           {!isTrainingComplete ? (
-            <div className="mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200">
+            <div className="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
               <div className="flex items-center gap-3">
-                <Lock className="w-5 h-5 text-amber-600" />
+                <Lock className="w-5 h-5 text-amber-400" />
                 <div>
-                  <p className="font-semibold text-amber-800">Acesso a Lives Bloqueado</p>
-                  <p className="text-sm text-amber-700">
+                  <p className="font-semibold text-amber-300">Acesso a Lives Bloqueado</p>
+                  <p className="text-sm text-amber-400">
                     Faltam <span className="font-bold">{remainingModules} modulos</span> para desbloquear o acesso as Lives.
                   </p>
                 </div>
               </div>
             </div>
           ) : (
-            <div className="mt-4 p-4 rounded-xl bg-emerald-50 border border-emerald-200">
+            <div className="mt-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
               <div className="flex items-center gap-3">
-                <Unlock className="w-5 h-5 text-emerald-600" />
+                <Unlock className="w-5 h-5 text-emerald-400" />
                 <div className="flex-1">
-                  <p className="font-semibold text-emerald-800">Acesso Liberado!</p>
-                  <p className="text-sm text-emerald-700">
+                  <p className="font-semibold text-emerald-300">Acesso Liberado!</p>
+                  <p className="text-sm text-emerald-400">
                     Voce pode acessar a secao de Lives agora.
                   </p>
                 </div>
@@ -435,11 +435,11 @@ export default function Tutorials() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
+        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
       >
         <button
           onClick={() => toggleSection('videos')}
-          className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors"
+          className="w-full flex items-center justify-between p-6 hover:bg-white/[0.03] transition-colors"
         >
           <div className="flex items-center gap-4">
             <motion.div
@@ -449,7 +449,7 @@ export default function Tutorials() {
               <Video className="w-7 h-7 text-white" />
             </motion.div>
             <div className="text-left">
-              <h2 className="text-xl font-bold text-slate-800">Trilha de Aprendizado</h2>
+              <h2 className="text-xl font-bold text-white">Trilha de Aprendizado</h2>
               <p className="text-slate-500">10 modulos • {trainingInfo.totalVideoDuration} de conteudo</p>
             </div>
           </div>
@@ -496,30 +496,30 @@ export default function Tutorials() {
                             whileTap={!isLocked ? { scale: 0.99 } : {}}
                             className={`ml-16 p-5 rounded-2xl border-2 transition-all ${
                               isLocked
-                                ? 'bg-slate-50 border-slate-200 opacity-60 cursor-not-allowed'
+                                ? 'bg-white/[0.03] border-white/[0.08] opacity-60 cursor-not-allowed'
                                 : completed
-                                  ? 'bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-300 cursor-pointer hover:shadow-lg hover:shadow-emerald-100'
+                                  ? 'bg-emerald-500/10 border-emerald-500/30 cursor-pointer hover:shadow-lg hover:shadow-emerald-500/10'
                                   : isNext
                                     ? 'bg-gradient-to-r from-primary/5 to-orange-500/5 border-primary cursor-pointer hover:shadow-lg hover:shadow-primary/20'
-                                    : 'bg-white border-slate-200 cursor-pointer hover:border-slate-300 hover:shadow-md'
+                                    : 'bg-white/[0.05] border-white/[0.08] cursor-pointer hover:border-white/[0.15] hover:shadow-md'
                             }`}
                           >
                             {/* Node indicator */}
                             <div className={`absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-4 flex items-center justify-center z-10 ${
                               completed
-                                ? 'bg-emerald-500 border-emerald-200'
+                                ? 'bg-emerald-500 border-emerald-500/30'
                                 : isNext
                                   ? 'bg-primary border-primary/30 animate-pulse'
                                   : isLocked
-                                    ? 'bg-slate-300 border-slate-200'
-                                    : 'bg-white border-slate-300'
+                                    ? 'bg-white/[0.08] border-white/[0.08]'
+                                    : 'bg-white/[0.05] border-white/[0.1]'
                             }`}>
                               {completed ? (
                                 <CheckCircle className="w-5 h-5 text-white" />
                               ) : isLocked ? (
                                 <Lock className="w-3 h-3 text-slate-500" />
                               ) : (
-                                <span className="text-xs font-bold text-slate-600">{video.moduleNumber}</span>
+                                <span className="text-xs font-bold text-slate-300">{video.moduleNumber}</span>
                               )}
                             </div>
 
@@ -532,10 +532,10 @@ export default function Tutorials() {
                                 <div className="flex items-center gap-2 mb-1">
                                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                                     completed
-                                      ? 'bg-emerald-100 text-emerald-700'
+                                      ? 'bg-emerald-500/15 text-emerald-400'
                                       : isNext
                                         ? 'bg-primary/10 text-primary'
-                                        : 'bg-slate-100 text-slate-500'
+                                        : 'bg-white/[0.05] text-slate-400'
                                   }`}>
                                     MODULO {video.moduleNumber}
                                   </span>
@@ -557,7 +557,7 @@ export default function Tutorials() {
                                   )}
                                 </div>
                                 <h3 className={`font-bold text-lg ${
-                                  completed ? 'text-emerald-800' : 'text-slate-800'
+                                  completed ? 'text-emerald-300' : 'text-white'
                                 }`}>
                                   {video.title}
                                 </h3>
@@ -574,8 +574,8 @@ export default function Tutorials() {
                                     whileHover={{ x: 5 }}
                                     className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                                       completed
-                                        ? 'bg-emerald-100'
-                                        : 'bg-slate-100 group-hover:bg-primary/10'
+                                        ? 'bg-emerald-500/15'
+                                        : 'bg-white/[0.05] group-hover:bg-primary/10'
                                     }`}
                                   >
                                     {completed ? (
@@ -604,11 +604,11 @@ export default function Tutorials() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
+        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
       >
         <button
           onClick={() => toggleSection('materials')}
-          className="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors"
+          className="w-full flex items-center justify-between p-6 hover:bg-white/[0.03] transition-colors"
         >
           <div className="flex items-center gap-4">
             <motion.div
@@ -618,7 +618,7 @@ export default function Tutorials() {
               <FileText className="w-7 h-7 text-white" />
             </motion.div>
             <div className="text-left">
-              <h2 className="text-xl font-bold text-slate-800">Materiais de Apoio</h2>
+              <h2 className="text-xl font-bold text-white">Materiais de Apoio</h2>
               <p className="text-slate-500">{supportMaterials.length} documentos • PDFs e Docs</p>
             </div>
           </div>
@@ -652,7 +652,7 @@ export default function Tutorials() {
                       whileHover={{ scale: 1.02, y: -5 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setSelectedMaterial(material)}
-                      className="relative group p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-white border-2 border-slate-200 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-100/50 transition-all cursor-pointer overflow-hidden"
+                      className="relative group p-5 rounded-2xl bg-white/[0.05] border-2 border-white/[0.08] hover:border-blue-500/30 hover:shadow-xl hover:shadow-blue-500/10 transition-all cursor-pointer overflow-hidden"
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-cyan-500/0 group-hover:from-blue-500/5 group-hover:to-cyan-500/5 transition-all" />
 
@@ -660,12 +660,12 @@ export default function Tutorials() {
                         <div className="flex items-start gap-4">
                           <motion.div
                             whileHover={{ rotate: 10, scale: 1.1 }}
-                            className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-cyan-100 group-hover:from-blue-500 group-hover:to-cyan-500 flex items-center justify-center transition-all duration-300"
+                            className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 group-hover:from-blue-500 group-hover:to-cyan-500 flex items-center justify-center transition-all duration-300"
                           >
-                            <Icon className="w-6 h-6 text-blue-600 group-hover:text-white transition-colors" />
+                            <Icon className="w-6 h-6 text-blue-400 group-hover:text-white transition-colors" />
                           </motion.div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-slate-800 group-hover:text-blue-700 transition-colors">
+                            <h3 className="font-bold text-white group-hover:text-blue-300 transition-colors">
                               {material.title}
                             </h3>
                             <p className="text-sm text-slate-500 line-clamp-2 mt-1">
@@ -674,11 +674,11 @@ export default function Tutorials() {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
+                        <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.06]">
                           <span className={`text-xs px-3 py-1 rounded-full font-bold ${
                             material.type === 'pdf'
-                              ? 'bg-red-100 text-red-600'
-                              : 'bg-blue-100 text-blue-600'
+                              ? 'bg-red-500/15 text-red-400'
+                              : 'bg-blue-500/15 text-blue-400'
                           }`}>
                             {material.type.toUpperCase()}
                           </span>
@@ -820,22 +820,22 @@ export default function Tutorials() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="aspect-video rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50 flex flex-col items-center justify-center border-2 border-dashed border-slate-200"
+                className="aspect-video rounded-2xl bg-gradient-to-br from-white/[0.05] to-white/[0.02] flex flex-col items-center justify-center border-2 border-dashed border-white/[0.08]"
               >
                 <motion.div
                   animate={{ scale: [1, 1.1, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center mb-4"
+                  className="w-20 h-20 rounded-full bg-white/[0.08] flex items-center justify-center mb-4"
                 >
                   <Play className="w-10 h-10 text-slate-400" />
                 </motion.div>
-                <p className="text-slate-600 font-semibold text-lg">Video em breve</p>
+                <p className="text-slate-300 font-semibold text-lg">Video em breve</p>
                 <p className="text-sm text-slate-400">O conteudo estara disponivel em breve</p>
               </motion.div>
             )}
 
             <div>
-              <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <h4 className="font-bold text-white mb-4 flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-primary" />
                 Topicos Abordados
               </h4>
@@ -846,10 +846,10 @@ export default function Tutorials() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] transition-colors"
                   >
                     <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                    <span className="text-slate-700">{topic}</span>
+                    <span className="text-slate-300">{topic}</span>
                   </motion.div>
                 ))}
               </div>
@@ -857,33 +857,33 @@ export default function Tutorials() {
 
             {selectedVideo.content && (
               <div className="max-h-96 overflow-y-auto">
-                <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <h4 className="font-bold text-white mb-4 flex items-center gap-2">
                   <FileText className="w-5 h-5 text-primary" />
                   Conteudo do Modulo
                 </h4>
-                <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100">
+                <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
                   <div className="prose prose-sm max-w-none">
                     {selectedVideo.content.split('\n').map((line, i) => {
                       if (line.startsWith('# ')) {
-                        return <h2 key={i} className="text-xl font-bold text-slate-800 mt-6 mb-3 first:mt-0">{line.replace('# ', '')}</h2>
+                        return <h2 key={i} className="text-xl font-bold text-white mt-6 mb-3 first:mt-0">{line.replace('# ', '')}</h2>
                       }
                       if (line.startsWith('## ')) {
-                        return <h3 key={i} className="text-lg font-semibold text-slate-700 mt-4 mb-2">{line.replace('## ', '')}</h3>
+                        return <h3 key={i} className="text-lg font-semibold text-slate-200 mt-4 mb-2">{line.replace('## ', '')}</h3>
                       }
                       if (line.startsWith('### ')) {
-                        return <h4 key={i} className="text-base font-semibold text-slate-600 mt-3 mb-2">{line.replace('### ', '')}</h4>
+                        return <h4 key={i} className="text-base font-semibold text-slate-300 mt-3 mb-2">{line.replace('### ', '')}</h4>
                       }
                       if (line.startsWith('- ')) {
-                        return <li key={i} className="text-slate-600 ml-4 mb-1">{line.replace('- ', '')}</li>
+                        return <li key={i} className="text-slate-400 ml-4 mb-1">{line.replace('- ', '')}</li>
                       }
                       if (line.startsWith('- [ ]')) {
-                        return <li key={i} className="text-slate-600 ml-4 list-none flex items-center gap-2 mb-1">
-                          <span className="w-4 h-4 border-2 border-slate-300 rounded" />
+                        return <li key={i} className="text-slate-400 ml-4 list-none flex items-center gap-2 mb-1">
+                          <span className="w-4 h-4 border-2 border-white/[0.15] rounded" />
                           {line.replace('- [ ] ', '')}
                         </li>
                       }
                       if (line.trim() === '') return <br key={i} />
-                      return <p key={i} className="text-slate-600 mb-2">{line}</p>
+                      return <p key={i} className="text-slate-400 mb-2">{line}</p>
                     })}
                   </div>
                 </div>
@@ -905,14 +905,14 @@ export default function Tutorials() {
                   Marcar como Concluido
                 </motion.button>
               ) : (
-                <div className="flex-1 px-6 py-4 bg-emerald-100 text-emerald-700 font-bold rounded-xl flex items-center justify-center gap-2">
+                <div className="flex-1 px-6 py-4 bg-emerald-500/15 text-emerald-400 font-bold rounded-xl flex items-center justify-center gap-2">
                   <CheckCircle className="w-5 h-5" />
                   Modulo Concluido
                 </div>
               )}
               <button
                 onClick={() => setSelectedVideo(null)}
-                className="px-6 py-4 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors"
+                className="px-6 py-4 bg-white/[0.05] text-slate-300 font-semibold rounded-xl hover:bg-white/[0.08] transition-colors"
               >
                 Fechar
               </button>
@@ -930,25 +930,25 @@ export default function Tutorials() {
       >
         {selectedMaterial && (
           <div className="space-y-6">
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-100">
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                 {selectedMaterial.icon && <selectedMaterial.icon className="w-6 h-6 text-white" />}
               </div>
               <div>
-                <h3 className="font-bold text-slate-800">{selectedMaterial.title}</h3>
+                <h3 className="font-bold text-white">{selectedMaterial.title}</h3>
                 <p className="text-sm text-slate-500">{selectedMaterial.description}</p>
               </div>
               <span className={`ml-auto px-3 py-1 rounded-full font-bold text-sm ${
                 selectedMaterial.type === 'pdf'
-                  ? 'bg-red-100 text-red-600'
-                  : 'bg-blue-100 text-blue-600'
+                  ? 'bg-red-500/15 text-red-400'
+                  : 'bg-blue-500/15 text-blue-400'
               }`}>
                 {selectedMaterial.type.toUpperCase()}
               </span>
             </div>
 
             <div className="max-h-[60vh] overflow-y-auto">
-              <div className="p-5 rounded-2xl bg-slate-50 border border-slate-100 font-mono text-sm whitespace-pre-wrap text-slate-700">
+              <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] font-mono text-sm whitespace-pre-wrap text-slate-300">
                 {selectedMaterial.content}
               </div>
             </div>
@@ -964,7 +964,7 @@ export default function Tutorials() {
               </motion.button>
               <button
                 onClick={() => setSelectedMaterial(null)}
-                className="px-6 py-4 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors"
+                className="px-6 py-4 bg-white/[0.05] text-slate-300 font-semibold rounded-xl hover:bg-white/[0.08] transition-colors"
               >
                 Fechar
               </button>

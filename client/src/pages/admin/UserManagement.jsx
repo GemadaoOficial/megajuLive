@@ -120,8 +120,8 @@ export default function UserManagement() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800">Gestao de Usuarios</h1>
-          <p className="text-slate-500 mt-1">Gerencie os usuarios da plataforma</p>
+          <h1 className="text-3xl font-bold text-white">Gestao de Usuarios</h1>
+          <p className="text-slate-400 mt-1">Gerencie os usuarios da plataforma</p>
         </div>
         <Button onClick={() => handleOpenModal()}>
           <Plus className="w-5 h-5" />
@@ -139,28 +139,28 @@ export default function UserManagement() {
               placeholder="Buscar usuarios..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4 shadow-sm">
+        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4 flex items-center gap-4">
           <div className="p-3 rounded-xl bg-primary/10">
             <Users className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="text-2xl font-bold text-slate-800">{users.length}</p>
-            <p className="text-xs text-slate-500">Total de usuarios</p>
+            <p className="text-2xl font-bold text-white">{users.length}</p>
+            <p className="text-xs text-slate-400">Total de usuarios</p>
           </div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-4 shadow-sm">
-          <div className="p-3 rounded-xl bg-emerald-100">
-            <Shield className="w-5 h-5 text-emerald-600" />
+        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4 flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-emerald-500/100/100/20">
+            <Shield className="w-5 h-5 text-emerald-400" />
           </div>
           <div>
-            <p className="text-2xl font-bold text-slate-800">
+            <p className="text-2xl font-bold text-white">
               {users.filter((u) => u.role === 'ADMIN').length}
             </p>
-            <p className="text-xs text-slate-500">Administradores</p>
+            <p className="text-xs text-slate-400">Administradores</p>
           </div>
         </div>
       </div>
@@ -169,7 +169,7 @@ export default function UserManagement() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm"
+        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
       >
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -177,19 +177,19 @@ export default function UserManagement() {
           </div>
         ) : (
           <table className="w-full">
-            <thead className="bg-slate-50">
+            <thead className="bg-white/[0.03]">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Usuario</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Email</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Funcao</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Treinamento</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-600">Criado em</th>
-                <th className="px-6 py-4 text-right text-sm font-semibold text-slate-600">Acoes</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Usuario</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Email</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Funcao</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Treinamento</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Criado em</th>
+                <th className="px-6 py-4 text-right text-sm font-semibold text-slate-300">Acoes</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-white/[0.06]">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-slate-50 transition-colors">
+                <tr key={user.id} className="hover:bg-white/[0.03] transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center">
@@ -197,16 +197,16 @@ export default function UserManagement() {
                           {user.name.charAt(0).toUpperCase()}
                         </span>
                       </div>
-                      <span className="font-medium text-slate-800">{user.name}</span>
+                      <span className="font-medium text-white">{user.name}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-slate-600">{user.email}</td>
+                  <td className="px-6 py-4 text-slate-300">{user.email}</td>
                   <td className="px-6 py-4">
                     <span
                       className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                         user.role === 'ADMIN'
                           ? 'bg-primary/10 text-primary'
-                          : 'bg-emerald-100 text-emerald-600'
+                          : 'bg-emerald-500/100/100/20 text-emerald-400'
                       }`}
                     >
                       {user.role === 'ADMIN' ? 'Admin' : 'Colaborador'}
@@ -214,14 +214,14 @@ export default function UserManagement() {
                   </td>
                   <td className="px-6 py-4">
                     {user.role === 'ADMIN' ? (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-600">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/100/100/20 text-amber-400">
                         <Shield className="w-3 h-3" />
                         Admin
                       </span>
                     ) : hasUserSkipPermission(user.id) ? (
                       <button
                         onClick={() => handleToggleSkipTraining(user.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-600 hover:bg-emerald-200 transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/100/100/20 text-emerald-400 hover:bg-emerald-200 transition-colors"
                         title="Clique para revogar permissao"
                       >
                         <CheckCircle className="w-3.5 h-3.5" />
@@ -230,7 +230,7 @@ export default function UserManagement() {
                     ) : (
                       <button
                         onClick={() => handleToggleSkipTraining(user.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-violet-100 hover:text-violet-600 transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white/[0.05] text-slate-300 hover:bg-violet-500/100/20 hover:text-violet-400 transition-colors"
                         title="Clique para liberar sem treinamento"
                       >
                         <SkipForward className="w-3.5 h-3.5" />
@@ -238,18 +238,18 @@ export default function UserManagement() {
                       </button>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-slate-600">{new Date(user.createdAt).toLocaleDateString('pt-BR')}</td>
+                  <td className="px-6 py-4 text-slate-300">{new Date(user.createdAt).toLocaleDateString('pt-BR')}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleOpenModal(user)}
-                        className="p-2 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-colors"
+                        className="p-2 rounded-lg hover:bg-white/[0.05] text-slate-400 hover:text-slate-200 transition-colors"
                       >
                         <Edit className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDelete(user.id)}
-                        className="p-2 rounded-lg hover:bg-red-100 text-slate-500 hover:text-red-500 transition-colors"
+                        className="p-2 rounded-lg hover:bg-red-500/100/100/100/100/20 text-slate-400 hover:text-red-500 transition-colors"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
@@ -263,10 +263,10 @@ export default function UserManagement() {
 
         {!loading && filteredUsers.length === 0 && (
           <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-white/[0.05] flex items-center justify-center mb-4">
               <Users className="w-8 h-8 text-slate-400" />
             </div>
-            <p className="text-slate-500">Nenhum usuario encontrado</p>
+            <p className="text-slate-400">Nenhum usuario encontrado</p>
           </div>
         )}
       </motion.div>
@@ -307,11 +307,11 @@ export default function UserManagement() {
           />
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-700">Funcao</label>
+            <label className="block text-sm font-medium text-slate-200">Funcao</label>
             <select
               value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             >
               <option value="COLABORADOR">Colaborador</option>
               <option value="ADMIN">Administrador</option>

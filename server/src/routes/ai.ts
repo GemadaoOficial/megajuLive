@@ -9,6 +9,21 @@ import '../types/index.js'
 
 const router = Router()
 
+// ─── OpenAI singleton (reuse HTTP/2 connection + explicit timeout) ───────────
+let _openai: OpenAI | null = null
+function getOpenAI(): OpenAI {
+  const key = getConfig('OPENAI_API_KEY')
+  if (!_openai || (_openai as any)._apiKey !== key) {
+    _openai = new OpenAI({
+      apiKey: key,
+      timeout: 60_000,   // 60s max per request (fail fast instead of hanging)
+      maxRetries: 1,      // 1 retry instead of default 2 (saves time on failures)
+    })
+    ;(_openai as any)._apiKey = key // track key for hot-reload detection
+  }
+  return _openai
+}
+
 // Test endpoint (no auth required) to diagnose OpenAI connection
 router.get('/test', async (req: Request, res: Response): Promise<void> => {
   try {
@@ -18,10 +33,11 @@ router.get('/test', async (req: Request, res: Response): Promise<void> => {
       return
     }
 
-    const openai = new OpenAI({ apiKey: key })
+    const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
       model: 'gpt-5-nano',
       messages: [{ role: 'user', content: 'Diga apenas: OK' }],
+      max_tokens: 10,
     })
 
     res.json({
@@ -86,21 +102,23 @@ router.post('/suggest-title', async (req: Request, res: Response): Promise<void>
       return
     }
 
-    const openai = new OpenAI({ apiKey: getConfig('OPENAI_API_KEY') })
+    const openai = getOpenAI()
 
     const userPrompt = prompt
-      ? `O usuario quer uma live sobre: "${prompt}". Gere 5 titulos atrativos para essa live na Shopee. Os titulos devem ser curtos (max 60 caracteres), impactantes, usar emojis quando apropriado, e respeitar os termos da Shopee (sem palavras proibidas como "gratis total", "garantido", enganosas). Retorne apenas os titulos, um por linha, sem numeracao.`
-      : `Gere 5 titulos atrativos para uma live de vendas na Shopee na categoria "${category || 'Geral'}" e nicho "${niche || 'E-commerce'}". Os titulos devem ser curtos (max 60 caracteres), impactantes e chamar atencao. Retorne apenas os titulos, um por linha, sem numeracao.`
+      ? `Live sobre: "${prompt}". Gere 5 titulos (max 60 chars cada), um por linha, sem numeracao.`
+      : `Live na categoria "${category || 'Geral'}", nicho "${niche || 'E-commerce'}". Gere 5 titulos (max 60 chars cada), um por linha, sem numeracao.`
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-5-nano',
       messages: [
         {
           role: 'system',
-          content: 'Voce e um especialista em marketing para lives de vendas na Shopee Brasil. Gere titulos atrativos, clicaveis e dentro dos termos de uso da Shopee. Nunca use promessas enganosas. Foque em urgencia, beneficios reais e emocao. Use emojis com moderacao.',
+          content: 'Especialista em marketing Shopee Brasil. Gere titulos atrativos, curtos, com emojis moderados. Sem promessas enganosas. Foque em urgencia e beneficios reais.',
         },
         { role: 'user', content: userPrompt },
       ],
+      max_tokens: 500,
+      temperature: 0.7,
     })
 
     const titles = completion.choices[0].message.content
@@ -142,21 +160,23 @@ router.post('/suggest-description', async (req: Request, res: Response): Promise
       return
     }
 
-    const openai = new OpenAI({ apiKey: getConfig('OPENAI_API_KEY') })
+    const openai = getOpenAI()
 
     const userPrompt = prompt
-      ? `Crie 3 descricoes para uma live da Shopee sobre: "${prompt}"${title ? `. Titulo da live: "${title}"` : ''}. Cada descricao deve ter NO MAXIMO 250 caracteres, ser persuasiva, usar emojis com moderacao, e respeitar os termos da Shopee (sem promessas enganosas). Retorne cada descricao em uma linha separada, sem numeracao.`
-      : `Crie 3 descricoes para uma live de vendas da Shopee${title ? ` com o titulo "${title}"` : ''}. Cada descricao deve ter NO MAXIMO 250 caracteres, ser persuasiva e engajante. Retorne cada descricao em uma linha separada, sem numeracao.`
+      ? `Live sobre: "${prompt}"${title ? `. Titulo: "${title}"` : ''}. Crie 3 descricoes (max 250 chars cada), uma por linha, sem numeracao.`
+      : `Live Shopee${title ? ` "${title}"` : ''}. Crie 3 descricoes (max 250 chars cada), uma por linha, sem numeracao.`
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-5-nano',
       messages: [
         {
           role: 'system',
-          content: 'Voce e um copywriter especialista em Shopee Lives no Brasil. Crie descricoes curtas (max 250 caracteres cada), persuasivas e dentro dos termos da Shopee. Use emojis com moderacao. Foque em criar urgencia e destacar beneficios reais. Nunca use promessas falsas ou enganosas.',
+          content: 'Copywriter Shopee Brasil. Descricoes curtas (max 250 chars), persuasivas, com emojis moderados. Sem promessas falsas. Foque em urgencia e beneficios reais.',
         },
         { role: 'user', content: userPrompt },
       ],
+      max_tokens: 500,
+      temperature: 0.7,
     })
 
     const descriptions = completion.choices[0].message.content
@@ -205,7 +225,7 @@ router.post(
         return
       }
 
-      const openai = new OpenAI({ apiKey: getConfig('OPENAI_API_KEY') })
+      const openai = getOpenAI()
 
       const result: any = { stats: {}, products: [], traffic: {} }
 
@@ -312,7 +332,7 @@ router.post(
         return
       }
 
-      const openai = new OpenAI({ apiKey: getConfig('OPENAI_API_KEY') })
+      const openai = getOpenAI()
       const result = await extractFromImages(openai, files, STATS_PROMPT)
       files.forEach(f => fs.unlink(f.path, () => {}))
       res.json(result)
@@ -332,13 +352,14 @@ function cleanupFiles(files: { [fieldname: string]: Express.Multer.File[] }) {
 }
 
 async function extractFromImages(openai: OpenAI, files: Express.Multer.File[], systemPrompt: string) {
-  const imageContents = files.map(file => {
-    const base64 = fs.readFileSync(file.path).toString('base64')
+  // Async file I/O (non-blocking) + detail: 'high' (needed for accurate text/number extraction from screenshots)
+  const imageContents = await Promise.all(files.map(async (file) => {
+    const buffer = await fs.promises.readFile(file.path)
     return {
       type: 'image_url' as const,
-      image_url: { url: `data:${file.mimetype || 'image/png'};base64,${base64}`, detail: 'high' as const },
+      image_url: { url: `data:${file.mimetype || 'image/png'};base64,${buffer.toString('base64')}`, detail: 'high' as const },
     }
-  })
+  }))
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-5-nano',
@@ -347,11 +368,13 @@ async function extractFromImages(openai: OpenAI, files: Express.Multer.File[], s
       {
         role: 'user',
         content: [
-          { type: 'text', text: 'Analise as imagens e extraia todos os dados visíveis. Retorne APENAS um JSON válido, sem markdown, sem explicação.' },
+          { type: 'text', text: 'Extraia os dados das imagens. Retorne APENAS JSON válido.' },
           ...imageContents,
         ],
       },
     ],
+    max_tokens: 2000,
+    temperature: 0.1,
   })
 
   const text = completion.choices[0].message.content || '{}'
@@ -384,115 +407,26 @@ function getMockExtractedData() {
   }
 }
 
-const STATS_PROMPT = `Você é um especialista em extrair dados de relatórios de lives da Shopee Brasil. Analise as imagens e extraia TODOS os valores numéricos visíveis.
+const STATS_PROMPT = `Extraia dados do relatório Shopee Live Brasil. Retorne JSON com campos abaixo (0 se ausente, "" se string ausente).
 
-Mapeamento dos campos da Shopee para o JSON:
-METADADOS (cabeçalho do relatório - geralmente aparece no topo da página):
-- Nome/título da live (texto grande no topo, ex: "Lançamento POSITIVO") → liveTitle (string, copie o texto exato)
-- "Horário de início" (formato DD/MM/YYYY HH:MM) → startDate (converter para formato YYYY-MM-DD, ex: "02/02/2026 13:06" → "2026-02-02") e startTime (formato HH:MM, ex: "02/02/2026 13:06" → "13:06")
-- "Duração" (formato HH:MM:SS no cabeçalho) → liveDuration (converter para segundos, ex: "01:14:40" → 4480)
+Campos Shopee → JSON:
+liveTitle: título da live | startDate: "Horário de início" DD/MM/YYYY→YYYY-MM-DD | startTime: HH:MM | liveDuration: "Duração" HH:MM:SS→segundos
+totalRevenue: "Vendas" R$ | totalOrders: "Pedidos" | totalItemsSold: "Itens vendidos" | avgOrderValue: "Vendas por pedido" R$ | avgRevenuePerBuyer: "Vendas por Comprador" R$
+totalViewers: "Espectadores" | engagedViewers: "Visualizadores engajados" | totalViews: "Visualizações" | peakViewers: "Pico simultâneo" | avgWatchTime: HH:MM:SS→segundos
+clickRate: "Taxa de cliques" % | totalBuyers: "Compradores" | productClicks: "Cliques do produto" | productClickRate: "Taxa de cliques no produto" % | conversionRate: "Taxa de conversão" % | addToCart: "Adicionar ao carrinho" | gpm: "GPM"
+totalLikes: "Curtidas" | totalShares: "Compartilhamentos" | totalComments: "Comentários" | commentRate: "Taxa de comentários" % | newFollowers: "Novos Seguidores"
+couponsUsed: "Cupons usados" | coinsUsed: "Moedas usadas" | coinRedemptions: "Resgates" | auctionRounds: "Rodada de leilão"
 
-TRANSAÇÃO:
-- "Vendas" (R$) → totalRevenue
-- "Pedidos" → totalOrders
-- "Item vendido" / "Itens vendidos" → totalItemsSold
-- "Vendas por pedido" (R$) → avgOrderValue
-- "Vendas por Comprador" / "Vendas por comprador" (R$) → avgRevenuePerBuyer
+Conversões BR: R$1.213,62→1213.62 (ponto=milhar, vírgula=decimal) | HH:MM:SS→segundos | 1,3%→1.3 (NÃO dividir por 100) | 18.920→18920`
 
-TRÁFEGO:
-- "Espectadores" → totalViewers
-- "Visualizadores engajados" → engagedViewers
-- "Visualizações" → totalViews
-- "Pico de usuários simultâneos" / "Pico simultâneo" → peakViewers
-- "Tempo médio de visualização" (formato HH:MM:SS) → avgWatchTime (converter para segundos)
-- "Duração da live" / "Duração da transmissão" / "Duração" (formato HH:MM:SS) → liveDuration (converter para segundos)
+const PRODUCTS_PROMPT = `Extraia TODOS os produtos da lista Shopee. Retorne JSON: {"products":[{campos abaixo}]}
 
-CONVERSÃO:
-- "Taxa de cliques" (%) → clickRate
-- "Compradores" → totalBuyers
-- "Cliques do produto" / "Cliques no produto" → productClicks
-- "Taxa de cliques no produto" (%) → productClickRate
-- "Taxa de conversão" (%) → conversionRate
-- "Adicionar ao carrinho" → addToCart
-- "GPM" → gpm
+Campos: name, price (R$), productClicks, clickRate (%), orders, itemsSold, orderClickRate (%), addToCart, revenue (R$), shopeeItemId (se visível)
 
-ENGAJAMENTO:
-- "Gostei" / "Curtidas" → totalLikes
-- "Compartilhamentos" → totalShares
-- "Comentários" → totalComments
-- "Taxa de comentários" (%) → commentRate
-- "Novos Seguidores" / "Novos seguidores" → newFollowers
+Conversões BR: R$1.213,62→1213.62 (ponto=milhar, vírgula=decimal) | 1,0%→1.0 (NÃO dividir por 100) | 18.920→18920`
 
-PROMOÇÃO:
-- "Cupons usados" → couponsUsed
-- "Moedas usadas" / "Moedas Shopee" → coinsUsed
-- "Resgates" / "Quantidade de resgates" → coinRedemptions
-- "Rodada de leilão" → auctionRounds
+const TRAFFIC_PROMPT = `Extraia dados do funil de tráfego Shopee Live. Retorne JSON com: productImpressions, clickRate (%), productClicks, orderRate (%), totalOrders, impressionToOrderRate (%)
 
-Retorne um JSON com estes campos (use 0 para números não encontrados, "" para strings não encontradas):
-{
-  "liveTitle": string, "startDate": string (YYYY-MM-DD), "startTime": string (HH:MM), "liveDuration": number,
-  "totalRevenue": number, "totalOrders": number, "totalItemsSold": number,
-  "avgOrderValue": number, "avgRevenuePerBuyer": number,
-  "totalViewers": number, "engagedViewers": number, "totalViews": number,
-  "peakViewers": number, "avgWatchTime": number,
-  "clickRate": number, "totalBuyers": number, "productClicks": number,
-  "productClickRate": number, "conversionRate": number, "addToCart": number, "gpm": number,
-  "totalLikes": number, "totalShares": number, "totalComments": number,
-  "commentRate": number, "newFollowers": number,
-  "couponsUsed": number, "coinsUsed": number, "coinRedemptions": number, "auctionRounds": number
-}
-
-Regras de conversão:
-- Valores monetários (R$1.213,62) → número (1213.62). Atenção: ponto é separador de milhar, vírgula é decimal no Brasil.
-- Tempos (00:01:24) → segundos (84)
-- Porcentagens: mantenha o número SEM dividir por 100. Exemplos: 1,3% → 1.3 / 2,7% → 2.7 / 3,9% → 3.9 / 0,06% → 0.06. NÃO converta para fração (1,3% NÃO é 0.013).
-- Números com ponto como milhar (18.920) → número inteiro (18920)`
-
-const PRODUCTS_PROMPT = `Você é um especialista em extrair dados de relatórios da Shopee Brasil. Analise a imagem de lista de produtos e extraia os dados de CADA produto.
-
-Mapeamento dos campos da Shopee:
-- Nome do produto → name
-- Preço (R$) → price
-- "Cliques do produto" → productClicks
-- "Taxa de cliques" (%) → clickRate
-- "Pedidos" → orders
-- "Itens vendidos" / "Vendido" → itemsSold
-- "CO" / "Taxa de clique para pedido" (%) → orderClickRate
-- "Adicionar ao carrinho" → addToCart
-- "GMV" / "Vendas" (R$) → revenue
-- ID do item Shopee (se visível) → shopeeItemId
-
-Retorne um JSON:
-{
-  "products": [
-    { "name": "Nome", "price": 0, "productClicks": 0, "clickRate": 0, "orders": 0, "itemsSold": 0, "orderClickRate": 0, "addToCart": 0, "revenue": 0, "shopeeItemId": "" }
-  ]
-}
-
-Extraia TODOS os produtos visíveis. Regras de conversão:
-- Valores monetários (R$1.213,62) → número (1213.62). Ponto é milhar, vírgula é decimal.
-- Números com ponto como milhar (18.920) → inteiro (18920)
-- Porcentagens: mantenha o número SEM dividir por 100. Exemplos: 1,0% → 1.0 / 2,7% → 2.7. NÃO converta para fração.`
-
-const TRAFFIC_PROMPT = `Você é um especialista em extrair dados de análise de tráfego de lives da Shopee Brasil. Analise a imagem e extraia os dados do funil de conversão.
-
-O funil da Shopee segue o fluxo: Impressão do Produto → Taxa de Cliques → Cliques de Produto → Taxa de Pedido → Pedido confirmado
-
-Mapeamento dos campos da Shopee:
-- "Impressão do produto" / "Impressões" (número grande no topo do funil) → productImpressions
-- "Taxa de Cliques" / "Taxa de cliques" (% entre impressões e cliques, geralmente a primeira seta) → clickRate
-- "Cliques do produto" / "Cliques de Produto" (número no meio do funil) → productClicks
-- "Taxa de Pedido" / "Taxa de pedido" (% entre cliques e pedidos, geralmente a segunda seta) → orderRate
-- "Pedido confirmado" / "Pedidos" (número final do funil) → totalOrders
-- Taxa geral no topo da página (% em destaque, ex: "0,06%", taxa de impressão para pedido) → impressionToOrderRate
-
-Retorne um JSON:
-{
-  "productImpressions": number, "clickRate": number, "productClicks": number,
-  "orderRate": number, "totalOrders": number, "impressionToOrderRate": number
-}
-
-Regras: Ponto é milhar no Brasil (18.920 = 18920). Porcentagens: mantenha o número SEM dividir por 100. Exemplos: 2,41% → 2.41 / 2,51% → 2.51 / 0,06% → 0.06. NÃO converta para fração.`
+Funil: Impressão→Cliques→Pedido. Conversões BR: 18.920→18920 (ponto=milhar) | 2,41%→2.41 (NÃO dividir por 100)`
 
 export default router

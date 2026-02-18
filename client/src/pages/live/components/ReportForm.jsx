@@ -4,15 +4,15 @@ import { DollarSign, Users, Eye, ShoppingCart, Heart, MessageCircle, Share2, Use
 function Section({ title, icon: Icon, gradient, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-      <button type="button" onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+    <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl overflow-hidden">
+      <button type="button" onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-4 hover:bg-white/[0.06] transition-colors">
         <div className="flex items-center gap-3">
           <div className={`w-8 h-8 rounded-lg bg-gradient-to-r ${gradient} flex items-center justify-center`}>
             <Icon className="w-4 h-4 text-white" />
           </div>
-          <h3 className="font-semibold text-slate-800">{title}</h3>
+          <h3 className="font-semibold text-white">{title}</h3>
         </div>
-        {open ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+        {open ? <ChevronUp className="w-5 h-5 text-slate-500" /> : <ChevronDown className="w-5 h-5 text-slate-500" />}
       </button>
       {open && <div className="px-4 pb-4">{children}</div>}
     </div>
@@ -114,7 +114,7 @@ function Field({ label, name, value, onChange, format, undetected }) {
 
   return (
     <div>
-      <label className={`block text-xs font-medium mb-1 ${undetected ? 'text-amber-600' : 'text-slate-500'}`}>
+      <label className={`block text-xs font-medium mb-1 ${undetected ? 'text-amber-400' : 'text-slate-500'}`}>
         {label}
         {undetected && <span className="ml-1 text-amber-400" title="Nao detectado pela IA">*</span>}
       </label>
@@ -127,8 +127,8 @@ function Field({ label, name, value, onChange, format, undetected }) {
         onBlur={handleBlur}
         onChange={focused ? handleChange : onChange}
         placeholder={placeholder}
-        className={`w-full px-3 py-2 rounded-lg border text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 ${
-          undetected ? 'border-amber-300 bg-amber-50/50' : 'border-slate-200'
+        className={`w-full px-3 py-2 rounded-lg border text-sm text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 placeholder:text-slate-600 ${
+          undetected ? 'border-amber-500/30 bg-amber-500/10' : 'border-white/[0.08] bg-white/[0.05]'
         }`}
       />
     </div>
@@ -164,7 +164,7 @@ function ProductField({ label, value, onChange, format }) {
         }}
         onChange={(e) => focused ? setRaw(e.target.value) : onChange(e.target.value)}
         placeholder={format === 'currency' ? 'R$ 0,00' : '0'}
-        className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-primary"
+        className="w-full px-3 py-2 rounded-lg border border-white/[0.08] bg-white/[0.05] text-white text-sm focus:outline-none focus:border-primary placeholder:text-slate-600"
       />
     </div>
   )
@@ -175,7 +175,7 @@ function ProductFields({ product, index, updateProduct }) {
     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2">
       <div className="col-span-2">
         <label className="block text-xs font-medium text-slate-500 mb-1">Nome</label>
-        <input type="text" value={product.name} onChange={(e) => updateProduct(index, 'name', e.target.value)} placeholder="Nome do produto" className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-primary" />
+        <input type="text" value={product.name} onChange={(e) => updateProduct(index, 'name', e.target.value)} placeholder="Nome do produto" className="w-full px-3 py-2 rounded-lg border border-white/[0.08] bg-white/[0.05] text-white text-sm focus:outline-none focus:border-primary placeholder:text-slate-600" />
       </div>
       <ProductField label="Preco (R$)" value={product.price} onChange={(v) => updateProduct(index, 'price', v)} format="currency" />
       <ProductField label="Cliques" value={product.productClicks} onChange={(v) => updateProduct(index, 'productClicks', v)} format="integer" />
@@ -185,7 +185,7 @@ function ProductFields({ product, index, updateProduct }) {
       <ProductField label="Vendas (R$)" value={product.revenue} onChange={(v) => updateProduct(index, 'revenue', v)} format="currency" />
       <div>
         <label className="block text-xs font-medium text-slate-500 mb-1">ID Shopee</label>
-        <input type="text" value={product.shopeeItemId || ''} onChange={(e) => updateProduct(index, 'shopeeItemId', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-primary" />
+        <input type="text" value={product.shopeeItemId || ''} onChange={(e) => updateProduct(index, 'shopeeItemId', e.target.value)} className="w-full px-3 py-2 rounded-lg border border-white/[0.08] bg-white/[0.05] text-white text-sm focus:outline-none focus:border-primary placeholder:text-slate-600" />
       </div>
     </div>
   )
@@ -274,11 +274,11 @@ export default function ReportForm({ data, onChange, products, onProductsChange,
           <Field label="Cupons Usados" name="couponsUsed" value={data.couponsUsed} onChange={handleChange} format="integer" undetected={undetectedFields.includes('couponsUsed')} />
           <Field label="Moedas Usadas (qtd)" name="coinsUsed" value={data.coinsUsed} onChange={handleChange} format="integer" undetected={undetectedFields.includes('coinsUsed')} />
           <div>
-            <label className="block text-xs font-medium mb-1 text-emerald-600">Custo Moedas (R$)</label>
-            <div className="w-full px-3 py-2 rounded-lg border border-emerald-200 bg-emerald-50/50 text-sm text-emerald-700 font-medium">
+            <label className="block text-xs font-medium mb-1 text-emerald-400">Custo Moedas (R$)</label>
+            <div className="w-full px-3 py-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-sm text-emerald-400 font-medium">
               {data.coinsCost ? formatBRL(data.coinsCost) : 'R$ 0,00'}
             </div>
-            <p className="text-[10px] text-slate-400 mt-0.5">1 moeda = R$0,01</p>
+            <p className="text-[10px] text-slate-500 mt-0.5">1 moeda = R$0,01</p>
           </div>
           <Field label="Qtd. Resgates" name="coinRedemptions" value={data.coinRedemptions} onChange={handleChange} format="integer" undetected={undetectedFields.includes('coinRedemptions')} />
           <Field label="Rodadas Leilão" name="auctionRounds" value={data.auctionRounds} onChange={handleChange} format="integer" undetected={undetectedFields.includes('auctionRounds')} />
@@ -288,13 +288,13 @@ export default function ReportForm({ data, onChange, products, onProductsChange,
       {/* Funil de Tráfego */}
       <Section title="Funil de Tráfego" icon={MousePointerClick} gradient="from-cyan-400 to-blue-500" defaultOpen={false}>
         <div className="mb-3">
-          <div className="flex items-center gap-2 text-xs text-slate-400 mb-3">
+          <div className="flex items-center gap-2 text-xs text-slate-500 mb-3">
             <span>Impressão</span>
             <span>→</span>
             <span>Cliques</span>
             <span>→</span>
             <span>Pedidos</span>
-            <span className="ml-auto text-slate-300">Taxa geral: {data.impressionToOrderRate ? formatPct(data.impressionToOrderRate) : '—'}</span>
+            <span className="ml-auto text-white/20">Taxa geral: {data.impressionToOrderRate ? formatPct(data.impressionToOrderRate) : '—'}</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             <Field label="Impressões do Produto" name="productImpressions" value={data.productImpressions} onChange={handleChange} format="integer" undetected={undetectedFields.includes('productImpressions')} />
@@ -311,9 +311,9 @@ export default function ReportForm({ data, onChange, products, onProductsChange,
       <Section title={`Produtos Apresentados (${products.length})`} icon={ShoppingCart} gradient="from-indigo-400 to-violet-500">
         <div className="space-y-3">
           {products.map((product, index) => (
-            <div key={index} className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+            <div key={index} className="bg-white/[0.03] rounded-lg p-3 border border-white/[0.04]">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-slate-600">Produto {index + 1}</span>
+                <span className="text-sm font-medium text-slate-300">Produto {index + 1}</span>
                 <button type="button" onClick={() => removeProduct(index)} className="text-red-400 hover:text-red-600 p-1">
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -322,7 +322,7 @@ export default function ReportForm({ data, onChange, products, onProductsChange,
             </div>
           ))}
 
-          <button type="button" onClick={addProduct} className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-dashed border-slate-300 rounded-lg text-sm font-medium text-slate-500 hover:border-primary hover:text-primary transition-colors">
+          <button type="button" onClick={addProduct} className="w-full flex items-center justify-center gap-2 py-2.5 border-2 border-dashed border-white/[0.12] rounded-lg text-sm font-medium text-slate-400 hover:border-primary hover:text-primary transition-colors">
             <Plus className="w-4 h-4" /> Adicionar Produto
           </button>
         </div>

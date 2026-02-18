@@ -33,9 +33,9 @@ export default function TutorialHome() {
         return (
             <div className="flex justify-center items-center h-[50vh]">
                 <div className="relative">
-                    <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
+                    <div className="w-16 h-16 border-4 border-orange-500/20 border-t-orange-500 rounded-full animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-8 h-8 bg-orange-100 rounded-full animate-pulse"></div>
+                        <div className="w-8 h-8 bg-orange-500/15 rounded-full animate-pulse"></div>
                     </div>
                 </div>
             </div>
@@ -104,21 +104,21 @@ export default function TutorialHome() {
                             className={`
                                 h-full rounded-[2rem] border transition-all duration-300 animate-slide-up
                                 ${isCompleted
-                                    ? 'bg-white border-emerald-200/50 shadow-[0_20px_40px_-12px_rgba(16,185,129,0.15)] group'
+                                    ? 'bg-white/[0.05] border-emerald-500/30 shadow-[0_20px_40px_-12px_rgba(16,185,129,0.1)] group'
                                     : isLocked
-                                        ? 'bg-gray-50/50 border-gray-200/50 cursor-not-allowed opacity-80'
-                                        : 'bg-white border-white/80 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.05)] hover:shadow-[0_25px_50px_-12px_rgba(249,115,22,0.15)] cursor-pointer group hover:border-orange-100'
+                                        ? 'bg-white/[0.02] border-white/[0.06] cursor-not-allowed opacity-80'
+                                        : 'bg-white/[0.05] border-white/[0.08] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)] hover:shadow-[0_25px_50px_-12px_rgba(249,115,22,0.15)] cursor-pointer group hover:border-orange-500/30'
                                 }
                             `}
                         >
                             <div className="p-8 flex flex-col h-full relative z-10">
                                 {/* LOCKED OVERLAY */}
                                 {isLocked && (
-                                    <div className="absolute inset-0 z-30 backdrop-blur-[3px] bg-slate-50/60 flex flex-col items-center justify-center text-center p-6 grayscale">
-                                        <div className="bg-white p-4 rounded-2xl shadow-xl shadow-gray-200/50 mb-3 transform scale-90">
-                                            <Lock size={24} className="text-gray-300" />
+                                    <div className="absolute inset-0 z-30 backdrop-blur-[3px] bg-black/40 flex flex-col items-center justify-center text-center p-6 grayscale">
+                                        <div className="bg-white/[0.08] p-4 rounded-2xl shadow-xl shadow-black/20 mb-3 transform scale-90">
+                                            <Lock size={24} className="text-slate-400" />
                                         </div>
-                                        <span className="text-xs font-black text-gray-300 tracking-widest uppercase">Bloqueado</span>
+                                        <span className="text-xs font-black text-slate-400 tracking-widest uppercase">Bloqueado</span>
                                     </div>
                                 )}
 
@@ -127,26 +127,26 @@ export default function TutorialHome() {
                                     <div className={`
                                         w-16 h-16 rounded-2xl flex items-center justify-center relative transition-all duration-500
                                         ${isCompleted
-                                            ? 'bg-gradient-to-br from-emerald-100 to-teal-50 text-emerald-600 shadow-inner group-hover:scale-110 group-hover:rotate-3'
+                                            ? 'bg-gradient-to-br from-emerald-500/20 to-teal-500/10 text-emerald-400 shadow-inner group-hover:scale-110 group-hover:rotate-3'
                                             : isLocked
-                                                ? 'bg-gray-100 text-gray-300'
-                                                : 'bg-gradient-to-br from-orange-50 to-rose-50 text-orange-500 shadow-sm group-hover:shadow-orange-200/50 group-hover:scale-110 group-hover:-rotate-3'
+                                                ? 'bg-white/[0.05] text-slate-500'
+                                                : 'bg-gradient-to-br from-orange-500/15 to-rose-500/10 text-orange-400 shadow-sm group-hover:shadow-orange-500/10 group-hover:scale-110 group-hover:-rotate-3'
                                         }
                                     `}>
                                         <IconComponent size={30} strokeWidth={1.5} />
                                         {isCompleted && (
-                                            <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-1 rounded-full shadow-lg border-2 border-white">
+                                            <div className="absolute -bottom-2 -right-2 bg-emerald-500 text-white p-1 rounded-full shadow-lg border-2 border-[#0a0a12]">
                                                 <Check size={12} strokeWidth={4} />
                                             </div>
                                         )}
                                     </div>
 
                                     {isCompleted ? (
-                                        <div className="px-3 py-1 rounded-full bg-emerald-100/50 border border-emerald-200 text-emerald-700 text-[10px] font-bold uppercase tracking-wide flex items-center gap-1">
+                                        <div className="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold uppercase tracking-wide flex items-center gap-1">
                                             <Trophy size={12} /> Concluído
                                         </div>
                                     ) : !isLocked && (
-                                        <div className="px-3 py-1 rounded-full bg-orange-50 border border-orange-100 text-orange-600 text-[10px] font-bold uppercase tracking-wide flex items-center gap-1 group-hover:bg-orange-100 transition-colors">
+                                        <div className="px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[10px] font-bold uppercase tracking-wide flex items-center gap-1 group-hover:bg-orange-500/20 transition-colors">
                                             <PlayCircle size={12} /> Disponível
                                         </div>
                                     )}
@@ -155,7 +155,7 @@ export default function TutorialHome() {
                                 {/* Content Info */}
                                 <div className="flex-1">
                                     <h3 className={`text-xl font-bold mb-3 leading-tight
-                                        ${isCompleted ? 'text-emerald-950' : 'text-slate-800 group-hover:text-orange-600 transition-colors'}
+                                        ${isCompleted ? 'text-emerald-300' : 'text-white group-hover:text-orange-400 transition-colors'}
                                     `}>
                                         {module.title}
                                     </h3>
@@ -165,8 +165,8 @@ export default function TutorialHome() {
                                 </div>
 
                                 {/* Footer Action */}
-                                <div className="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
-                                    <span className="text-xs font-bold text-slate-300 uppercase tracking-widest">
+                                <div className="mt-8 pt-6 border-t border-white/[0.06] flex items-center justify-between">
+                                    <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
                                         Aula 0{index + 1}
                                     </span>
 
@@ -211,17 +211,17 @@ export default function TutorialHome() {
                 title="Conteúdo Bloqueado"
             >
                 <div className="text-center py-8">
-                    <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                        <Lock size={40} className="text-slate-300" />
+                    <div className="w-24 h-24 bg-white/[0.05] rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                        <Lock size={40} className="text-slate-400" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 mb-2">Continue sua Jornada!</h3>
-                    <p className="text-slate-500 mb-8 px-8 leading-relaxed">
+                    <h3 className="text-xl font-bold text-white mb-2">Continue sua Jornada!</h3>
+                    <p className="text-slate-400 mb-8 px-8 leading-relaxed">
                         Para manter a qualidade do aprendizado, os módulos são liberados sequencialmente.
                         Finalize o módulo anterior para destravar este conteúdo exclusivo.
                     </p>
                     <button
                         onClick={() => setIsModalOpen(false)}
-                        className="bg-slate-900 text-white px-10 py-3.5 rounded-xl font-bold hover:bg-black transition-all transform hover:-translate-y-1 hover:shadow-lg"
+                        className="bg-primary text-white px-10 py-3.5 rounded-xl font-bold hover:bg-orange-600 transition-all transform hover:-translate-y-1 hover:shadow-lg"
                     >
                         Entendi, vou focar!
                     </button>

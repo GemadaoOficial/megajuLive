@@ -27,21 +27,21 @@ const getActionIcon = (action) => {
 const getActionColor = (action) => {
   switch (action) {
     case 'CREATE':
-      return 'text-emerald-500 bg-emerald-50'
+      return 'text-emerald-400 bg-emerald-500/15'
     case 'UPDATE':
-      return 'text-blue-500 bg-blue-50'
+      return 'text-blue-400 bg-blue-500/15'
     case 'DELETE':
-      return 'text-red-500 bg-red-50'
+      return 'text-red-400 bg-red-500/15'
     case 'LOGIN':
-      return 'text-green-500 bg-green-50'
+      return 'text-green-400 bg-green-500/15'
     case 'LOGOUT':
-      return 'text-slate-500 bg-slate-50'
+      return 'text-slate-400 bg-white/[0.05]'
     case 'START_LIVE':
-      return 'text-violet-500 bg-violet-50'
+      return 'text-violet-400 bg-violet-500/15'
     case 'END_LIVE':
-      return 'text-orange-500 bg-orange-50'
+      return 'text-orange-400 bg-orange-500/15'
     default:
-      return 'text-slate-500 bg-slate-50'
+      return 'text-slate-400 bg-white/[0.05]'
   }
 }
 
@@ -129,7 +129,7 @@ export default function RecentActivity() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
-      className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm"
+      className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6"
     >
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
@@ -137,8 +137,8 @@ export default function RecentActivity() {
           <Activity className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-slate-800">Atividade Recente</h2>
-          <p className="text-sm text-slate-500">Últimas ações no sistema</p>
+          <h2 className="text-xl font-bold text-white">Atividade Recente</h2>
+          <p className="text-sm text-slate-400">Últimas ações no sistema</p>
         </div>
       </div>
 
@@ -159,23 +159,23 @@ export default function RecentActivity() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 + index * 0.05 }}
-                className="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors"
+                className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.06] transition-colors"
               >
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${colorClass}`}>
                   <ActionIcon className="w-4 h-4" />
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-800">
+                  <p className="text-sm font-medium text-white">
                     {buildDescription(activity)}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs text-slate-500 flex items-center gap-1">
+                    <span className="text-xs text-slate-400 flex items-center gap-1">
                       <User className="w-3 h-3" />
                       {activity.user?.name || 'Sistema'}
                     </span>
-                    <span className="text-xs text-slate-400">•</span>
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-slate-500">•</span>
+                    <span className="text-xs text-slate-400">
                       {formatTime(activity.createdAt)}
                     </span>
                   </div>
@@ -186,10 +186,10 @@ export default function RecentActivity() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <div className="w-16 h-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-3">
-            <Activity className="w-8 h-8 text-slate-400" />
+          <div className="w-16 h-16 mx-auto rounded-full bg-white/[0.05] flex items-center justify-center mb-3">
+            <Activity className="w-8 h-8 text-slate-500" />
           </div>
-          <p className="text-slate-500">Nenhuma atividade recente</p>
+          <p className="text-slate-400">Nenhuma atividade recente</p>
         </div>
       )}
     </motion.div>

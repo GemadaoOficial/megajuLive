@@ -95,11 +95,11 @@ export default function AuditLogs() {
 
   const getEntityColor = (entity) => {
     switch (entity) {
-      case 'USER': return 'bg-blue-100 text-blue-600'
-      case 'LIVE': return 'bg-violet-100 text-violet-600'
-      case 'PRODUCT': return 'bg-emerald-100 text-emerald-600'
-      case 'AUTH': return 'bg-amber-100 text-amber-600'
-      default: return 'bg-slate-100 text-slate-600'
+      case 'USER': return 'bg-blue-500/100/100/20 text-blue-400'
+      case 'LIVE': return 'bg-violet-500/100/20 text-violet-400'
+      case 'PRODUCT': return 'bg-emerald-500/100/100/20 text-emerald-400'
+      case 'AUTH': return 'bg-amber-500/100/100/20 text-amber-400'
+      default: return 'bg-white/[0.05] text-slate-300'
     }
   }
 
@@ -122,7 +122,7 @@ export default function AuditLogs() {
       case 'UPDATE': return 'text-blue-500'
       case 'DELETE': return 'text-red-500'
       case 'LOGIN': return 'text-emerald-500'
-      case 'LOGOUT': return 'text-slate-500'
+      case 'LOGOUT': return 'text-slate-400'
       case 'START_LIVE': return 'text-violet-500'
       case 'END_LIVE': return 'text-orange-500'
       default: return 'text-amber-500'
@@ -209,53 +209,53 @@ export default function AuditLogs() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-800">Logs de Auditoria</h1>
-        <p className="text-slate-500 mt-1">Historico de acoes realizadas no sistema</p>
+        <h1 className="text-3xl font-bold text-white">Logs de Auditoria</h1>
+        <p className="text-slate-400 mt-1">Historico de acoes realizadas no sistema</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-slate-100">
-              <FileText className="w-5 h-5 text-slate-600" />
+            <div className="p-2 rounded-lg bg-white/[0.05]">
+              <FileText className="w-5 h-5 text-slate-300" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-800">{stats.totalLogs}</p>
-              <p className="text-xs text-slate-500">Total de logs</p>
+              <p className="text-2xl font-bold text-white">{stats.totalLogs}</p>
+              <p className="text-xs text-slate-400">Total de logs</p>
             </div>
           </div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-100">
-              <Calendar className="w-5 h-5 text-emerald-600" />
+            <div className="p-2 rounded-lg bg-emerald-500/100/100/20">
+              <Calendar className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-emerald-600">{stats.todayLogs}</p>
-              <p className="text-xs text-slate-500">Hoje</p>
+              <p className="text-2xl font-bold text-emerald-400">{stats.todayLogs}</p>
+              <p className="text-xs text-slate-400">Hoje</p>
             </div>
           </div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-100">
-              <User className="w-5 h-5 text-blue-600" />
+            <div className="p-2 rounded-lg bg-blue-500/100/100/20">
+              <User className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-blue-600">{stats.entityCounts?.USER || 0}</p>
-              <p className="text-xs text-slate-500">Usuarios</p>
+              <p className="text-2xl font-bold text-blue-400">{stats.entityCounts?.USER || 0}</p>
+              <p className="text-xs text-slate-400">Usuarios</p>
             </div>
           </div>
         </div>
-        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-amber-100">
-              <Shield className="w-5 h-5 text-amber-600" />
+            <div className="p-2 rounded-lg bg-amber-500/100/100/20">
+              <Shield className="w-5 h-5 text-amber-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-amber-600">{stats.entityCounts?.AUTH || 0}</p>
-              <p className="text-xs text-slate-500">Autenticacao</p>
+              <p className="text-2xl font-bold text-amber-400">{stats.entityCounts?.AUTH || 0}</p>
+              <p className="text-xs text-slate-400">Autenticacao</p>
             </div>
           </div>
         </div>
@@ -270,7 +270,7 @@ export default function AuditLogs() {
             placeholder="Buscar nos logs..."
             value={searchTerm}
             onChange={handleSearch}
-            className="w-full pl-12 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </div>
         <div className="flex gap-2">
@@ -279,7 +279,7 @@ export default function AuditLogs() {
             <select
               value={entityFilter}
               onChange={handleEntityFilter}
-              className="px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             >
               <option value="all">Todas as entidades</option>
               <option value="USER">Usuarios</option>
@@ -291,7 +291,7 @@ export default function AuditLogs() {
           <select
             value={actionFilter}
             onChange={handleActionFilter}
-            className="px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
             <option value="all">Todas as acoes</option>
             <option value="CREATE">Criacao</option>
@@ -307,7 +307,7 @@ export default function AuditLogs() {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-600">
+        <div className="bg-red-500/100/10 border border-red-500/20 rounded-xl p-4 text-red-400">
           {error}
         </div>
       )}
@@ -316,14 +316,14 @@ export default function AuditLogs() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
+        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
       >
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-white/[0.06]">
             {logs.map((log) => {
               const EntityIcon = getEntityIcon(log.entity)
               const ActionIcon = getActionIcon(log.action)
@@ -331,7 +331,7 @@ export default function AuditLogs() {
               return (
                 <div
                   key={log.id}
-                  className="flex items-start gap-4 p-4 hover:bg-slate-50 transition-colors"
+                  className="flex items-start gap-4 p-4 hover:bg-white/[0.03] transition-colors"
                 >
                   <div className={`p-2 rounded-xl ${getEntityColor(log.entity)}`}>
                     <EntityIcon className="w-5 h-5" />
@@ -340,9 +340,9 @@ export default function AuditLogs() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <ActionIcon className={`w-4 h-4 ${getActionColor(log.action)}`} />
-                      <span className="font-medium text-slate-800">{buildDescription(log)}</span>
+                      <span className="font-medium text-white">{buildDescription(log)}</span>
                     </div>
-                    <div className="flex items-center gap-4 mt-1 text-sm text-slate-500">
+                    <div className="flex items-center gap-4 mt-1 text-sm text-slate-400">
                       <span className="flex items-center gap-1">
                         <User className="w-3 h-3" />
                         {log.user?.name || 'Sistema'}
@@ -368,34 +368,34 @@ export default function AuditLogs() {
 
         {!loading && logs.length === 0 && (
           <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-white/[0.05] flex items-center justify-center mb-4">
               <FileText className="w-8 h-8 text-slate-400" />
             </div>
-            <p className="text-slate-500">Nenhum log encontrado</p>
+            <p className="text-slate-400">Nenhum log encontrado</p>
           </div>
         )}
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-slate-100">
-            <p className="text-sm text-slate-500">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-white/[0.04]">
+            <p className="text-sm text-slate-400">
               Mostrando {(page - 1) * logsPerPage + 1} a {Math.min(page * logsPerPage, total)} de {total}
             </p>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg hover:bg-white/[0.05] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
-              <span className="text-sm text-slate-600">
+              <span className="text-sm text-slate-300">
                 Pagina {page} de {totalPages}
               </span>
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg hover:bg-white/[0.05] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

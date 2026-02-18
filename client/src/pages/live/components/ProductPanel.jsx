@@ -47,7 +47,7 @@ export default function ProductPanel({
   const quickTimeOptions = [30, 60, 90, 120, 180]
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-3xl p-6 shadow-xl h-full">
+    <div className="bg-white/[0.05] border border-white/[0.08] rounded-3xl p-6 h-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
@@ -55,8 +55,8 @@ export default function ProductPanel({
             <ShoppingBag className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-800">Produtos</h2>
-            <p className="text-sm text-slate-500">{products.length} na fila</p>
+            <h2 className="text-xl font-bold text-white">Produtos</h2>
+            <p className="text-sm text-slate-400">{products.length} na fila</p>
           </div>
         </div>
         <motion.button
@@ -65,7 +65,7 @@ export default function ProductPanel({
           onClick={() => setShowForm(!showForm)}
           className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
             showForm
-              ? 'bg-slate-200 text-slate-600 rotate-45'
+              ? 'bg-white/[0.1] text-slate-300 rotate-45'
               : 'bg-gradient-to-br from-primary to-orange-500 text-white shadow-lg'
           }`}
         >
@@ -82,8 +82,8 @@ export default function ProductPanel({
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden mb-6"
           >
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200 space-y-4">
-              <div className="flex items-center gap-2 text-slate-700 font-medium mb-2">
+            <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/[0.08] space-y-4">
+              <div className="flex items-center gap-2 text-slate-200 font-medium mb-2">
                 <Sparkles className="w-4 h-4 text-primary" />
                 Novo Produto
               </div>
@@ -94,7 +94,7 @@ export default function ProductPanel({
                   placeholder="Nome do produto"
                   value={productForm.name}
                   onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
@@ -106,7 +106,7 @@ export default function ProductPanel({
                     placeholder="Preco"
                     value={productForm.price}
                     onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
                 <div className="relative">
@@ -118,14 +118,14 @@ export default function ProductPanel({
                     onChange={(e) =>
                       setProductForm({ ...productForm, timeSlot: parseInt(e.target.value) || 60 })
                     }
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
               </div>
 
               {/* Quick Time Selection */}
               <div>
-                <p className="text-xs text-slate-500 mb-2">Tempo rapido:</p>
+                <p className="text-xs text-slate-400 mb-2">Tempo rapido:</p>
                 <div className="flex gap-2">
                   {quickTimeOptions.map((time) => (
                     <button
@@ -134,7 +134,7 @@ export default function ProductPanel({
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         productForm.timeSlot === time
                           ? 'bg-primary text-white'
-                          : 'bg-white border border-slate-200 text-slate-600 hover:border-primary'
+                          : 'bg-white/[0.05] border border-white/[0.08] text-slate-300 hover:border-primary'
                       }`}
                     >
                       {time}s
@@ -165,11 +165,11 @@ export default function ProductPanel({
             animate={{ opacity: 1 }}
             className="text-center py-12"
           >
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
-              <Package className="w-10 h-10 text-slate-400" />
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/[0.05] flex items-center justify-center">
+              <Package className="w-10 h-10 text-slate-500" />
             </div>
-            <p className="text-slate-500 font-medium">Nenhum produto na fila</p>
-            <p className="text-sm text-slate-400 mt-1">Adicione produtos para comecar</p>
+            <p className="text-slate-400 font-medium">Nenhum produto na fila</p>
+            <p className="text-sm text-slate-500 mt-1">Adicione produtos para comecar</p>
           </motion.div>
         ) : (
           <AnimatePresence>
@@ -190,13 +190,13 @@ export default function ProductPanel({
                     ${isActive
                       ? 'bg-gradient-to-r from-primary/10 to-orange-500/10 border-2 border-primary shadow-lg scale-[1.02]'
                       : isPast
-                        ? 'bg-emerald-50 border-2 border-emerald-200 opacity-70'
-                        : 'bg-white border-2 border-slate-100 hover:border-slate-300 hover:shadow-md'
+                        ? 'bg-emerald-500/10 border-2 border-emerald-500/30 opacity-70'
+                        : 'bg-white/[0.03] border-2 border-white/[0.06] hover:border-white/[0.12]'
                     }
                   `}
                 >
                   {/* Drag Handle */}
-                  <div className="text-slate-300 cursor-grab active:cursor-grabbing">
+                  <div className="text-slate-600 cursor-grab active:cursor-grabbing">
                     <GripVertical className="w-5 h-5" />
                   </div>
 
@@ -207,7 +207,7 @@ export default function ProductPanel({
                       ? 'bg-gradient-to-br from-primary to-orange-500 text-white shadow-lg'
                       : isPast
                         ? 'bg-emerald-500 text-white'
-                        : 'bg-slate-100 text-slate-600'
+                        : 'bg-white/[0.05] text-slate-300'
                     }
                   `}>
                     {isPast ? <CheckCircle className="w-5 h-5" /> : index + 1}
@@ -216,18 +216,18 @@ export default function ProductPanel({
                   {/* Product Info */}
                   <div className="flex-1 min-w-0">
                     <h3 className={`font-semibold truncate ${
-                      isActive ? 'text-primary' : isPast ? 'text-emerald-700' : 'text-slate-800'
+                      isActive ? 'text-primary' : isPast ? 'text-emerald-400' : 'text-white'
                     }`}>
                       {product.name}
                     </h3>
                     <div className="flex items-center gap-3 mt-1">
                       <span className="flex items-center gap-1 text-sm">
                         <Tag className="w-3 h-3 text-emerald-500" />
-                        <span className="text-emerald-600 font-medium">
+                        <span className="text-emerald-400 font-medium">
                           R$ {product.price.toFixed(2)}
                         </span>
                       </span>
-                      <span className="flex items-center gap-1 text-sm text-slate-500">
+                      <span className="flex items-center gap-1 text-sm text-slate-400">
                         <Clock className="w-3 h-3" />
                         {product.timeSlot}s
                       </span>
@@ -251,7 +251,7 @@ export default function ProductPanel({
                       e.stopPropagation()
                       onRemoveProduct(product.id)
                     }}
-                    className="p-2 rounded-xl bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-100 transition-all"
+                    className="p-2 rounded-xl bg-red-500/10 text-red-400 opacity-0 group-hover:opacity-100 hover:bg-red-500/20 transition-all"
                   >
                     <Trash2 className="w-4 h-4" />
                   </motion.button>
@@ -267,18 +267,18 @@ export default function ProductPanel({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="mt-6 pt-4 border-t border-slate-200"
+          className="mt-6 pt-4 border-t border-white/[0.08]"
         >
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-xl bg-slate-50">
-              <p className="text-xs text-slate-500">Total estimado</p>
-              <p className="text-lg font-bold text-slate-800">
+            <div className="p-3 rounded-xl bg-white/[0.03]">
+              <p className="text-xs text-slate-400">Total estimado</p>
+              <p className="text-lg font-bold text-white">
                 R$ {products.reduce((acc, p) => acc + p.price, 0).toFixed(2)}
               </p>
             </div>
-            <div className="p-3 rounded-xl bg-slate-50">
-              <p className="text-xs text-slate-500">Tempo total</p>
-              <p className="text-lg font-bold text-slate-800">
+            <div className="p-3 rounded-xl bg-white/[0.03]">
+              <p className="text-xs text-slate-400">Tempo total</p>
+              <p className="text-lg font-bold text-white">
                 {Math.floor(products.reduce((acc, p) => acc + p.timeSlot, 0) / 60)}min
               </p>
             </div>
@@ -294,11 +294,11 @@ export default function ProductPanel({
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #CBD5E1;
+          background: rgba(255,255,255,0.1);
           border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #94A3B8;
+          background: rgba(255,255,255,0.2);
         }
       `}</style>
     </div>

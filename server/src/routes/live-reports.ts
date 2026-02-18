@@ -159,9 +159,14 @@ router.get('/products', async (req: Request, res: Response): Promise<void> => {
       orderBy: { revenue: 'desc' },
     })
 
-    // Aggregate products by name
+    // Aggregate by normalized name (first 40 alphanum chars, lowercase)
+    // AI often extracts slightly different shopeeItemIds for the same product
+    const normalizeName = (name: string) =>
+      name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '').substring(0, 40)
+
     const productMap = new Map<string, {
       name: string
+      shopeeItemId: string | null
       productClicks: number
       addToCart: number
       orders: number
@@ -171,7 +176,7 @@ router.get('/products', async (req: Request, res: Response): Promise<void> => {
     }>()
 
     for (const p of allProducts) {
-      const key = p.name.toLowerCase().trim()
+      const key = normalizeName(p.name)
       const existing = productMap.get(key)
       if (existing) {
         existing.productClicks += p.productClicks
@@ -183,6 +188,7 @@ router.get('/products', async (req: Request, res: Response): Promise<void> => {
       } else {
         productMap.set(key, {
           name: p.name,
+          shopeeItemId: p.shopeeItemId,
           productClicks: p.productClicks,
           addToCart: p.addToCart,
           orders: p.orders,

@@ -101,8 +101,8 @@ export default function AITitlesModal({
           onClick={() => setTab('title')}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             tab === 'title'
-              ? 'bg-violet-100 text-violet-700 shadow-sm'
-              : 'text-slate-500 hover:bg-slate-100'
+              ? 'bg-violet-500/20 text-violet-400'
+              : 'text-slate-400 hover:bg-white/[0.06]'
           }`}
         >
           <Type className="w-4 h-4" />
@@ -112,8 +112,8 @@ export default function AITitlesModal({
           onClick={() => setTab('description')}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             tab === 'description'
-              ? 'bg-violet-100 text-violet-700 shadow-sm'
-              : 'text-slate-500 hover:bg-slate-100'
+              ? 'bg-violet-500/20 text-violet-400'
+              : 'text-slate-400 hover:bg-white/[0.06]'
           }`}
         >
           <FileText className="w-4 h-4" />
@@ -123,7 +123,7 @@ export default function AITitlesModal({
 
       {/* Prompt input */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-slate-600 mb-1.5">
+        <label className="block text-sm font-medium text-slate-300 mb-1.5">
           {tab === 'title' ? 'Sobre o que sera a live?' : 'Descreva o que quer na descricao'}
         </label>
         <div className="relative">
@@ -136,7 +136,7 @@ export default function AITitlesModal({
               : 'Ex: live de ofertas relampago com cupons de frete gratis e sorteio...'
             }
             rows={2}
-            className="w-full px-4 py-3 pr-12 rounded-xl border border-slate-200 text-sm resize-none focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+            className="w-full px-4 py-3 pr-12 rounded-xl border border-white/[0.08] bg-white/[0.05] text-white text-sm resize-none focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20 placeholder-white/30"
           />
           <button
             onClick={handleGenerate}
@@ -150,18 +150,18 @@ export default function AITitlesModal({
             )}
           </button>
         </div>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-slate-500 mt-1">
           Pressione Enter ou clique no botao para gerar. Deixe vazio para sugestoes gerais.
         </p>
       </div>
 
       {/* Error message */}
       {aiError && (
-        <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 flex items-start gap-2">
-          <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-2">
+          <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-red-700">Falha na IA</p>
-            <p className="text-xs text-red-600 mt-0.5 break-all">{aiError}</p>
+            <p className="text-sm font-medium text-red-400">Falha na IA</p>
+            <p className="text-xs text-red-400/80 mt-0.5 break-all">{aiError}</p>
           </div>
         </div>
       )}
@@ -187,7 +187,7 @@ export default function AITitlesModal({
           <motion.p
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 1.5, repeat: Infinity }}
-            className="mt-4 text-slate-600 font-medium"
+            className="mt-4 text-slate-300 font-medium"
           >
             {tab === 'title' ? 'Gerando titulos...' : 'Gerando descricoes...'}
           </motion.p>
@@ -209,10 +209,10 @@ export default function AITitlesModal({
                 if (tab === 'title') onSelectTitle(item)
                 else onSelectDescription(item)
               }}
-              className="w-full p-4 rounded-xl bg-gradient-to-r from-slate-50 to-white hover:from-violet-50 hover:to-purple-50 border border-slate-200 hover:border-violet-300 text-left transition-all group"
+              className="w-full p-4 rounded-xl bg-white/[0.03] hover:bg-violet-500/10 border border-white/[0.08] hover:border-violet-500/30 text-left transition-all group"
             >
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-100 to-purple-100 group-hover:from-violet-200 group-hover:to-purple-200 flex items-center justify-center flex-shrink-0 transition-colors">
+                <div className="w-10 h-10 rounded-lg bg-violet-500/15 group-hover:bg-violet-500/25 flex items-center justify-center flex-shrink-0 transition-colors">
                   {index === 0 ? (
                     <Star className="w-5 h-5 text-violet-500" />
                   ) : (
@@ -221,11 +221,11 @@ export default function AITitlesModal({
                 </div>
                 <div className="flex-1 min-w-0">
                   {index === 0 && (
-                    <span className="text-[10px] font-bold text-violet-500 bg-violet-100 px-2 py-0.5 rounded-full mb-1 inline-block uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-violet-400 bg-violet-500/20 px-2 py-0.5 rounded-full mb-1 inline-block uppercase tracking-wider">
                       Recomendado
                     </span>
                   )}
-                  <p className={`font-medium text-slate-800 group-hover:text-violet-700 transition-colors ${tab === 'description' ? 'text-sm leading-relaxed' : ''}`}>
+                  <p className={`font-medium text-white group-hover:text-violet-400 transition-colors ${tab === 'description' ? 'text-sm leading-relaxed' : ''}`}>
                     {item}
                   </p>
                   {tab === 'description' && (
@@ -234,14 +234,14 @@ export default function AITitlesModal({
                     </span>
                   )}
                 </div>
-                <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-violet-500 flex-shrink-0 mt-1 transition-colors" />
+                <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-violet-400 flex-shrink-0 mt-1 transition-colors" />
               </div>
             </motion.button>
           ))}
 
           {/* Regenerate */}
           <div className="pt-3 flex items-center justify-between">
-            <p className="text-xs text-slate-400">Clique para usar na sua live</p>
+            <p className="text-xs text-slate-500">Clique para usar na sua live</p>
             <button
               onClick={handleGenerate}
               disabled={loading}
@@ -257,8 +257,8 @@ export default function AITitlesModal({
       {/* Empty state */}
       {!loading && results.length === 0 && (
         <div className="text-center py-10 text-slate-400">
-          <Sparkles className="w-10 h-10 mx-auto mb-3 text-slate-300" />
-          <p className="font-medium text-slate-500">
+          <Sparkles className="w-10 h-10 mx-auto mb-3 text-slate-600" />
+          <p className="font-medium text-slate-400">
             {tab === 'title' ? 'Descreva sua live para gerar titulos' : 'Descreva sua live para gerar descricoes'}
           </p>
           <p className="text-sm mt-1">Ou clique no botao para sugestoes gerais</p>

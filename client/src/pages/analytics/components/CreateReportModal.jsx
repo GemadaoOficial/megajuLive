@@ -195,30 +195,30 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
           initial={{ opacity: 0, y: 20, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20 }}
-          className="bg-slate-50 rounded-2xl w-full max-w-5xl my-8 shadow-2xl"
+          className="bg-[#0f1117] border border-white/[0.08] rounded-2xl w-full max-w-5xl my-8 shadow-2xl"
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-white rounded-t-2xl">
+          <div className="flex items-center justify-between p-6 border-b border-white/[0.08] bg-white/[0.03] rounded-t-2xl">
             <div>
-              <h2 className="text-xl font-bold text-slate-800">{isEdit ? 'Editar Relatorio' : 'Criar Relatorio Manual'}</h2>
-              <p className="text-sm text-slate-500">{isEdit ? 'Edite os dados do relatorio da live' : 'Registre dados de uma live retroativa'}</p>
+              <h2 className="text-xl font-bold text-white">{isEdit ? 'Editar Relatorio' : 'Criar Relatorio Manual'}</h2>
+              <p className="text-sm text-slate-400">{isEdit ? 'Edite os dados do relatorio da live' : 'Registre dados de uma live retroativa'}</p>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg"><X className="w-5 h-5" /></button>
+            <button onClick={onClose} className="p-2 hover:bg-white/[0.06] rounded-lg text-slate-400 hover:text-white"><X className="w-5 h-5" /></button>
           </div>
 
           <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto relative">
             {/* Sticky AI Loading Bar - always visible when scrolling */}
             {aiLoading && (
               <div className="sticky top-0 z-20 -mx-6 -mt-6 mb-2">
-                <div className="bg-white/95 backdrop-blur-sm border-b border-slate-200 px-5 py-2.5 shadow-sm">
+                <div className="bg-white/[0.05] backdrop-blur-sm border-b border-white/[0.08] px-5 py-2.5">
                   <div className="flex items-center gap-3">
-                    <Loader2 className="w-4 h-4 text-indigo-500 animate-spin flex-shrink-0" />
+                    <Loader2 className="w-4 h-4 text-indigo-400 animate-spin flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium text-slate-700 truncate">{aiStep}</span>
-                        <span className="text-xs font-bold text-indigo-600 ml-2">{aiProgress}%</span>
+                        <span className="text-xs font-medium text-slate-300 truncate">{aiStep}</span>
+                        <span className="text-xs font-bold text-indigo-400 ml-2">{aiProgress}%</span>
                       </div>
-                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
                         <motion.div
                           className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"
                           initial={{ width: 0 }}
@@ -233,21 +233,21 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
             )}
 
             {/* Meta info */}
-            <div className="bg-white border border-slate-200 rounded-xl p-4">
+            <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Nome da Live *</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Nome da Live *</label>
                   <input
                     type="text"
                     value={data.liveTitle}
                     onChange={(e) => setData(prev => ({ ...prev, liveTitle: e.target.value }))}
                     placeholder="Ex: Super Promo de Quinta"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-primary"
+                    className="w-full px-3 py-2 rounded-lg border border-white/[0.08] bg-white/[0.05] text-white text-sm focus:outline-none focus:border-primary placeholder:text-slate-500"
                   />
                 </div>
                 {/* Loja */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1.5">Loja *</label>
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">Loja *</label>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
@@ -255,7 +255,7 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
                         className={`px-3 py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${
                           data.store === 'MADA'
                             ? 'border-[#EE4D2D] bg-[#EE4D2D]/10 text-[#EE4D2D]'
-                            : 'border-slate-200 text-slate-500 hover:border-slate-300'
+                            : 'border-white/[0.08] text-slate-400 hover:border-white/[0.12]'
                         }`}
                       >
                         Mada
@@ -266,7 +266,7 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
                         className={`px-3 py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${
                           data.store === 'STAR_IMPORT'
                             ? 'border-[#EE4D2D] bg-[#EE4D2D]/10 text-[#EE4D2D]'
-                            : 'border-slate-200 text-slate-500 hover:border-slate-300'
+                            : 'border-white/[0.08] text-slate-400 hover:border-white/[0.12]'
                         }`}
                       >
                         Star Import
@@ -274,29 +274,29 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
                     </div>
                   </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Data da Live *</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Data da Live *</label>
                   <input
                     type="date"
                     value={data.reportDate}
                     onChange={(e) => setData(prev => ({ ...prev, reportDate: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-primary"
+                    className="w-full px-3 py-2 rounded-lg border border-white/[0.08] bg-white/[0.05] text-white text-sm focus:outline-none focus:border-primary"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Horario de Inicio *</label>
+                  <label className="block text-sm font-medium text-slate-300 mb-1">Horario de Inicio *</label>
                   <input
                     type="time"
                     value={data.reportTime || ''}
                     onChange={(e) => setData(prev => ({ ...prev, reportTime: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:border-primary"
+                    className="w-full px-3 py-2 rounded-lg border border-white/[0.08] bg-white/[0.05] text-white text-sm focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
             </div>
 
             {/* AI Upload Section */}
-            <div className="bg-white border border-slate-200 rounded-xl p-4">
-              <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
+              <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
                 Preencher com IA (opcional)
               </h3>
@@ -309,11 +309,11 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
               {/* Progress bar */}
               {aiLoading && aiProgress > 0 && (
                 <div className="mb-3">
-                  <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
+                  <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
                     <span>{aiStep}</span>
                     <span>{aiProgress}%</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
                     <motion.div
                       className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"
                       initial={{ width: 0 }}
@@ -346,29 +346,29 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
 
             {/* AI Error */}
             {aiError && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="font-semibold text-red-700 text-sm">Erro ao processar imagens</p>
-                  <p className="text-xs text-red-600 mt-1">{aiError}</p>
-                  <button onClick={() => setAiError('')} className="text-xs text-red-500 underline mt-2 hover:text-red-700">Fechar</button>
+                  <p className="font-semibold text-red-400 text-sm">Erro ao processar imagens</p>
+                  <p className="text-xs text-red-300 mt-1">{aiError}</p>
+                  <button onClick={() => setAiError('')} className="text-xs text-red-400 underline mt-2 hover:text-red-300">Fechar</button>
                 </div>
               </div>
             )}
 
             {/* AI Warnings */}
             {aiWarnings.length > 0 && !aiLoading && (
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-                <Info className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3">
+                <Info className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="font-semibold text-amber-700 text-sm">{aiWarnings.length} campo(s) nao detectados</p>
-                  <p className="text-xs text-amber-600 mt-1">Verifique se estao visiveis nos screenshots ou preencha manualmente.</p>
+                  <p className="font-semibold text-amber-400 text-sm">{aiWarnings.length} campo(s) nao detectados</p>
+                  <p className="text-xs text-amber-300 mt-1">Verifique se estao visiveis nos screenshots ou preencha manualmente.</p>
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {aiWarnings.map((w, i) => (
-                      <span key={i} className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">{w}</span>
+                      <span key={i} className="px-2 py-0.5 bg-amber-500/15 text-amber-400 rounded-full text-xs font-medium">{w}</span>
                     ))}
                   </div>
-                  <button onClick={() => setAiWarnings([])} className="text-xs text-amber-500 underline mt-2 hover:text-amber-700">Fechar</button>
+                  <button onClick={() => setAiWarnings([])} className="text-xs text-amber-400 underline mt-2 hover:text-amber-300">Fechar</button>
                 </div>
               </div>
             )}
@@ -378,8 +378,8 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 p-6 border-t border-slate-200 bg-white rounded-b-2xl">
-            <button onClick={onClose} className="px-6 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-medium hover:bg-slate-50">
+          <div className="flex items-center justify-end gap-3 p-6 border-t border-white/[0.08] bg-white/[0.03] rounded-b-2xl">
+            <button onClick={onClose} className="px-6 py-2.5 rounded-xl border border-white/[0.08] text-slate-300 font-medium hover:bg-white/[0.06]">
               Cancelar
             </button>
             <button

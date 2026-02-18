@@ -168,13 +168,13 @@ export default function Settings() {
         <div className="flex items-center gap-4">
           <Link
             to="/admin"
-            className="p-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+            className="p-2 rounded-xl bg-white/[0.05] text-slate-300 hover:bg-white/[0.08] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-slate-800">Configuracoes do Sistema</h1>
-            <p className="text-slate-500 mt-1">Gerencie chaves e segredos criptografados no banco de dados</p>
+            <h1 className="text-3xl font-bold text-white">Configuracoes do Sistema</h1>
+            <p className="text-slate-400 mt-1">Gerencie chaves e segredos criptografados no banco de dados</p>
           </div>
         </div>
       </div>
@@ -183,15 +183,15 @@ export default function Settings() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-6"
+        className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6"
       >
         <div className="flex items-start gap-4">
-          <div className="p-3 rounded-xl bg-emerald-100">
-            <Shield className="w-6 h-6 text-emerald-600" />
+          <div className="p-3 rounded-xl bg-emerald-500/100/100/20">
+            <Shield className="w-6 h-6 text-emerald-400" />
           </div>
           <div>
-            <h3 className="font-semibold text-emerald-800">Armazenamento Seguro</h3>
-            <p className="text-emerald-700 text-sm mt-1">
+            <h3 className="font-semibold text-emerald-400">Armazenamento Seguro</h3>
+            <p className="text-emerald-400 text-sm mt-1">
               Todas as configuracoes marcadas como criptografadas sao protegidas com AES-256-GCM.
               Mesmo que o banco de dados seja comprometido, os valores permanecem inacessiveis sem a chave de criptografia.
             </p>
@@ -211,7 +211,7 @@ export default function Settings() {
         <button
           onClick={handleMigrate}
           disabled={migrating}
-          className="flex items-center gap-2 px-4 py-2.5 bg-violet-500 text-white rounded-xl hover:bg-violet-600 transition-colors font-medium disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2.5 bg-violet-500/100 text-white rounded-xl hover:bg-violet-600 transition-colors font-medium disabled:opacity-50"
         >
           {migrating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
           Migrar do .env
@@ -235,13 +235,13 @@ export default function Settings() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="bg-white border border-slate-200 rounded-2xl p-12 text-center"
+          className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-12 text-center"
         >
-          <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-2xl bg-white/[0.05] flex items-center justify-center mx-auto mb-4">
             <Key className="w-8 h-8 text-slate-400" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-700">Nenhuma configuracao</h3>
-          <p className="text-slate-500 mt-2 max-w-md mx-auto">
+          <h3 className="text-lg font-semibold text-slate-200">Nenhuma configuracao</h3>
+          <p className="text-slate-400 mt-2 max-w-md mx-auto">
             Clique em "Migrar do .env" para importar suas variaveis de ambiente atuais,
             ou adicione manualmente.
           </p>
@@ -250,36 +250,36 @@ export default function Settings() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white border border-slate-200 rounded-2xl overflow-hidden"
+          className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
         >
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-white/[0.06]">
             {configs.map((config, idx) => (
               <div
                 key={config.key}
-                className="p-5 hover:bg-slate-50 transition-colors"
+                className="p-5 hover:bg-white/[0.03] transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className={`p-2 rounded-lg ${config.encrypted ? 'bg-emerald-100' : 'bg-amber-100'}`}>
+                    <div className={`p-2 rounded-lg ${config.encrypted ? 'bg-emerald-500/100/100/20' : 'bg-amber-500/100/100/20'}`}>
                       {config.encrypted ? (
-                        <Lock className="w-4 h-4 text-emerald-600" />
+                        <Lock className="w-4 h-4 text-emerald-400" />
                       ) : (
-                        <Unlock className="w-4 h-4 text-amber-600" />
+                        <Unlock className="w-4 h-4 text-amber-400" />
                       )}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-semibold text-slate-800">{config.key}</span>
+                        <span className="font-mono font-semibold text-white">{config.key}</span>
                         <span className={`text-xs px-2 py-0.5 rounded-full ${
                           config.encrypted
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : 'bg-amber-100 text-amber-700'
+                            ? 'bg-emerald-500/100/100/20 text-emerald-400'
+                            : 'bg-amber-500/100/100/20 text-amber-400'
                         }`}>
                           {config.encrypted ? 'Criptografado' : 'Texto plano'}
                         </span>
                       </div>
                       {config.description && (
-                        <p className="text-sm text-slate-500 mt-0.5">{config.description}</p>
+                        <p className="text-sm text-slate-400 mt-0.5">{config.description}</p>
                       )}
                       {visibleKeys.has(config.key) && maskedValues[config.key] && (
                         <p className="text-sm font-mono text-slate-400 mt-1">{maskedValues[config.key]}</p>
@@ -292,7 +292,7 @@ export default function Settings() {
                   <div className="flex items-center gap-2 ml-4">
                     <button
                       onClick={() => loadMaskedValue(config.key)}
-                      className="p-2 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                      className="p-2 rounded-lg text-slate-400 hover:bg-white/[0.05] hover:text-slate-300 transition-colors"
                       title={visibleKeys.has(config.key) ? 'Esconder valor' : 'Ver valor mascarado'}
                     >
                       {visibleKeys.has(config.key) ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -306,7 +306,7 @@ export default function Settings() {
                     </button>
                     <button
                       onClick={() => handleDelete(config.key)}
-                      className="p-2 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors"
+                      className="p-2 rounded-lg text-slate-400 hover:bg-red-500/100/100/100/10 hover:text-red-500 transition-colors"
                       title="Remover"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -333,18 +333,18 @@ export default function Settings() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl"
+              className="bg-[#0a0a12] border border-white/[0.08] rounded-2xl p-6 w-full max-w-lg shadow-xl"
             >
-              <h2 className="text-xl font-bold text-slate-800 mb-6">
+              <h2 className="text-xl font-bold text-white mb-6">
                 {editingKey ? `Editar: ${editingKey}` : 'Nova Configuracao'}
               </h2>
 
               <div className="space-y-4">
                 {/* Key */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Chave</label>
+                  <label className="block text-sm font-medium text-slate-200 mb-1">Chave</label>
                   {editingKey ? (
-                    <div className="px-4 py-3 rounded-xl bg-slate-100 font-mono text-slate-600">
+                    <div className="px-4 py-3 rounded-xl bg-white/[0.05] font-mono text-slate-300">
                       {editingKey}
                     </div>
                   ) : (
@@ -354,7 +354,7 @@ export default function Settings() {
                         value={formKey}
                         onChange={(e) => setFormKey(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ''))}
                         placeholder="NOME_DA_VARIAVEL"
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all font-mono"
+                        className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border-2 border-white/[0.08] focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all font-mono"
                       />
                       {/* Quick select predefined keys */}
                       <div className="flex gap-2 mt-2">
@@ -364,7 +364,7 @@ export default function Settings() {
                             <button
                               key={pk.key}
                               onClick={() => { setFormKey(pk.key); setFormDescription(pk.description) }}
-                              className="text-xs px-3 py-1.5 rounded-lg bg-violet-50 text-violet-600 hover:bg-violet-100 transition-colors"
+                              className="text-xs px-3 py-1.5 rounded-lg bg-violet-500/10 text-violet-400 hover:bg-violet-500/100/20 transition-colors"
                             >
                               {pk.key}
                             </button>
@@ -376,7 +376,7 @@ export default function Settings() {
 
                 {/* Value */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                  <label className="block text-sm font-medium text-slate-200 mb-1">
                     {editingKey ? 'Novo Valor' : 'Valor'}
                   </label>
                   <input
@@ -384,28 +384,28 @@ export default function Settings() {
                     value={formValue}
                     onChange={(e) => setFormValue(e.target.value)}
                     placeholder={editingKey ? 'Digite o novo valor...' : 'Valor do segredo...'}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all font-mono"
+                    className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border-2 border-white/[0.08] focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all font-mono"
                   />
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Descricao (opcional)</label>
+                  <label className="block text-sm font-medium text-slate-200 mb-1">Descricao (opcional)</label>
                   <input
                     type="text"
                     value={formDescription}
                     onChange={(e) => setFormDescription(e.target.value)}
                     placeholder="Descricao da configuracao..."
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border-2 border-white/[0.08] focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
                   />
                 </div>
 
                 {/* Encrypted toggle */}
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50">
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03]">
                   <button
                     onClick={() => setFormEncrypted(!formEncrypted)}
                     className={`relative w-12 h-6 rounded-full transition-colors ${
-                      formEncrypted ? 'bg-emerald-500' : 'bg-slate-300'
+                      formEncrypted ? 'bg-emerald-500/100/100' : 'bg-slate-300'
                     }`}
                   >
                     <div className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
@@ -413,10 +413,10 @@ export default function Settings() {
                     }`} />
                   </button>
                   <div>
-                    <span className="font-medium text-slate-700">
+                    <span className="font-medium text-slate-200">
                       {formEncrypted ? 'Criptografado (AES-256)' : 'Texto plano'}
                     </span>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-400">
                       {formEncrypted
                         ? 'Valor sera criptografado antes de salvar no banco'
                         : 'Valor sera salvo sem criptografia'}
@@ -425,9 +425,9 @@ export default function Settings() {
                 </div>
 
                 {!formEncrypted && (
-                  <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200">
-                    <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-                    <p className="text-sm text-amber-700">
+                  <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-500/100/10 border border-amber-500/20">
+                    <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                    <p className="text-sm text-amber-400">
                       Valores sem criptografia ficam visiveis no banco de dados
                     </p>
                   </div>
@@ -438,7 +438,7 @@ export default function Settings() {
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={resetForm}
-                  className="flex-1 px-4 py-3 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors font-medium"
+                  className="flex-1 px-4 py-3 rounded-xl bg-white/[0.05] text-slate-300 hover:bg-white/[0.08] transition-colors font-medium"
                 >
                   Cancelar
                 </button>
@@ -461,31 +461,31 @@ export default function Settings() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-white border border-slate-200 rounded-2xl p-6"
+        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6"
       >
-        <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+        <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
           <AlertTriangle className="w-5 h-5 text-amber-500" />
           Guia de Migracao
         </h3>
-        <div className="space-y-3 text-sm text-slate-600">
+        <div className="space-y-3 text-sm text-slate-300">
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center flex-shrink-0 text-xs font-bold">1</div>
+            <div className="w-6 h-6 rounded-full bg-violet-500/100/20 text-violet-400 flex items-center justify-center flex-shrink-0 text-xs font-bold">1</div>
             <p>Clique em <strong>"Migrar do .env"</strong> para importar JWT_SECRET e OPENAI_API_KEY automaticamente</p>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center flex-shrink-0 text-xs font-bold">2</div>
+            <div className="w-6 h-6 rounded-full bg-violet-500/100/20 text-violet-400 flex items-center justify-center flex-shrink-0 text-xs font-bold">2</div>
             <p>Verifique que as chaves aparecem na lista acima com status <strong>"Criptografado"</strong></p>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center flex-shrink-0 text-xs font-bold">3</div>
-            <p>Remova <strong>JWT_SECRET</strong> e <strong>OPENAI_API_KEY</strong> do arquivo <code className="bg-slate-100 px-1.5 py-0.5 rounded">.env</code></p>
+            <div className="w-6 h-6 rounded-full bg-violet-500/100/20 text-violet-400 flex items-center justify-center flex-shrink-0 text-xs font-bold">3</div>
+            <p>Remova <strong>JWT_SECRET</strong> e <strong>OPENAI_API_KEY</strong> do arquivo <code className="bg-white/[0.05] px-1.5 py-0.5 rounded">.env</code></p>
           </div>
           <div className="flex items-start gap-3">
-            <div className="w-6 h-6 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center flex-shrink-0 text-xs font-bold">4</div>
+            <div className="w-6 h-6 rounded-full bg-violet-500/100/20 text-violet-400 flex items-center justify-center flex-shrink-0 text-xs font-bold">4</div>
             <p>Reinicie o servidor — ele carregara os segredos do banco automaticamente</p>
           </div>
-          <div className="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
-            <p className="font-mono text-xs text-slate-500">
+          <div className="mt-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.08]">
+            <p className="font-mono text-xs text-slate-400">
               <span className="text-slate-400">## Seu .env final deve ter apenas:</span><br />
               DATABASE_URL="postgresql://..."<br />
               ENCRYPTION_KEY="chave-hex-64-chars"<br />
