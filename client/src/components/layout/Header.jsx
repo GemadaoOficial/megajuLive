@@ -57,19 +57,19 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
       {/* Gradient line on top */}
-      <div className="h-1 bg-gradient-to-r from-primary via-orange-500 to-amber-500" />
+      <div className="h-1 bg-linear-to-r from-primary via-orange-500 to-amber-500" />
 
-      <div className="bg-[#0a0a0f]/95 backdrop-blur-xl border-b border-white/[0.06]">
+      <div className="bg-dark-surface/95 backdrop-blur-xl border-b border-white/6">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
 
             {/* Logo */}
             <NavLink to="/dashboard" className="flex items-center gap-3 group">
               <div className="relative">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center shadow-lg shadow-primary/30 group-hover:shadow-primary/50 transition-shadow">
+                <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary to-orange-600 flex items-center justify-center shadow-lg shadow-primary/30 group-hover:shadow-primary/50 transition-shadow">
                   <Flame className="w-5 h-5 text-white" />
                 </div>
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-orange-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity" />
+                <div className="absolute -inset-1 bg-linear-to-r from-primary to-orange-500 rounded-xl blur-sm opacity-30 group-hover:opacity-50 transition-opacity" />
               </div>
               <div>
                 <h1 className="text-lg font-bold text-white">Mega<span className="text-primary">Ju</span></h1>
@@ -79,7 +79,7 @@ export default function Header() {
 
             {/* Main Navigation */}
             <nav className="hidden md:flex items-center">
-              <div className="flex items-center bg-white/[0.05] rounded-2xl p-1.5">
+              <div className="flex items-center bg-white/5 rounded-2xl p-1.5">
                 {mainTabs.map((tab) => {
                   const isLocked = tab.requiresTraining && !canAccessLive
 
@@ -93,7 +93,7 @@ export default function Header() {
                       {isActive(tab.to) && !isLocked && (
                         <motion.div
                           layoutId="activeTab"
-                          className={`absolute inset-0 ${tab.highlight ? 'bg-gradient-to-r from-primary to-orange-500' : 'bg-white/[0.1]'} rounded-xl`}
+                          className={`absolute inset-0 ${tab.highlight ? 'bg-linear-to-r from-primary to-orange-500' : 'bg-white/10'} rounded-xl`}
                           transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                         />
                       )}
@@ -141,7 +141,7 @@ export default function Header() {
 
               {/* Admin Tabs */}
               {user?.role === 'ADMIN' && (
-                <div className="flex items-center ml-3 pl-3 border-l border-white/[0.08]">
+                <div className="flex items-center ml-3 pl-3 border-l border-white/8">
                   {adminTabs.map((tab) => (
                     <NavLink
                       key={tab.to}
@@ -165,9 +165,9 @@ export default function Header() {
             <div className="flex items-center gap-4">
               <NavLink
                 to="/profile"
-                className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] transition-colors cursor-pointer"
+                className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/8 transition-colors cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                <div className="w-8 h-8 rounded-lg bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
                   {user?.name?.charAt(0).toUpperCase()}
                 </div>
                 <div className="hidden md:block">

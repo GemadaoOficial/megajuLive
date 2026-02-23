@@ -9,9 +9,9 @@ export default function QuickActions() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
     >
-      <div className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6">
+      <div className="bg-white/5 border border-white/8 rounded-2xl p-6">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-linear-to-r from-amber-500 to-orange-500 flex items-center justify-center">
             <Zap className="w-5 h-5 text-white" />
           </div>
           <h2 className="text-xl font-bold text-white">Acoes Rapidas</h2>
@@ -20,9 +20,9 @@ export default function QuickActions() {
         <div className="space-y-3">
           <Link
             to="/live"
-            className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-orange-500/10 border border-primary/30 hover:border-primary/50 transition-all group"
+            className="flex items-center gap-4 p-4 rounded-xl bg-linear-to-r from-primary/10 to-orange-500/10 border border-primary/30 hover:border-primary/50 transition-all group"
           >
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-r from-primary to-orange-500 flex items-center justify-center shadow-lg shadow-primary/30">
+            <div className="w-11 h-11 rounded-xl bg-linear-to-r from-primary to-orange-500 flex items-center justify-center shadow-lg shadow-primary/30">
               <Video className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -35,9 +35,9 @@ export default function QuickActions() {
 
           <Link
             to="/calendar"
-            className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.12] hover:bg-white/[0.06] transition-all group"
+            className="flex items-center gap-4 p-4 rounded-xl bg-white/3 border border-white/8 hover:border-white/12 hover:bg-white/6 transition-all group"
           >
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-xl bg-linear-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
               <Calendar className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -50,9 +50,9 @@ export default function QuickActions() {
 
           <Link
             to="/analytics"
-            className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.12] hover:bg-white/[0.06] transition-all group"
+            className="flex items-center gap-4 p-4 rounded-xl bg-white/3 border border-white/8 hover:border-white/12 hover:bg-white/6 transition-all group"
           >
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-r from-violet-500 to-purple-500 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-xl bg-linear-to-r from-violet-500 to-purple-500 flex items-center justify-center">
               <BarChart3 className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -65,9 +65,9 @@ export default function QuickActions() {
 
           <Link
             to="/tutorials"
-            className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.12] hover:bg-white/[0.06] transition-all group"
+            className="flex items-center gap-4 p-4 rounded-xl bg-white/3 border border-white/8 hover:border-white/12 hover:bg-white/6 transition-all group"
           >
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-xl bg-linear-to-r from-emerald-500 to-teal-500 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>

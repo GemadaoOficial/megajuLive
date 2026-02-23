@@ -16,6 +16,7 @@ import LivesManagement from './pages/admin/LivesManagement'
 import AuditLogs from './pages/admin/AuditLogs'
 import Backup from './pages/admin/Backup'
 import Settings from './pages/admin/Settings'
+import AIUsage from './pages/admin/AIUsage'
 import Profile from './pages/profile/Profile'
 
 function PrivateRoute({ children, adminOnly = false }) {
@@ -23,7 +24,7 @@ function PrivateRoute({ children, adminOnly = false }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050507] flex items-center justify-center">
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
@@ -47,7 +48,7 @@ function TrainingRequiredRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050507] flex items-center justify-center">
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
@@ -162,6 +163,14 @@ function AppRoutes() {
             </PrivateRoute>
           }
         />
+        <Route
+          path="admin/ai-usage"
+          element={
+            <PrivateRoute adminOnly>
+              <AIUsage />
+            </PrivateRoute>
+          }
+        />
       </Route>
 
       {/* Fallback */}
@@ -172,7 +181,7 @@ function AppRoutes() {
 
 function App() {
   return (
-    <div className="min-h-screen bg-[#050507]">
+    <div className="min-h-screen bg-dark-bg">
       <TrainingProvider>
         <AppRoutes />
       </TrainingProvider>

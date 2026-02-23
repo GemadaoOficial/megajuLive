@@ -26,9 +26,9 @@ const Input = forwardRef(({
           type={type}
           className={`
             w-full px-4 py-3.5 rounded-xl
-            bg-white/[0.05] border-2 border-white/[0.1]
+            bg-white/5 border-2 border-white/10
             text-white placeholder-white/30
-            focus:outline-none focus:border-primary focus:bg-white/[0.08]
+            focus:outline-hidden focus:border-primary focus:bg-white/8
             transition-all duration-200
             ${Icon ? 'pl-12' : ''}
             ${error ? 'border-red-400/60 focus:border-red-400/60 bg-red-500/10' : ''}

@@ -64,15 +64,9 @@ router.post('/snapshot/generate', requireAdmin, async (req: Request, res: Respon
     const nextDay = new Date(targetDate)
     nextDay.setDate(nextDay.getDate() + 1)
 
-    const [views, likes, comments, shares, purchases] = await Promise.all([
+    const [views, shares, purchases, liveReports] = await Promise.all([
       prisma.analyticsEvent.count({
         where: { type: 'view', timestamp: { gte: targetDate, lt: nextDay } },
-      }),
-      prisma.analyticsEvent.count({
-        where: { type: 'like', timestamp: { gte: targetDate, lt: nextDay } },
-      }),
-      prisma.analyticsEvent.count({
-        where: { type: 'comment', timestamp: { gte: targetDate, lt: nextDay } },
       }),
       prisma.analyticsEvent.count({
         where: { type: 'share', timestamp: { gte: targetDate, lt: nextDay } },
@@ -80,7 +74,15 @@ router.post('/snapshot/generate', requireAdmin, async (req: Request, res: Respon
       prisma.analyticsEvent.findMany({
         where: { type: 'purchase', timestamp: { gte: targetDate, lt: nextDay } },
       }),
+      prisma.liveReport.findMany({
+        where: { reportDate: { gte: targetDate, lt: nextDay } },
+        select: { totalLikes: true, totalComments: true },
+      }),
     ])
+
+    // Likes and comments come from LiveReport, not AnalyticsEvent
+    const likes = liveReports.reduce((sum, r) => sum + (r.totalLikes || 0), 0)
+    const comments = liveReports.reduce((sum, r) => sum + (r.totalComments || 0), 0)
 
     // Get lives data
     const [totalLives, completedLives] = await Promise.all([

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ImageIcon, Upload, X, BarChart3, Package, TrendingUp, Clipboard, FolderOpen } from 'lucide-react'
@@ -48,6 +48,12 @@ export default function ImageDropZone({ onDrop, files, setFiles, label, max, dis
   const pasteRef = useRef(null)
   const [pasteFocused, setPasteFocused] = useState(false)
 
+  // Create stable object URLs and revoke old ones to prevent memory leaks
+  const objectUrls = useMemo(() => files.map(f => URL.createObjectURL(f)), [files])
+  useEffect(() => {
+    return () => objectUrls.forEach(url => URL.revokeObjectURL(url))
+  }, [objectUrls])
+
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     accept: { 'image/*': [] },
     maxFiles: max,
@@ -87,7 +93,7 @@ export default function ImageDropZone({ onDrop, files, setFiles, label, max, dis
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <div className={`w-6 h-6 rounded-lg bg-gradient-to-r ${config.color} flex items-center justify-center`}>
+          <div className={`w-6 h-6 rounded-lg bg-linear-to-r ${config.color} flex items-center justify-center`}>
             <CategoryIcon className="w-3.5 h-3.5 text-white" />
           </div>
           <span className="text-sm font-semibold text-slate-200">{label}</span>
@@ -107,7 +113,7 @@ export default function ImageDropZone({ onDrop, files, setFiles, label, max, dis
             ? `${config.activeBorder} ${config.activeBg} scale-[1.02] shadow-md`
             : hasFiles
               ? `${config.lightBorder} ${config.lightBg} ${config.hoverBorder}`
-              : `border-white/[0.08] hover:border-white/[0.12] hover:bg-white/[0.03]`
+              : `border-white/8 hover:border-white/12 hover:bg-white/3`
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <input {...getInputProps()} />
@@ -123,14 +129,14 @@ export default function ImageDropZone({ onDrop, files, setFiles, label, max, dis
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
-                    className="relative aspect-square rounded-xl overflow-hidden border border-white/50 shadow-sm group"
+                    className="relative aspect-square rounded-xl overflow-hidden border border-white/50 shadow-xs group"
                   >
-                    <img src={URL.createObjectURL(f)} alt="" className="w-full h-full object-cover" />
+                    <img src={objectUrls[i]} alt="" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all" />
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); setFiles(prev => prev.filter((_, idx) => idx !== i)) }}
-                      className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 shadow-sm hover:scale-110"
+                      className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 shadow-xs hover:scale-110"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -171,7 +177,7 @@ export default function ImageDropZone({ onDrop, files, setFiles, label, max, dis
           type="button"
           onClick={open}
           disabled={disabled || files.length >= max}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-white/[0.08] text-xs font-medium text-slate-300 hover:bg-white/[0.06] hover:border-white/[0.12] transition-all disabled:opacity-40 disabled:cursor-not-allowed`}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border border-white/8 text-xs font-medium text-slate-300 hover:bg-white/6 hover:border-white/12 transition-all disabled:opacity-40 disabled:cursor-not-allowed`}
         >
           <FolderOpen className="w-3.5 h-3.5" />
           Selecionar
@@ -185,10 +191,10 @@ export default function ImageDropZone({ onDrop, files, setFiles, label, max, dis
           onFocus={() => setPasteFocused(true)}
           onBlur={() => setPasteFocused(false)}
           onClick={focusPasteArea}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-medium cursor-pointer transition-all select-none outline-none ${
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-medium cursor-pointer transition-all select-none outline-hidden ${
             pasteFocused
               ? `${config.activeBorder} ${config.activeBg} ${config.iconColor} ring-2 ${config.ringColor}`
-              : `border-white/[0.08] text-slate-300 hover:bg-white/[0.06] hover:border-white/[0.12]`
+              : `border-white/8 text-slate-300 hover:bg-white/6 hover:border-white/12`
           } ${disabled || files.length >= max ? 'opacity-40 cursor-not-allowed' : ''}`}
         >
           <Clipboard className="w-3.5 h-3.5" />

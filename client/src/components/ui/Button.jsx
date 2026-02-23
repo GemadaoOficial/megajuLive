@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion'
 
 const variants = {
-  primary: 'bg-gradient-to-r from-primary to-orange-500 text-white font-semibold shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:scale-[1.02]',
-  ghost: 'bg-white/[0.06] text-slate-300 font-medium hover:bg-white/[0.1]',
+  primary: 'bg-linear-to-r from-primary to-orange-500 text-white font-semibold shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:scale-[1.02]',
+  ghost: 'bg-white/6 text-slate-300 font-medium hover:bg-white/10',
   danger: 'bg-red-500 text-white font-medium hover:bg-red-600',
   success: 'bg-emerald-500 text-white font-medium hover:bg-emerald-600',
-  outline: 'bg-transparent border-2 border-white/[0.1] text-slate-300 font-medium hover:bg-white/[0.06] hover:border-white/[0.15]',
+  outline: 'bg-transparent border-2 border-white/10 text-slate-300 font-medium hover:bg-white/6 hover:border-white/15',
 }
 
 const sizes = {

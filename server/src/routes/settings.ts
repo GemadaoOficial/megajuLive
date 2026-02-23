@@ -22,7 +22,7 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
 // GET /settings/:key - get masked value
 router.get('/:key', async (req: Request, res: Response): Promise<void> => {
   try {
-    const value = getConfig(req.params.key)
+    const value = getConfig(req.params.key as string)
     if (value === undefined) {
       res.status(404).json({ message: 'Configuracao nao encontrada' })
       return
@@ -51,7 +51,7 @@ router.put('/:key', async (req: Request, res: Response): Promise<void> => {
       return
     }
 
-    await setConfig(req.params.key, value.trim(), encrypted, description)
+    await setConfig(req.params.key as string, value.trim(), encrypted, description)
 
     await createAuditLog({
       userId: req.user.id,
@@ -72,7 +72,7 @@ router.put('/:key', async (req: Request, res: Response): Promise<void> => {
 // DELETE /settings/:key - delete a config
 router.delete('/:key', async (req: Request, res: Response): Promise<void> => {
   try {
-    await deleteConfig(req.params.key)
+    await deleteConfig(req.params.key as string)
 
     await createAuditLog({
       userId: req.user.id,

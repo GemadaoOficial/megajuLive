@@ -163,7 +163,7 @@ export default function RichTextEditor({
         contentEditable
         onInput={handleChange}
         onKeyDown={handleKeyDown}
-        className="p-4 outline-none prose prose-slate max-w-none"
+        className="p-4 outline-hidden prose prose-slate max-w-none"
         style={{ minHeight }}
         dangerouslySetInnerHTML={{ __html: value }}
         data-placeholder={placeholder}
@@ -179,7 +179,7 @@ export default function RichTextEditor({
               value={linkUrl}
               onChange={(e) => setLinkUrl(e.target.value)}
               placeholder="https://exemplo.com"
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 mb-4"
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20 mb-4"
               autoFocus
             />
             <div className="flex gap-3">

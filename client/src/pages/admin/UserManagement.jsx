@@ -139,11 +139,11 @@ export default function UserManagement() {
               placeholder="Buscar usuarios..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/5 border border-white/8 text-white placeholder-white/30 focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4 flex items-center gap-4">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4 flex items-center gap-4">
           <div className="p-3 rounded-xl bg-primary/10">
             <Users className="w-5 h-5 text-primary" />
           </div>
@@ -152,8 +152,8 @@ export default function UserManagement() {
             <p className="text-xs text-slate-400">Total de usuarios</p>
           </div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4 flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-emerald-500/100/100/20">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4 flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-emerald-500/20">
             <Shield className="w-5 h-5 text-emerald-400" />
           </div>
           <div>
@@ -169,7 +169,7 @@ export default function UserManagement() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
+        className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden"
       >
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -177,7 +177,7 @@ export default function UserManagement() {
           </div>
         ) : (
           <table className="w-full">
-            <thead className="bg-white/[0.03]">
+            <thead className="bg-white/3">
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Usuario</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Email</th>
@@ -187,12 +187,12 @@ export default function UserManagement() {
                 <th className="px-6 py-4 text-right text-sm font-semibold text-slate-300">Acoes</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.06]">
+            <tbody className="divide-y divide-white/6">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-white/[0.03] transition-colors">
+                <tr key={user.id} className="hover:bg-white/3 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-orange-500 flex items-center justify-center">
                         <span className="text-white font-semibold">
                           {user.name.charAt(0).toUpperCase()}
                         </span>
@@ -206,7 +206,7 @@ export default function UserManagement() {
                       className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                         user.role === 'ADMIN'
                           ? 'bg-primary/10 text-primary'
-                          : 'bg-emerald-500/100/100/20 text-emerald-400'
+                          : 'bg-emerald-500/20 text-emerald-400'
                       }`}
                     >
                       {user.role === 'ADMIN' ? 'Admin' : 'Colaborador'}
@@ -214,14 +214,14 @@ export default function UserManagement() {
                   </td>
                   <td className="px-6 py-4">
                     {user.role === 'ADMIN' ? (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/100/100/20 text-amber-400">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-400">
                         <Shield className="w-3 h-3" />
                         Admin
                       </span>
                     ) : hasUserSkipPermission(user.id) ? (
                       <button
                         onClick={() => handleToggleSkipTraining(user.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/100/100/20 text-emerald-400 hover:bg-emerald-200 transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-400 hover:bg-emerald-200 transition-colors"
                         title="Clique para revogar permissao"
                       >
                         <CheckCircle className="w-3.5 h-3.5" />
@@ -230,7 +230,7 @@ export default function UserManagement() {
                     ) : (
                       <button
                         onClick={() => handleToggleSkipTraining(user.id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white/[0.05] text-slate-300 hover:bg-violet-500/100/20 hover:text-violet-400 transition-colors"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 text-slate-300 hover:bg-violet-500/20 hover:text-violet-400 transition-colors"
                         title="Clique para liberar sem treinamento"
                       >
                         <SkipForward className="w-3.5 h-3.5" />
@@ -243,13 +243,13 @@ export default function UserManagement() {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleOpenModal(user)}
-                        className="p-2 rounded-lg hover:bg-white/[0.05] text-slate-400 hover:text-slate-200 transition-colors"
+                        className="p-2 rounded-lg hover:bg-white/5 text-slate-400 hover:text-slate-200 transition-colors"
                       >
                         <Edit className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDelete(user.id)}
-                        className="p-2 rounded-lg hover:bg-red-500/100/100/100/100/20 text-slate-400 hover:text-red-500 transition-colors"
+                        className="p-2 rounded-lg hover:bg-red-500/20 text-slate-400 hover:text-red-500 transition-colors"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
@@ -263,7 +263,7 @@ export default function UserManagement() {
 
         {!loading && filteredUsers.length === 0 && (
           <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto rounded-full bg-white/[0.05] flex items-center justify-center mb-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-white/5 flex items-center justify-center mb-4">
               <Users className="w-8 h-8 text-slate-400" />
             </div>
             <p className="text-slate-400">Nenhum usuario encontrado</p>
@@ -311,7 +311,7 @@ export default function UserManagement() {
             <select
               value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="w-full px-4 py-3 rounded-xl bg-white/3 border border-white/8 text-white focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20"
             >
               <option value="COLABORADOR">Colaborador</option>
               <option value="ADMIN">Administrador</option>

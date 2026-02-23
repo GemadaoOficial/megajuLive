@@ -1,10 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -19,6 +19,8 @@ model User {
   refreshTokens RefreshToken[]
   auditLogs     AuditLog[]
   notes         Note[]
+  aiTokenUsages AITokenUsage[]
+  goals         Goal[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -168,10 +170,16 @@ model LiveReport {
   coinRedemptions     Int   @default(0)
   auctionRounds       Int   @default(0)
 
-  // Funil de tráfego
+  // Funil de tráfego (dados da imagem de Conversão de Tráfego - separados dos de Conversão)
   productImpressions    Int   @default(0)
+  funnelClickRate       Float @default(0)    // Taxa de cliques do funil (impressões → cliques)
+  funnelProductClicks   Int   @default(0)    // Cliques de produto do funil
   orderRate             Float @default(0)    // Taxa de Pedido (%) - cliques → pedidos
+  funnelOrders          Int   @default(0)    // Pedidos confirmados do funil
   impressionToOrderRate Float @default(0)
+
+  // Fontes de tráfego (array de {source, trafficRate, pageViews})
+  trafficSources        Json  @default("[]")
 
   // Metadados
   reportDate        DateTime
@@ -208,6 +216,7 @@ model LiveProduct {
   revenue         Float      @default(0)
   shopeeItemId    String?
   imageUrl        String?
+  canonicalName   String?
 }
 
 // Snapshot diário de analytics - armazenado permanentemente para comparações históricas
@@ -265,6 +274,40 @@ model Note {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([userId])
+}
+
+// Rastreamento de uso de tokens da IA
+model AITokenUsage {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  feature          String   // 'suggest-title' | 'suggest-description' | 'extract-stats' | 'extract-products' | 'extract-traffic' | 'ai-dedup' | 'ai-insights'
+  promptTokens     Int
+  completionTokens Int
+  totalTokens      Int
+  estimatedCost    Float    // em USD
+  model            String   @default("gpt-4.1-mini")
+  createdAt        DateTime @default(now())
+
+  @@index([userId])
+  @@index([feature])
+  @@index([createdAt])
+}
+
+model Goal {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  metric    String   // 'totalRevenue' | 'totalOrders' | 'totalViewers' | 'conversionRate'
+  target    Float
+  period    String   @default("monthly") // 'monthly' | 'weekly'
+  month     Int?     // 1-12
+  year      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, metric, period, month, year])
   @@index([userId])
 }
 

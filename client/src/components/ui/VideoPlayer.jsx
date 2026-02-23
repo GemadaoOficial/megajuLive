@@ -226,7 +226,7 @@ export default function VideoPlayer({
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: showControls ? 1 : 0 }}
-        className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 pointer-events-none"
+        className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-black/20 pointer-events-none"
       />
 
       {/* Title */}
@@ -262,7 +262,7 @@ export default function VideoPlayer({
             className="h-full bg-primary rounded-full relative"
             style={{ width: `${progressPercent}%` }}
           >
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow opacity-0 group-hover/progress:opacity-100 transition-opacity" />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-sm opacity-0 group-hover/progress:opacity-100 transition-opacity" />
           </div>
         </div>
 

@@ -16,13 +16,13 @@ export default function AdminLayout() {
     const isActive = (path) => location.pathname === path;
 
     return (
-        <div className="flex h-screen bg-[#050507] font-sans">
+        <div className="flex h-screen bg-dark-bg font-sans">
             {/* Sidebar */}
             <aside className="w-64 bg-slate-900 text-white shadow-xl flex flex-col">
                 <div className="p-6 flex items-center justify-center border-b border-slate-800">
                     <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
                         <Shield className="text-orange-500" />
-                        <span className="bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
+                        <span className="bg-linear-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
                             AGENCY ADMIN
                         </span>
                     </div>
@@ -93,7 +93,7 @@ export default function AdminLayout() {
 
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto">
-                <header className="bg-white/[0.05] p-4 flex justify-between items-center md:hidden">
+                <header className="bg-white/5 p-4 flex justify-between items-center md:hidden">
                     {/* Mobile header placeholder */}
                     <span className="font-bold text-white">Admin Panel</span>
                 </header>

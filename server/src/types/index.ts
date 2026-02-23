@@ -1,4 +1,4 @@
-import { User, Live, Product, Analytics, Tutorial } from '@prisma/client'
+import { User, Live, Product, Analytics, Tutorial } from '../generated/prisma/client.js'
 
 // User without password
 export type SafeUser = Omit<User, 'password'>

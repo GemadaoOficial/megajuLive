@@ -47,8 +47,8 @@ const PremiumPageHeader = ({ title, subtitle, icon: Icon, rightContent, variant 
     return (
         <div className={`relative group ${theme.bg} rounded-[2.5rem] p-8 md:p-10 text-white shadow-2xl overflow-hidden transform transition-transform hover:scale-[1.002] mb-10`}>
             {/* Dynamic Background Mesh */}
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-black z-0"></div>
-            <div className={`absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-b ${theme.glow1} rounded-full blur-[100px] -mr-32 -mt-32 animate-pulse-slow`}></div>
+            <div className="absolute inset-0 bg-linear-to-br from-slate-900 via-slate-800 to-black z-0"></div>
+            <div className={`absolute top-0 right-0 w-[500px] h-[500px] bg-linear-to-b ${theme.glow1} rounded-full blur-[100px] -mr-32 -mt-32 animate-pulse-slow`}></div>
             <div className={`absolute bottom-0 left-0 w-[400px] h-[400px] ${theme.glow2} rounded-full blur-[80px] -ml-20 -mb-20 animate-float`}></div>
 
             {/* Floating Particles (Simulated) */}
@@ -65,7 +65,7 @@ const PremiumPageHeader = ({ title, subtitle, icon: Icon, rightContent, variant 
                         <span className={`text-xs font-bold tracking-wider uppercase ${theme.accent} opacity-90`}>Shopee Live Premium</span>
                     </div>
 
-                    <h1 className={`text-4xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r ${theme.titleGradient} tracking-tight leading-tight drop-shadow-sm`}>
+                    <h1 className={`text-4xl md:text-5xl font-black bg-clip-text text-transparent bg-linear-to-r ${theme.titleGradient} tracking-tight leading-tight drop-shadow-xs`}>
                         <div className="flex items-center gap-4">
                             {Icon && <Icon size={48} className={`text-white/20`} />}
                             {title}
@@ -80,7 +80,7 @@ const PremiumPageHeader = ({ title, subtitle, icon: Icon, rightContent, variant 
                 {rightContent && (
                     <div className="w-full md:w-auto">
                         <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 min-w-[300px] shadow-[0_8px_32px_rgba(0,0,0,0.3)] relative group cursor-default">
-                            <div className={`absolute -inset-1 bg-gradient-to-r ${theme.glow1} rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000`}></div>
+                            <div className={`absolute -inset-1 bg-linear-to-r ${theme.glow1} rounded-3xl blur-sm opacity-20 group-hover:opacity-40 transition duration-1000`}></div>
                             <div className="relative z-10">
                                 {rightContent}
                             </div>

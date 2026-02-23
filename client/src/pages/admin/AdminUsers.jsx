@@ -85,15 +85,15 @@ export default function AdminUsers() {
                         placeholder="Buscar por nome ou email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 bg-white/[0.05] border border-white/[0.08] rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-orange-500 w-full md:w-80"
+                        className="pl-10 pr-4 py-2 bg-white/5 border border-white/8 rounded-xl text-white placeholder-white/30 focus:outline-hidden focus:ring-2 focus:ring-orange-500 w-full md:w-80"
                     />
                 </div>
             </div>
 
-            <div className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden">
+            <div className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-white/[0.03] border-b border-white/[0.06]">
+                        <thead className="bg-white/3 border-b border-white/6">
                             <tr>
                                 <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Usuário</th>
                                 <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Cargo</th>
@@ -103,12 +103,12 @@ export default function AdminUsers() {
                                 <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Ações</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/[0.06]">
+                        <tbody className="divide-y divide-white/6">
                             {filteredUsers.map((user) => (
-                                <tr key={user.id} className="hover:bg-white/[0.03] transition-colors">
+                                <tr key={user.id} className="hover:bg-white/3 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3 cursor-pointer" onClick={() => handleEditClick(user)}>
-                                            <div className="w-10 h-10 rounded-full bg-white/[0.05] flex items-center justify-center text-slate-400 border border-white/[0.08] hover:border-orange-500/30 transition-colors">
+                                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 border border-white/8 hover:border-orange-500/30 transition-colors">
                                                 <User size={20} />
                                             </div>
                                             <div>
@@ -129,7 +129,7 @@ export default function AdminUsers() {
                                                 <CheckCircle size={12} /> Pulou
                                             </span>
                                         ) : (
-                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/[0.05] text-slate-400">
+                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/5 text-slate-400">
                                                 Obrigatório
                                             </span>
                                         )}
@@ -138,7 +138,7 @@ export default function AdminUsers() {
                                         {format(new Date(user.createdAt), "d 'de' MMM, yyyy", { locale: ptBR })}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="flex items-center gap-2 text-sm text-slate-300 bg-white/[0.05] px-3 py-1 rounded-full w-fit">
+                                        <div className="flex items-center gap-2 text-sm text-slate-300 bg-white/5 px-3 py-1 rounded-full w-fit">
                                             <Video size={14} className="text-slate-400" />
                                             <span className="font-medium">{user._count?.lives || 0}</span>
                                         </div>
@@ -161,9 +161,9 @@ export default function AdminUsers() {
 
             {/* Edit User Modal */}
             {editingUser && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-                    <div className="bg-[#0a0a12] border border-white/[0.08] rounded-2xl shadow-xl w-full max-w-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-                        <div className="p-6 border-b border-white/[0.06] flex justify-between items-center sticky top-0 bg-[#0a0a12] rounded-t-2xl z-10">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-xs">
+                    <div className="bg-[#0a0a12] border border-white/8 rounded-2xl shadow-xl w-full max-w-2xl animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+                        <div className="p-6 border-b border-white/6 flex justify-between items-center sticky top-0 bg-[#0a0a12] rounded-t-2xl z-10">
                             <div>
                                 <h2 className="text-xl font-bold text-white">Detalhes do Usuário</h2>
                                 <p className="text-sm text-slate-400">Edite informações e visualize histórico.</p>
@@ -182,7 +182,7 @@ export default function AdminUsers() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     {/* Column 1: Edit Form */}
                                     <div className="space-y-6">
-                                        <h3 className="text-sm font-bold text-white uppercase tracking-wider border-b border-white/[0.06] pb-2">Configurações</h3>
+                                        <h3 className="text-sm font-bold text-white uppercase tracking-wider border-b border-white/6 pb-2">Configurações</h3>
 
                                         <form id="editUserForm" onSubmit={handleUpdateUser} className="space-y-4">
                                             <div>
@@ -191,7 +191,7 @@ export default function AdminUsers() {
                                                     type="text"
                                                     value={editingUser.name}
                                                     disabled
-                                                    className="w-full px-4 py-2 border border-white/[0.08] rounded-lg bg-white/[0.03] text-slate-400 cursor-not-allowed"
+                                                    className="w-full px-4 py-2 border border-white/8 rounded-lg bg-white/3 text-slate-400 cursor-not-allowed"
                                                 />
                                             </div>
 
@@ -202,7 +202,7 @@ export default function AdminUsers() {
                                                     value={editingUser.roleTitle || ''}
                                                     onChange={(e) => setEditingUser({ ...editingUser, roleTitle: e.target.value })}
                                                     placeholder="Ex: Streamer Senior"
-                                                    className="w-full px-4 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                                    className="w-full px-4 py-2 bg-white/5 border border-white/8 rounded-lg text-white placeholder-white/30 focus:outline-hidden focus:ring-2 focus:ring-orange-500"
                                                 />
                                             </div>
 
@@ -212,7 +212,7 @@ export default function AdminUsers() {
                                                     id="skipTutorial"
                                                     checked={editingUser.skipTutorial || false}
                                                     onChange={(e) => setEditingUser({ ...editingUser, skipTutorial: e.target.checked })}
-                                                    className="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 border-white/[0.08]"
+                                                    className="w-5 h-5 text-purple-600 rounded-sm focus:ring-purple-500 border-white/8"
                                                 />
                                                 <label htmlFor="skipTutorial" className="text-sm font-medium text-white cursor-pointer select-none">
                                                     Pular Tutorial Obrigatório
@@ -223,10 +223,10 @@ export default function AdminUsers() {
 
                                     {/* Column 2: History & Live Link */}
                                     <div className="space-y-6">
-                                        <h3 className="text-sm font-bold text-white uppercase tracking-wider border-b border-white/[0.06] pb-2">Última Transmissão</h3>
+                                        <h3 className="text-sm font-bold text-white uppercase tracking-wider border-b border-white/6 pb-2">Última Transmissão</h3>
 
                                         {editingUser.lives && editingUser.lives.length > 0 ? (
-                                            <div className="bg-white/[0.03] rounded-xl p-4 border border-white/[0.08]">
+                                            <div className="bg-white/3 rounded-xl p-4 border border-white/8">
                                                 <div className="mb-4">
                                                     <span className="text-xs font-semibold text-slate-400 uppercase">Link da Live</span>
                                                     {editingUser.lives[0].liveLink ? (
@@ -260,7 +260,7 @@ export default function AdminUsers() {
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="text-center py-8 bg-white/[0.03] rounded-xl border border-dashed border-white/[0.08] text-slate-500 text-sm">
+                                            <div className="text-center py-8 bg-white/3 rounded-xl border border-dashed border-white/8 text-slate-500 text-sm">
                                                 Nenhuma live registrada ainda.
                                             </div>
                                         )}
@@ -269,11 +269,11 @@ export default function AdminUsers() {
                             )}
                         </div>
 
-                        <div className="p-6 border-t border-white/[0.06] bg-white/[0.03] rounded-b-2xl flex justify-end gap-3">
+                        <div className="p-6 border-t border-white/6 bg-white/3 rounded-b-2xl flex justify-end gap-3">
                             <button
                                 type="button"
                                 onClick={() => setEditingUser(null)}
-                                className="px-4 py-2 text-slate-300 bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.08] rounded-lg font-medium transition-colors"
+                                className="px-4 py-2 text-slate-300 bg-white/5 border border-white/8 hover:bg-white/8 rounded-lg font-medium transition-colors"
                             >
                                 Cancelar
                             </button>

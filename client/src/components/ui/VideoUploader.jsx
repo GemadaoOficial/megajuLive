@@ -218,7 +218,7 @@ export default function VideoUploader({
             exit={{ opacity: 0, y: -10 }}
             className="flex items-center gap-2 p-3 rounded-lg bg-red-50 text-red-600"
           >
-            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 shrink-0" />
             <span className="text-sm">{error}</span>
           </motion.div>
         )}

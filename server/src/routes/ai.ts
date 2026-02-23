@@ -5,6 +5,7 @@ import fs from 'fs'
 import path from 'path'
 import { authenticate } from '../middlewares/auth.js'
 import { getConfig } from '../utils/config.js'
+import { trackTokenUsage } from '../utils/tokenTracker.js'
 import '../types/index.js'
 
 const router = Router()
@@ -24,8 +25,8 @@ function getOpenAI(): OpenAI {
   return _openai
 }
 
-// Test endpoint (no auth required) to diagnose OpenAI connection
-router.get('/test', async (req: Request, res: Response): Promise<void> => {
+// Test endpoint to diagnose OpenAI connection
+router.get('/test', authenticate, async (req: Request, res: Response): Promise<void> => {
   try {
     const key = getConfig('OPENAI_API_KEY')
     if (!key || key === 'your-openai-api-key-here') {
@@ -35,7 +36,7 @@ router.get('/test', async (req: Request, res: Response): Promise<void> => {
 
     const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
-      model: 'gpt-5-nano',
+      model: 'gpt-4.1-mini',
       messages: [{ role: 'user', content: 'Diga apenas: OK' }],
       max_tokens: 10,
     })
@@ -109,7 +110,7 @@ router.post('/suggest-title', async (req: Request, res: Response): Promise<void>
       : `Live na categoria "${category || 'Geral'}", nicho "${niche || 'E-commerce'}". Gere 5 titulos (max 60 chars cada), um por linha, sem numeracao.`
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-5-nano',
+      model: 'gpt-4.1-mini',
       messages: [
         {
           role: 'system',
@@ -120,6 +121,8 @@ router.post('/suggest-title', async (req: Request, res: Response): Promise<void>
       max_tokens: 500,
       temperature: 0.7,
     })
+
+    trackTokenUsage(req.user.id, 'suggest-title', completion.usage)
 
     const titles = completion.choices[0].message.content
       ?.split('\n')
@@ -167,7 +170,7 @@ router.post('/suggest-description', async (req: Request, res: Response): Promise
       : `Live Shopee${title ? ` "${title}"` : ''}. Crie 3 descricoes (max 250 chars cada), uma por linha, sem numeracao.`
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-5-nano',
+      model: 'gpt-4.1-mini',
       messages: [
         {
           role: 'system',
@@ -178,6 +181,8 @@ router.post('/suggest-description', async (req: Request, res: Response): Promise
       max_tokens: 500,
       temperature: 0.7,
     })
+
+    trackTokenUsage(req.user.id, 'suggest-description', completion.usage)
 
     const descriptions = completion.choices[0].message.content
       ?.split('\n')
@@ -229,38 +234,28 @@ router.post(
 
       const result: any = { stats: {}, products: [], traffic: {} }
 
-      // Collect all images for smart routing
-      const allImages = [
-        ...(files.statsScreenshots || []),
-        ...(files.productScreenshots || []),
-        ...(files.trafficScreenshots || []),
-      ]
+      // Each category ONLY receives its own dropzone images - no cross-contamination
+      const statsImages = files.statsScreenshots || []
+      const productImages = files.productScreenshots || []
+      const trafficImages = files.trafficScreenshots || []
 
-      // Count how many dropzones have images
-      const usedDropzones = [
-        (files.statsScreenshots?.length || 0) > 0,
-        (files.productScreenshots?.length || 0) > 0,
-        (files.trafficScreenshots?.length || 0) > 0,
-      ].filter(Boolean).length
-
-      // Stats and traffic share overlapping fields, so fallback makes sense for them
-      // Products NEVER fallback - only extract from explicit product screenshots to avoid overwriting existing products
-      const fallbackToAll = usedDropzones <= 1
-
-      const statsImages = files.statsScreenshots?.length ? files.statsScreenshots : (fallbackToAll ? allImages : [])
-      const productImages = files.productScreenshots?.length ? files.productScreenshots : []
-      const trafficImages = files.trafficScreenshots?.length ? files.trafficScreenshots : (fallbackToAll ? allImages : [])
-
-      // Run all extractions in PARALLEL for speed (GPT-5-nano is slow)
+      // Run all extractions in PARALLEL for speed
+      const userId = req.user.id
       const [statsRes, productsRes, trafficRes] = await Promise.allSettled([
-        statsImages.length ? extractFromImages(openai, statsImages, STATS_PROMPT) : Promise.resolve({}),
-        productImages.length ? extractFromImages(openai, productImages, PRODUCTS_PROMPT) : Promise.resolve({ products: [] }),
-        trafficImages.length ? extractFromImages(openai, trafficImages, TRAFFIC_PROMPT) : Promise.resolve({}),
+        statsImages.length ? extractFromImages(openai, statsImages, STATS_PROMPT, 2000, { userId, feature: 'extract-stats' }) : Promise.resolve({}),
+        productImages.length ? extractFromImages(openai, productImages, PRODUCTS_PROMPT, 4000, { userId, feature: 'extract-products' }) : Promise.resolve({ products: [] }),
+        trafficImages.length ? extractFromImages(openai, trafficImages, TRAFFIC_PROMPT, 2000, { userId, feature: 'extract-traffic' }) : Promise.resolve({}),
       ])
 
       result.stats = statsRes.status === 'fulfilled' ? statsRes.value : {}
       result.products = productsRes.status === 'fulfilled' ? (productsRes.value.products || []) : []
       result.traffic = trafficRes.status === 'fulfilled' ? trafficRes.value : {}
+
+      // Log extraction failures for debugging
+      if (statsRes.status === 'rejected') console.error('[AI] Stats extraction failed:', statsRes.reason?.message || statsRes.reason)
+      if (productsRes.status === 'rejected') console.error('[AI] Products extraction failed:', productsRes.reason?.message || productsRes.reason)
+      if (trafficRes.status === 'rejected') console.error('[AI] Traffic extraction failed:', trafficRes.reason?.message || trafficRes.reason)
+      console.log(`[AI] Extraction results: stats=${Object.keys(result.stats).length} fields, products=${result.products.length} items, traffic=${Object.keys(result.traffic).length} fields`)
 
       const reportData: any = {
         ...(result.stats.liveTitle ? { liveTitle: result.stats.liveTitle } : {}),
@@ -277,10 +272,10 @@ router.post(
         peakViewers: result.stats.peakViewers || 0,
         avgWatchTime: result.stats.avgWatchTime || 0,
         liveDuration: result.stats.liveDuration || 0,
-        clickRate: result.stats.clickRate || result.traffic.clickRate || 0,
+        clickRate: result.stats.clickRate || 0,
         totalBuyers: result.stats.totalBuyers || 0,
-        productClicks: result.stats.productClicks || result.traffic.productClicks || 0,
-        productClickRate: result.stats.productClickRate || result.traffic.productClickRate || 0,
+        productClicks: result.stats.productClicks || 0,
+        productClickRate: result.stats.productClickRate || 0,
         conversionRate: result.stats.conversionRate || 0,
         addToCart: result.stats.addToCart || 0,
         gpm: result.stats.gpm || 0,
@@ -289,14 +284,17 @@ router.post(
         totalComments: result.stats.totalComments || 0,
         commentRate: result.stats.commentRate || 0,
         newFollowers: result.stats.newFollowers || 0,
-        couponsUsed: result.stats.couponsUsed || 0,
         coinsUsed: result.stats.coinsUsed || 0,
         coinsCost: (result.stats.coinsUsed || 0) * 0.01,
         coinRedemptions: result.stats.coinRedemptions || 0,
         auctionRounds: result.stats.auctionRounds || 0,
         productImpressions: result.traffic.productImpressions || 0,
+        funnelClickRate: result.traffic.clickRate || 0,
+        funnelProductClicks: result.traffic.productClicks || 0,
         orderRate: result.traffic.orderRate || 0,
+        funnelOrders: result.traffic.totalOrders || 0,
         impressionToOrderRate: result.traffic.impressionToOrderRate || 0,
+        trafficSources: Array.isArray(result.traffic.trafficSources) ? result.traffic.trafficSources : [],
         products: result.products,
       }
 
@@ -351,7 +349,7 @@ function cleanupFiles(files: { [fieldname: string]: Express.Multer.File[] }) {
   Object.values(files).flat().forEach(f => fs.unlink(f.path, () => {}))
 }
 
-async function extractFromImages(openai: OpenAI, files: Express.Multer.File[], systemPrompt: string) {
+async function extractFromImages(openai: OpenAI, files: Express.Multer.File[], systemPrompt: string, maxTokens = 2000, tracking?: { userId: string; feature: string }) {
   // Async file I/O (non-blocking) + detail: 'high' (needed for accurate text/number extraction from screenshots)
   const imageContents = await Promise.all(files.map(async (file) => {
     const buffer = await fs.promises.readFile(file.path)
@@ -362,7 +360,7 @@ async function extractFromImages(openai: OpenAI, files: Express.Multer.File[], s
   }))
 
   const completion = await openai.chat.completions.create({
-    model: 'gpt-5-nano',
+    model: 'gpt-4.1-mini',
     messages: [
       { role: 'system', content: systemPrompt },
       {
@@ -373,17 +371,53 @@ async function extractFromImages(openai: OpenAI, files: Express.Multer.File[], s
         ],
       },
     ],
-    max_tokens: 2000,
+    max_tokens: maxTokens,
     temperature: 0.1,
   })
 
-  const text = completion.choices[0].message.content || '{}'
+  if (tracking) trackTokenUsage(tracking.userId, tracking.feature, completion.usage)
+
+  const raw = completion.choices[0].message.content || '{}'
+  // Strip markdown code blocks (```json ... ```)
+  const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim()
   const jsonMatch = text.match(/\{[\s\S]*\}/) || text.match(/\[[\s\S]*\]/)
+  let jsonStr = jsonMatch ? jsonMatch[0] : text
   try {
-    return JSON.parse(jsonMatch ? jsonMatch[0] : text)
+    const parsed = JSON.parse(jsonStr)
+    console.log(`[AI] Parsed response keys: ${Object.keys(parsed).join(', ')}${parsed.products ? ` (${parsed.products.length} products)` : ''}`)
+    return parsed
   } catch {
-    console.error('Failed to parse AI response:', text)
-    return {}
+    // Try to repair truncated JSON (response cut off by max_tokens)
+    try {
+      // Count unclosed brackets and braces
+      let openBraces = 0, openBrackets = 0
+      let inString = false, escape = false
+      for (const ch of jsonStr) {
+        if (escape) { escape = false; continue }
+        if (ch === '\\' && inString) { escape = true; continue }
+        if (ch === '"') { inString = !inString; continue }
+        if (inString) continue
+        if (ch === '{') openBraces++
+        else if (ch === '}') openBraces--
+        else if (ch === '[') openBrackets++
+        else if (ch === ']') openBrackets--
+      }
+      // Close unclosed string
+      if (inString) jsonStr += '"'
+      // Remove incomplete key-value pair at end (e.g. "price": or "price":1.)
+      jsonStr = jsonStr.replace(/,?\s*"[^"]*"\s*:\s*(?:[^,\]\}"]*)?$/, '')
+      // Remove trailing comma
+      jsonStr = jsonStr.replace(/,\s*$/, '')
+      // Close any unclosed brackets/braces (order matters: ] before })
+      for (let i = 0; i < openBrackets; i++) jsonStr += ']'
+      for (let i = 0; i < openBraces; i++) jsonStr += '}'
+      const repaired = JSON.parse(jsonStr)
+      console.log(`[AI] Repaired truncated JSON. Keys: ${Object.keys(repaired).join(', ')}${repaired.products ? ` (${repaired.products.length} products)` : ''}`)
+      return repaired
+    } catch {
+      console.error('[AI] Failed to parse response. Raw text:', raw.slice(0, 500))
+      return {}
+    }
   }
 }
 
@@ -397,8 +431,14 @@ function getMockExtractedData() {
     productClickRate: 2.0, conversionRate: 1.1, addToCart: 175, gpm: 11.03,
     totalLikes: 30699, totalShares: 9, totalComments: 246,
     commentRate: 2.3, newFollowers: 151,
-    couponsUsed: 0, coinsUsed: 0, coinRedemptions: 0, auctionRounds: 0,
-    productImpressions: 9935, impressionToOrderRate: 0.06,
+    coinsUsed: 0, coinRedemptions: 0, auctionRounds: 0,
+    productImpressions: 9935, funnelClickRate: 5.6, funnelProductClicks: 556, funnelOrders: 6, impressionToOrderRate: 0.06,
+    trafficSources: [
+      { source: 'Painel Ao Vivo', trafficRate: 28.0, pageViews: 2207 },
+      { source: 'Recomendação', trafficRate: 2.0, pageViews: 134 },
+      { source: 'Vídeo', trafficRate: 1.0, pageViews: 40 },
+      { source: 'Outros', trafficRate: 69.0, pageViews: 5354 },
+    ],
     products: [
       { name: 'Smartwatch Positivo Watch Essential 1.83"', price: 119.11, productClicks: 288, clickRate: 2.0, orders: 4, itemsSold: 4, orderClickRate: 1.4, addToCart: 98, revenue: 63.60, shopeeItemId: '40478428325' },
       { name: 'Sanduicheira 3 em 1 220V', price: 149.69, productClicks: 150, clickRate: 2.0, orders: 1, itemsSold: 1, orderClickRate: 0.7, addToCart: 40, revenue: 49.69 },
@@ -415,18 +455,33 @@ totalRevenue: "Vendas" R$ | totalOrders: "Pedidos" | totalItemsSold: "Itens vend
 totalViewers: "Espectadores" | engagedViewers: "Visualizadores engajados" | totalViews: "Visualizações" | peakViewers: "Pico simultâneo" | avgWatchTime: HH:MM:SS→segundos
 clickRate: "Taxa de cliques" % | totalBuyers: "Compradores" | productClicks: "Cliques do produto" | productClickRate: "Taxa de cliques no produto" % | conversionRate: "Taxa de conversão" % | addToCart: "Adicionar ao carrinho" | gpm: "GPM"
 totalLikes: "Curtidas" | totalShares: "Compartilhamentos" | totalComments: "Comentários" | commentRate: "Taxa de comentários" % | newFollowers: "Novos Seguidores"
-couponsUsed: "Cupons usados" | coinsUsed: "Moedas usadas" | coinRedemptions: "Resgates" | auctionRounds: "Rodada de leilão"
+coinsUsed: "Moedas resgatadas" (número GRANDE, milhares, ex: 18.920→18920) | coinRedemptions: "Quantidade de resgates" (número menor) | auctionRounds: "Rodada de moedas"
 
+ATENÇÃO: NÃO confundir "Cupons" com "Moedas". Cupons=poucas unidades (0-20). Moedas=milhares (1 moeda=R$0,01).
 Conversões BR: R$1.213,62→1213.62 (ponto=milhar, vírgula=decimal) | HH:MM:SS→segundos | 1,3%→1.3 (NÃO dividir por 100) | 18.920→18920`
 
 const PRODUCTS_PROMPT = `Extraia TODOS os produtos da lista Shopee. Retorne JSON: {"products":[{campos abaixo}]}
 
-Campos: name, price (R$), productClicks, clickRate (%), orders, itemsSold, orderClickRate (%), addToCart, revenue (R$), shopeeItemId (se visível)
+Campos: name, canonicalName (nome curto padronizado, max 60 chars, sem detalhes técnicos extras), price (R$), productClicks, clickRate (%), orders, itemsSold, orderClickRate (%), addToCart, revenue (R$), shopeeItemId (se visível)
 
 Conversões BR: R$1.213,62→1213.62 (ponto=milhar, vírgula=decimal) | 1,0%→1.0 (NÃO dividir por 100) | 18.920→18920`
 
-const TRAFFIC_PROMPT = `Extraia dados do funil de tráfego Shopee Live. Retorne JSON com: productImpressions, clickRate (%), productClicks, orderRate (%), totalOrders, impressionToOrderRate (%)
+const TRAFFIC_PROMPT = `Extraia dados da página "Conversão de Tráfego" da Shopee Live. Esta página tem 2 partes:
 
-Funil: Impressão→Cliques→Pedido. Conversões BR: 18.920→18920 (ponto=milhar) | 2,41%→2.41 (NÃO dividir por 100)`
+PARTE 1 - FUNIL (gráfico de barras no topo):
+A taxa geral de conversão é mostrada no topo. O funil mostra: Impressão do Produto → Taxa de Cliques → Cliques de Produto → Taxa de Pedido → Pedido confirmado
+Extraia:
+- productImpressions: número grande da barra "Impressão do Produto" (ex: 6.168→6168)
+- clickRate: "Taxa de Cliques" (%) entre impressões e cliques
+- productClicks: "Cliques de Produto" (número)
+- orderRate: "Taxa de Pedido" (%) entre cliques e pedidos
+- totalOrders: "Pedido confirmado" (número)
+- impressionToOrderRate: taxa geral de conversão (%) mostrada no topo
+
+PARTE 2 - FONTES DE TRÁFEGO (tabela):
+- trafficSources: array com cada linha da tabela: {"source":"nome","trafficRate":X,"pageViews":Y}
+
+Retorne JSON com TODOS estes campos. Se a tabela de fontes não estiver visível, retorne trafficSources: [].
+Conversões BR: 6.168→6168 (ponto=milhar) | 2,12%→2.12 (NÃO dividir por 100)`
 
 export default router

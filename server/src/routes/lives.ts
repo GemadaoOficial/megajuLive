@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express'
-import { Prisma } from '@prisma/client'
 import prisma from '../utils/prisma.js'
+import { Prisma } from '../generated/prisma/client.js'
 import { authenticate } from '../middlewares/auth.js'
 import { parsePaginationParams, buildPaginatedResponse } from '../utils/pagination.js'
 import { createAuditLog } from './audit.js'

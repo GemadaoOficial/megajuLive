@@ -43,14 +43,14 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#050507] via-[#0a0a12] to-[#050507] flex">
+    <div className="min-h-screen bg-linear-to-br from-dark-bg via-[#0a0a12] to-dark-bg flex">
       {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary via-orange-500 to-amber-500 p-12 flex-col justify-between relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-primary via-orange-500 to-amber-500 p-12 flex-col justify-between relative overflow-hidden">
         <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)', backgroundSize: '24px 24px'}} />
 
         <div className="relative z-10">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center">
               <Flame className="w-7 h-7 text-white" />
             </div>
             <div>
@@ -89,7 +89,7 @@ export default function Register() {
         >
           {/* Mobile Logo */}
           <div className="lg:hidden text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-orange-500 mb-4 shadow-lg shadow-primary/30">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-linear-to-br from-primary to-orange-500 mb-4 shadow-lg shadow-primary/30">
               <Flame className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-white">MegaJu</h1>

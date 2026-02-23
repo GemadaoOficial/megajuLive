@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
-import { Prisma } from '@prisma/client'
 import prisma from '../utils/prisma.js'
+import { Prisma } from '../generated/prisma/client.js'
 import { authenticate, requireAdmin } from '../middlewares/auth.js'
 import { parsePaginationParams, buildPaginatedResponse } from '../utils/pagination.js'
 import { createAuditLog } from './audit.js'
@@ -389,6 +389,97 @@ router.get('/analytics', async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     console.error('Get analytics error:', error)
     res.status(500).json({ message: 'Erro ao buscar analytics' })
+  }
+})
+
+// GET /admin/ai-usage - AI token usage analytics
+router.get('/ai-usage', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const days = parseInt(req.query.days as string) || 30
+    const since = new Date()
+    since.setDate(since.getDate() - days)
+
+    const where = { createdAt: { gte: since } }
+
+    // Summary totals
+    const agg = await prisma.aITokenUsage.aggregate({
+      where,
+      _sum: { promptTokens: true, completionTokens: true, totalTokens: true, estimatedCost: true },
+      _count: true,
+    })
+
+    const totalTokens = agg._sum.totalTokens || 0
+    const totalCost = agg._sum.estimatedCost || 0
+    const totalRequests = agg._count
+    const avgTokensPerRequest = totalRequests > 0 ? Math.round(totalTokens / totalRequests) : 0
+
+    // By feature
+    const byFeatureRaw = await prisma.aITokenUsage.groupBy({
+      by: ['feature'],
+      where,
+      _sum: { totalTokens: true, estimatedCost: true },
+      _count: true,
+      orderBy: { _sum: { totalTokens: 'desc' } },
+    })
+
+    const byFeature = byFeatureRaw.map((f: any) => ({
+      feature: f.feature,
+      tokens: f._sum.totalTokens || 0,
+      cost: f._sum.estimatedCost || 0,
+      requests: f._count,
+    }))
+
+    // Daily usage
+    const allRecords = await prisma.aITokenUsage.findMany({
+      where,
+      select: { totalTokens: true, estimatedCost: true, createdAt: true },
+      orderBy: { createdAt: 'asc' },
+    })
+
+    const dailyMap = new Map<string, { tokens: number; cost: number; requests: number }>()
+    for (const r of allRecords) {
+      const date = r.createdAt.toISOString().split('T')[0]
+      const existing = dailyMap.get(date) || { tokens: 0, cost: 0, requests: 0 }
+      existing.tokens += r.totalTokens
+      existing.cost += r.estimatedCost
+      existing.requests++
+      dailyMap.set(date, existing)
+    }
+    const dailyUsage = Array.from(dailyMap.entries()).map(([date, data]) => ({ date, ...data }))
+
+    // By user
+    const byUserRaw = await prisma.aITokenUsage.groupBy({
+      by: ['userId'],
+      where,
+      _sum: { totalTokens: true, estimatedCost: true },
+      _count: true,
+      orderBy: { _sum: { totalTokens: 'desc' } },
+    })
+
+    const userIds = byUserRaw.map((u: any) => u.userId)
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, name: true },
+    })
+    const userMap = new Map(users.map(u => [u.id, u.name]))
+
+    const byUser = byUserRaw.map((u: any) => ({
+      userId: u.userId,
+      userName: userMap.get(u.userId) || 'Desconhecido',
+      tokens: u._sum.totalTokens || 0,
+      cost: u._sum.estimatedCost || 0,
+      requests: u._count,
+    }))
+
+    res.json({
+      summary: { totalTokens, totalCost, totalRequests, avgTokensPerRequest },
+      byFeature,
+      dailyUsage,
+      byUser,
+    })
+  } catch (error) {
+    console.error('Get AI usage error:', error)
+    res.status(500).json({ message: 'Erro ao buscar uso de IA' })
   }
 })
 

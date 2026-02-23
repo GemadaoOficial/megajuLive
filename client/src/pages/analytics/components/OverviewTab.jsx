@@ -3,8 +3,10 @@ import { motion } from 'framer-motion'
 import {
   DollarSign, ShoppingCart, Eye, Users, Heart, MessageCircle,
   Share2, UserPlus, MousePointerClick, Megaphone,
-  TrendingUp, Zap, Package, Tag, Coins, Video, Target
+  TrendingUp, Zap, Package, Coins, Video, Target,
+  ArrowUpRight, ArrowDownRight, Trophy
 } from 'lucide-react'
+import GoalModal from './GoalModal'
 
 // ─── Formatters ──────────────────────────────────────────────────────────────
 const fmt = (num) => {
@@ -32,7 +34,7 @@ function Glass({ children, className = '', delay = 0 }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
-      className={`bg-white/[0.05] backdrop-blur-xl border border-white/[0.08] rounded-2xl ${className}`}
+      className={`bg-white/5 backdrop-blur-xl border border-white/8 rounded-2xl ${className}`}
     >
       {children}
     </motion.div>
@@ -220,8 +222,25 @@ function VFunnel({ funnelSteps }) {
   )
 }
 
+// ─── Delta Badge ─────────────────────────────────────────────────────────────
+function DeltaBadge({ value }) {
+  if (value == null || value === undefined) return null
+  const isPositive = value > 0
+  const isZero = value === 0
+  if (isZero) return null
+  const Arrow = isPositive ? ArrowUpRight : ArrowDownRight
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${
+      isPositive ? 'text-emerald-400 bg-emerald-500/15' : 'text-red-400 bg-red-500/15'
+    }`}>
+      <Arrow className="w-3 h-3" />
+      {isPositive ? '+' : ''}{value.toFixed(1)}%
+    </span>
+  )
+}
+
 // ─── Main component ──────────────────────────────────────────────────────────
-export default function OverviewTab({ summary, loading }) {
+export default function OverviewTab({ summary, loading, trafficSources = [], comparison = null, goals = [], topProducts = null, onGoalSaved }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -236,7 +255,7 @@ export default function OverviewTab({ summary, loading }) {
   if (!summary) {
     return (
       <div className="text-center py-24 px-4">
-        <div className="w-20 h-20 mx-auto rounded-2xl bg-white/[0.05] flex items-center justify-center mb-4">
+        <div className="w-20 h-20 mx-auto rounded-2xl bg-white/5 flex items-center justify-center mb-4">
           <TrendingUp className="w-10 h-10 text-white/20" />
         </div>
         <p className="text-lg font-semibold text-white/50">Nenhum dado encontrado</p>
@@ -246,6 +265,7 @@ export default function OverviewTab({ summary, loading }) {
   }
 
   const s = summary
+  const [showGoalModal, setShowGoalModal] = useState(false)
   const avgRevenuePerLive = s.livesCount > 0 ? s.totalRevenue / s.livesCount : 0
 
   // Funnel data
@@ -257,12 +277,18 @@ export default function OverviewTab({ summary, loading }) {
     { label: 'Pedidos',      value: s.totalOrders,         color: '#10b981', colorEnd: '#34d399' },
   ]
 
+  // Cart abandonment calc
+  const cartAbandoned = (s.totalAddToCart || 0) - (s.totalOrders || 0)
+  const cartAbandonRate = s.totalAddToCart > 0 ? (cartAbandoned / s.totalAddToCart * 100) : 0
+  const lostRevenue = cartAbandoned * (s.avgOrderValue || 0)
+
   // KPI cards data
   const kpiCards = [
     {
       icon: Eye, label: 'Espectadores', value: fmt(s.totalViewers),
       sub: `pico: ${fmt(s.peakViewers)}`,
       border: 'border-violet-500', glow: 'hover:shadow-violet-500/20',
+      compKey: 'totalViewers',
     },
     {
       icon: Zap, label: 'Engajados', value: fmt(s.engagedViewers),
@@ -270,14 +296,26 @@ export default function OverviewTab({ summary, loading }) {
       border: 'border-blue-500', glow: 'hover:shadow-blue-500/20',
     },
     {
+      icon: Eye, label: 'Visualizacoes', value: fmt(s.totalViews),
+      sub: `media: ${fmt(s.livesCount > 0 ? Math.round(s.totalViews / s.livesCount) : 0)}/live`,
+      border: 'border-cyan-500', glow: 'hover:shadow-cyan-500/20',
+    },
+    {
+      icon: ShoppingCart, label: 'Abandono Carrinho', value: fmt(cartAbandoned) + ' itens',
+      sub: `~${fmtCurrency(lostRevenue)} perdidos (${fmtPct(cartAbandonRate)})`,
+      border: 'border-red-500', glow: 'hover:shadow-red-500/20',
+    },
+    {
       icon: Package, label: 'Pedidos', value: fmt(s.totalOrders),
       sub: `avg: ${fmtCurrency(s.avgOrderValue)}`,
       border: 'border-orange-500', glow: 'hover:shadow-orange-500/20',
+      compKey: 'totalOrders',
     },
     {
       icon: Video, label: 'Lives', value: s.livesCount,
       sub: `dur. media: ${fmtTime(s.avgLiveDuration)}`,
       border: 'border-white/30', glow: 'hover:shadow-white/10',
+      compKey: 'livesCount',
     },
   ]
 
@@ -310,7 +348,7 @@ export default function OverviewTab({ summary, loading }) {
     <div className="space-y-5">
 
       {/* ── SECTION 1: Revenue Hero ──────────────────────────────────────── */}
-      <Glass delay={0.05} className="p-5 md:p-6 border-l-4 border-l-emerald-500 bg-gradient-to-r from-emerald-500/[0.08] to-transparent">
+      <Glass delay={0.05} className="p-5 md:p-6 border-l-4 border-l-emerald-500 bg-linear-to-r from-emerald-500/8 to-transparent">
         <div className="flex items-start justify-between mb-4">
           <div>
             <div className="flex items-center gap-2.5 mb-2">
@@ -322,6 +360,7 @@ export default function OverviewTab({ summary, loading }) {
             <p className="text-4xl md:text-5xl font-extrabold text-white leading-none">
               {fmtCurrency(s.totalRevenue)}
             </p>
+            {comparison?.totalRevenue && <DeltaBadge value={comparison.totalRevenue.change} />}
           </div>
           <div className="text-right hidden md:block">
             <p className="text-white/30 text-xs">avg/comprador</p>
@@ -331,8 +370,8 @@ export default function OverviewTab({ summary, loading }) {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
           {revenueStats.map((st) => (
-            <div key={st.label} className="bg-white/[0.05] rounded-xl px-3.5 py-2.5 flex items-center gap-2.5">
-              <st.icon className="w-4 h-4 text-emerald-400/70 flex-shrink-0" />
+            <div key={st.label} className="bg-white/5 rounded-xl px-3.5 py-2.5 flex items-center gap-2.5">
+              <st.icon className="w-4 h-4 text-emerald-400/70 shrink-0" />
               <div className="min-w-0">
                 <p className="text-white font-bold text-sm leading-tight truncate">{st.value}</p>
                 <p className="text-white/35 text-xs truncate">{st.label}</p>
@@ -342,13 +381,101 @@ export default function OverviewTab({ summary, loading }) {
         </div>
       </Glass>
 
+      {/* ── GOALS SECTION ──────────────────────────────────────────────── */}
+      {(goals.length > 0 || onGoalSaved) && (
+        <Glass delay={0.08} className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
+                <Target className="w-4 h-4 text-violet-400" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-sm">Metas do Mes</h3>
+                <p className="text-white/30 text-xs">Acompanhe seu progresso</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowGoalModal(true)}
+              className="text-xs font-semibold text-violet-400 hover:text-violet-300 px-3 py-1.5 rounded-lg border border-violet-500/30 hover:bg-violet-500/10 transition-all"
+            >
+              {goals.length > 0 ? 'Editar' : 'Definir Metas'}
+            </button>
+          </div>
+          {goals.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {goals.map((goal) => {
+                const metricLabels = {
+                  totalRevenue: { label: 'Receita', format: (v) => fmtCurrency(v), icon: DollarSign, color: 'emerald' },
+                  totalOrders: { label: 'Pedidos', format: (v) => fmt(v), icon: ShoppingCart, color: 'orange' },
+                  totalViewers: { label: 'Espectadores', format: (v) => fmt(v), icon: Eye, color: 'violet' },
+                  conversionRate: { label: 'Conversao', format: (v) => fmtPct(v), icon: TrendingUp, color: 'blue' },
+                }
+                const meta = metricLabels[goal.metric] || { label: goal.metric, format: fmt, icon: Target, color: 'slate' }
+                const current = s[goal.metric] || s[`avg${goal.metric.charAt(0).toUpperCase()}${goal.metric.slice(1)}`] || 0
+                const progress = goal.target > 0 ? Math.min((current / goal.target) * 100, 100) : 0
+                const MetricIcon = meta.icon
+                const colorMap = {
+                  emerald: { bg: 'bg-emerald-500/20', text: 'text-emerald-400', bar: 'from-emerald-500 to-teal-500' },
+                  orange: { bg: 'bg-orange-500/20', text: 'text-orange-400', bar: 'from-orange-500 to-amber-500' },
+                  violet: { bg: 'bg-violet-500/20', text: 'text-violet-400', bar: 'from-violet-500 to-purple-500' },
+                  blue: { bg: 'bg-blue-500/20', text: 'text-blue-400', bar: 'from-blue-500 to-indigo-500' },
+                  slate: { bg: 'bg-white/10', text: 'text-white/60', bar: 'from-slate-500 to-slate-400' },
+                }
+                const colors = colorMap[meta.color] || colorMap.slate
+                return (
+                  <div key={goal.id} className="bg-white/4 border border-white/6 rounded-xl p-3.5">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-7 h-7 rounded-lg ${colors.bg} flex items-center justify-center`}>
+                          <MetricIcon className={`w-3.5 h-3.5 ${colors.text}`} />
+                        </div>
+                        <span className="text-white/60 text-xs font-medium">{meta.label}</span>
+                      </div>
+                      <span className={`text-xs font-bold ${progress >= 100 ? 'text-emerald-400' : 'text-white/50'}`}>
+                        {progress.toFixed(0)}%
+                      </span>
+                    </div>
+                    <div className="h-2 bg-white/6 rounded-full overflow-hidden mb-1.5">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.max(progress, 2)}%` }}
+                        transition={{ delay: 0.3, duration: 0.6 }}
+                        className={`h-full rounded-full bg-linear-to-r ${colors.bar}`}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-white/30 text-[10px]">{meta.format(current)}</span>
+                      <span className="text-white/30 text-[10px]">Meta: {meta.format(goal.target)}</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-white/30 text-sm">Nenhuma meta definida para este mes</p>
+              <p className="text-white/20 text-xs mt-1">Clique em "Definir Metas" para comecar</p>
+            </div>
+          )}
+        </Glass>
+      )}
+
+      {/* GoalModal */}
+      {showGoalModal && (
+        <GoalModal
+          goals={goals}
+          onClose={() => setShowGoalModal(false)}
+          onSaved={() => { setShowGoalModal(false); onGoalSaved?.() }}
+        />
+      )}
+
       {/* ── SECTION 2: KPI Grid ──────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {kpiCards.map((kpi, i) => (
           <Glass
             key={kpi.label}
             delay={0.1 + i * 0.05}
-            className={`p-4 border-t-2 ${kpi.border} hover:bg-white/[0.08] ${kpi.glow} hover:shadow-lg transition-all duration-300 cursor-default`}
+            className={`p-4 border-t-2 ${kpi.border} hover:bg-white/8 ${kpi.glow} hover:shadow-lg transition-all duration-300 cursor-default`}
           >
             <div className="flex items-center gap-2 mb-3">
               <kpi.icon className="w-4 h-4 text-white/50" />
@@ -356,6 +483,11 @@ export default function OverviewTab({ summary, loading }) {
             </div>
             <p className="text-2xl md:text-3xl font-bold text-white leading-none mb-1">{kpi.value}</p>
             <p className="text-white/30 text-xs">{kpi.sub}</p>
+            {kpi.compKey && comparison?.[kpi.compKey] && (
+              <div className="mt-1">
+                <DeltaBadge value={comparison[kpi.compKey].change} />
+              </div>
+            )}
           </Glass>
         ))}
       </div>
@@ -366,7 +498,7 @@ export default function OverviewTab({ summary, loading }) {
         {/* Donut Funnel */}
         <Glass delay={0.25} className="lg:col-span-7 p-5">
           <div className="flex items-center gap-2.5 mb-5">
-            <div className="w-8 h-8 rounded-lg bg-white/[0.08] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-white/8 flex items-center justify-center">
               <MousePointerClick className="w-4 h-4 text-white/60" />
             </div>
             <div>
@@ -381,7 +513,7 @@ export default function OverviewTab({ summary, loading }) {
         {/* Performance Panel */}
         <Glass delay={0.3} className="lg:col-span-5 p-5">
           <div className="flex items-center gap-2.5 mb-5">
-            <div className="w-8 h-8 rounded-lg bg-white/[0.08] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-white/8 flex items-center justify-center">
               <Target className="w-4 h-4 text-white/60" />
             </div>
             <div>
@@ -402,7 +534,7 @@ export default function OverviewTab({ summary, loading }) {
                   <span className="text-white/50 text-xs font-medium">{m.label}</span>
                   <span className="text-white font-bold text-sm">{m.value}</span>
                 </div>
-                <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+                <div className="h-1.5 bg-white/6 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.max(m.pct, 2)}%` }}
@@ -415,16 +547,10 @@ export default function OverviewTab({ summary, loading }) {
           </div>
 
           {/* Audience extra stats */}
-          <div className="mt-5 pt-4 border-t border-white/[0.06]">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white/[0.04] rounded-xl px-3 py-2.5">
-                <p className="text-white/30 text-xs">Tempo medio</p>
-                <p className="text-white font-bold text-sm">{fmtTime(s.avgWatchTime)}</p>
-              </div>
-              <div className="bg-white/[0.04] rounded-xl px-3 py-2.5">
-                <p className="text-white/30 text-xs">Visualizacoes</p>
-                <p className="text-white font-bold text-sm">{fmt(s.totalViews)}</p>
-              </div>
+          <div className="mt-5 pt-4 border-t border-white/6">
+            <div className="bg-white/4 rounded-xl px-3 py-2.5">
+              <p className="text-white/30 text-xs">Tempo medio</p>
+              <p className="text-white font-bold text-sm">{fmtTime(s.avgWatchTime)}</p>
             </div>
           </div>
         </Glass>
@@ -452,15 +578,15 @@ export default function OverviewTab({ summary, loading }) {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 + i * 0.05 }}
-                className="flex items-center gap-3 px-2.5 py-2.5 rounded-xl hover:bg-white/[0.04] transition-colors"
+                className="flex items-center gap-3 px-2.5 py-2.5 rounded-xl hover:bg-white/4 transition-colors"
               >
-                <div className={`w-8 h-8 rounded-lg ${item.iconBg} flex items-center justify-center flex-shrink-0`}>
+                <div className={`w-8 h-8 rounded-lg ${item.iconBg} flex items-center justify-center shrink-0`}>
                   <item.icon className={`w-3.5 h-3.5 ${item.iconColor}`} />
                 </div>
                 <span className="text-white/50 text-sm flex-1">{item.label}</span>
                 <div className="flex items-center gap-2">
                   {item.sub && (
-                    <span className="text-xs text-white/25 bg-white/[0.05] px-1.5 py-0.5 rounded-md">{item.sub}</span>
+                    <span className="text-xs text-white/25 bg-white/5 px-1.5 py-0.5 rounded-md">{item.sub}</span>
                   )}
                   <span className="font-bold text-white text-sm">{item.value}</span>
                 </div>
@@ -477,28 +603,13 @@ export default function OverviewTab({ summary, loading }) {
             </div>
             <div>
               <h3 className="font-bold text-white text-sm">Marketing</h3>
-              <p className="text-white/30 text-xs">Cupons e moedas Shopee</p>
+              <p className="text-white/30 text-xs">Moedas Shopee</p>
             </div>
           </div>
 
           <div className="space-y-3">
-            {/* Cupons */}
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
-              <div className="flex items-center justify-between mb-2.5">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                    <Tag className="w-4.5 h-4.5 text-amber-400" />
-                  </div>
-                  <div>
-                    <p className="text-white/40 text-xs">Cupons utilizados</p>
-                    <p className="text-2xl font-bold text-white leading-tight">{fmt(s.totalCouponsUsed)}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Moedas */}
-            <div className="bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+            <div className="bg-white/4 border border-white/6 rounded-xl p-4">
               <div className="flex items-center justify-between mb-2.5">
                 <div className="flex items-center gap-2.5">
                   <div className="w-9 h-9 rounded-lg bg-yellow-500/20 flex items-center justify-center">
@@ -515,12 +626,12 @@ export default function OverviewTab({ summary, loading }) {
                 </div>
               </div>
               {s.totalCoinsUsed > 0 && (
-                <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden mt-1">
+                <div className="h-1.5 bg-white/6 rounded-full overflow-hidden mt-1">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${Math.min(((s.totalCoinsCost || 0) / (s.totalRevenue || 1)) * 100, 100)}%` }}
                     transition={{ delay: 0.6, duration: 0.5 }}
-                    className="h-full rounded-full bg-gradient-to-r from-yellow-500 to-amber-500"
+                    className="h-full rounded-full bg-linear-to-r from-yellow-500 to-amber-500"
                   />
                 </div>
               )}
@@ -533,6 +644,96 @@ export default function OverviewTab({ summary, loading }) {
           </div>
         </Glass>
       </div>
+
+      {/* ── SECTION: Top Products ────────────────────────────────────── */}
+      {topProducts && (topProducts.topByRevenue?.length > 0 || topProducts.topByOrders?.length > 0) && (
+        <Glass delay={0.42} className="p-5">
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center">
+              <Trophy className="w-4 h-4 text-orange-400" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-sm">Top Produtos</h3>
+              <p className="text-white/30 text-xs">Melhores produtos do periodo</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Top by Revenue */}
+            {topProducts.topByRevenue?.length > 0 && (
+              <div>
+                <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-2.5">Por Receita</p>
+                <div className="space-y-1.5">
+                  {topProducts.topByRevenue.slice(0, 5).map((p, i) => (
+                    <div key={`rev-${i}`} className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-white/4 transition-colors">
+                      <span className={`text-xs font-bold w-5 text-center ${i === 0 ? 'text-yellow-400' : i === 1 ? 'text-slate-300' : i === 2 ? 'text-amber-600' : 'text-white/30'}`}>
+                        {i + 1}
+                      </span>
+                      <span className="text-white/70 text-sm flex-1 truncate">{p.name}</span>
+                      <span className="text-emerald-400 text-xs font-bold">{fmtCurrency(p.revenue)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {/* Top by Orders */}
+            {topProducts.topByOrders?.length > 0 && (
+              <div>
+                <p className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-2.5">Por Pedidos</p>
+                <div className="space-y-1.5">
+                  {topProducts.topByOrders.slice(0, 5).map((p, i) => (
+                    <div key={`ord-${i}`} className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl hover:bg-white/4 transition-colors">
+                      <span className={`text-xs font-bold w-5 text-center ${i === 0 ? 'text-yellow-400' : i === 1 ? 'text-slate-300' : i === 2 ? 'text-amber-600' : 'text-white/30'}`}>
+                        {i + 1}
+                      </span>
+                      <span className="text-white/70 text-sm flex-1 truncate">{p.name}</span>
+                      <span className="text-orange-400 text-xs font-bold">{fmt(p.orders)} pedidos</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </Glass>
+      )}
+
+      {/* ── SECTION 5: Traffic Sources ─────────────────────────────────── */}
+      {trafficSources && trafficSources.length > 0 && (
+        <Glass delay={0.45} className="p-5">
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
+              <Eye className="w-4 h-4 text-cyan-400" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-sm">Fontes de Trafego</h3>
+              <p className="text-white/30 text-xs">De onde vem seu publico</p>
+            </div>
+          </div>
+          <div className="space-y-3">
+            {trafficSources.map((source, i) => {
+              const maxPV = trafficSources[0]?.pageViews || 1
+              const barPct = Math.max(((source.pageViews || 0) / maxPV) * 100, 2)
+              return (
+                <motion.div key={`${source.source}-${i}`} initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + i * 0.05 }}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-white/60 text-sm font-medium">{source.source}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-cyan-400 text-xs font-bold">{fmtPct(source.trafficRate)}</span>
+                      <span className="text-white font-bold text-sm">{fmt(source.pageViews)}</span>
+                    </div>
+                  </div>
+                  <div className="h-2 bg-white/6 rounded-full overflow-hidden">
+                    <motion.div initial={{ width: 0 }}
+                      animate={{ width: `${barPct}%` }}
+                      transition={{ delay: 0.6 + i * 0.06, duration: 0.5 }}
+                      className="h-full rounded-full bg-linear-to-r from-cyan-500 to-teal-500" />
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        </Glass>
+      )}
 
     </div>
   )

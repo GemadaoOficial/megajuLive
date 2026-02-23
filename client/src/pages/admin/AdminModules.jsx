@@ -112,7 +112,7 @@ export default function AdminModules() {
 
             <div className="grid gap-4">
                 {modules.map((module) => (
-                    <div key={module.id} className="bg-white/[0.05] p-6 rounded-2xl border border-white/[0.08] flex items-center justify-between">
+                    <div key={module.id} className="bg-white/5 p-6 rounded-2xl border border-white/8 flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="text-2xl">{module.icon}</div>
                             <div>
@@ -135,34 +135,34 @@ export default function AdminModules() {
             {/* Modal Simples */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-[#0a0a12] border border-white/[0.08] rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                    <div className="bg-[#0a0a12] border border-white/8 rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
                         <h2 className="text-xl font-bold text-white mb-4">{editingModule ? 'Editar Módulo' : 'Novo Módulo'}</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-slate-300 mb-1">Título</label>
-                                <input required className="w-full bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
+                                <input required className="w-full bg-white/5 border border-white/8 text-white placeholder-white/30 p-2 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-orange-500" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-slate-300 mb-1">Slug (URL)</label>
-                                    <input required className="w-full bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })} />
+                                    <input required className="w-full bg-white/5 border border-white/8 text-white placeholder-white/30 p-2 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-orange-500" value={formData.slug} onChange={e => setFormData({ ...formData, slug: e.target.value })} />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-slate-300 mb-1">Ordem</label>
-                                    <input type="number" required className="w-full bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value={formData.order} onChange={e => setFormData({ ...formData, order: e.target.value })} />
+                                    <input type="number" required className="w-full bg-white/5 border border-white/8 text-white placeholder-white/30 p-2 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-orange-500" value={formData.order} onChange={e => setFormData({ ...formData, order: e.target.value })} />
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-300 mb-1">Descrição Curta</label>
-                                <input required className="w-full bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
+                                <input required className="w-full bg-white/5 border border-white/8 text-white placeholder-white/30 p-2 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-orange-500" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-300 mb-1">URL do Vídeo (Embed)</label>
-                                <input className="w-full bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value={formData.videoUrl} onChange={e => setFormData({ ...formData, videoUrl: e.target.value })} />
+                                <input className="w-full bg-white/5 border border-white/8 text-white placeholder-white/30 p-2 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-orange-500" value={formData.videoUrl} onChange={e => setFormData({ ...formData, videoUrl: e.target.value })} />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-300 mb-1">Conteúdo (Markdown)</label>
-                                <textarea required rows={5} className="w-full bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} />
+                                <textarea required rows={5} className="w-full bg-white/5 border border-white/8 text-white placeholder-white/30 p-2 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-orange-500" value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} />
                             </div>
 
                             <div className="flex justify-end gap-2 mt-6">

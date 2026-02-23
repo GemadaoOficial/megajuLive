@@ -17,7 +17,7 @@ export default function StatCard({ title, value, icon: Icon, trend, trendValue, 
     };
 
     return (
-        <div className="bg-white/[0.05] backdrop-blur-xl border border-white/[0.08] p-6 rounded-2xl hover:shadow-xl transition-all duration-300 group hover:-translate-y-1">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/8 p-6 rounded-2xl hover:shadow-xl transition-all duration-300 group hover:-translate-y-1">
             <div className="flex justify-between items-start mb-4">
                 <div className={`p-3 rounded-xl ${bgClasses[color] || bgClasses.orange} group-hover:scale-110 transition-transform`}>
                     <Icon size={24} />

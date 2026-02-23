@@ -108,13 +108,13 @@ export default function Tutorials() {
             initial={{ opacity: 0, y: -20, height: 0 }}
             animate={{ opacity: 1, y: 0, height: 'auto' }}
             exit={{ opacity: 0, y: -20, height: 0 }}
-            className="relative overflow-hidden bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 rounded-2xl p-6 text-white"
+            className="relative overflow-hidden bg-linear-to-r from-emerald-500 via-green-500 to-teal-500 rounded-2xl p-6 text-white"
           >
             <div className="absolute inset-0">
               <motion.div
                 animate={{ x: ['0%', '100%'] }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent"
               />
             </div>
 
@@ -123,7 +123,7 @@ export default function Tutorials() {
                 <motion.div
                   animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-sm"
+                  className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-xs"
                 >
                   <Unlock className="w-8 h-8" />
                 </motion.div>
@@ -151,18 +151,18 @@ export default function Tutorials() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 text-white"
+        className="relative overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 text-white"
       >
         <div className="absolute inset-0">
           <motion.div
             animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
             transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="absolute -right-40 -top-40 w-96 h-96 bg-gradient-to-br from-primary/30 to-orange-500/30 rounded-full blur-3xl"
+            className="absolute -right-40 -top-40 w-96 h-96 bg-linear-to-br from-primary/30 to-orange-500/30 rounded-full blur-3xl"
           />
           <motion.div
             animate={{ scale: [1.2, 1, 1.2], rotate: [360, 180, 0] }}
             transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-            className="absolute -left-40 -bottom-40 w-96 h-96 bg-gradient-to-br from-violet-500/30 to-purple-500/30 rounded-full blur-3xl"
+            className="absolute -left-40 -bottom-40 w-96 h-96 bg-linear-to-br from-violet-500/30 to-purple-500/30 rounded-full blur-3xl"
           />
           {[...Array(6)].map((_, i) => (
             <motion.div
@@ -182,7 +182,7 @@ export default function Tutorials() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-xs rounded-full mb-6"
           >
             <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}>
               <GraduationCap className="w-5 h-5 text-amber-400" />
@@ -197,7 +197,7 @@ export default function Tutorials() {
             transition={{ delay: 0.3 }}
             className="text-4xl md:text-5xl font-bold mb-4"
           >
-            <span className="bg-gradient-to-r from-white via-amber-200 to-white bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-white via-amber-200 to-white bg-clip-text text-transparent">
               Analista de Conteudo
             </span>
             <br />
@@ -232,9 +232,9 @@ export default function Tutorials() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.6 + index * 0.1 }}
                 whileHover={{ scale: 1.05, y: -2 }}
-                className="flex items-center gap-3 px-4 py-3 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10"
+                className="flex items-center gap-3 px-4 py-3 bg-white/5 backdrop-blur-xs rounded-xl border border-white/10"
               >
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
+                <div className={`w-10 h-10 rounded-lg bg-linear-to-br ${stat.color} flex items-center justify-center`}>
                   <stat.icon className="w-5 h-5 text-white" />
                 </div>
                 <span className="font-medium">{stat.label}</span>
@@ -250,7 +250,7 @@ export default function Tutorials() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="lg:col-span-2 bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6"
+          className="lg:col-span-2 bg-white/5 border border-white/8 rounded-2xl p-6"
         >
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
@@ -258,8 +258,8 @@ export default function Tutorials() {
                 whileHover={{ scale: 1.1, rotate: 10 }}
                 className={`w-16 h-16 rounded-2xl flex items-center justify-center ${
                   isTrainingComplete
-                    ? 'bg-gradient-to-br from-emerald-400 to-green-500'
-                    : 'bg-gradient-to-br from-primary to-orange-500'
+                    ? 'bg-linear-to-br from-emerald-400 to-green-500'
+                    : 'bg-linear-to-br from-primary to-orange-500'
                 }`}
               >
                 {isTrainingComplete ? (
@@ -292,7 +292,7 @@ export default function Tutorials() {
                 key={progressPercent}
                 initial={{ scale: 0.5 }}
                 animate={{ scale: 1 }}
-                className={`text-5xl font-bold bg-gradient-to-r bg-clip-text text-transparent ${
+                className={`text-5xl font-bold bg-linear-to-r bg-clip-text text-transparent ${
                   isTrainingComplete
                     ? 'from-emerald-500 to-green-500'
                     : 'from-primary to-orange-500'
@@ -305,19 +305,19 @@ export default function Tutorials() {
 
           {/* XP-like Progress Bar */}
           <div className="relative">
-            <div className="w-full h-4 bg-white/[0.08] rounded-full overflow-hidden">
+            <div className="w-full h-4 bg-white/8 rounded-full overflow-hidden">
               <motion.div
                 className={`h-full rounded-full relative ${
                   isTrainingComplete
-                    ? 'bg-gradient-to-r from-emerald-400 via-green-400 to-teal-500'
-                    : 'bg-gradient-to-r from-primary via-orange-500 to-amber-500'
+                    ? 'bg-linear-to-r from-emerald-400 via-green-400 to-teal-500'
+                    : 'bg-linear-to-r from-primary via-orange-500 to-amber-500'
                 }`}
                 initial={{ width: 0 }}
                 animate={{ width: `${progressPercent}%` }}
                 transition={{ duration: 1, ease: 'easeOut' }}
               >
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent"
                   animate={{ x: ['-100%', '200%'] }}
                   transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
                 />
@@ -329,7 +329,7 @@ export default function Tutorials() {
                 <div
                   key={mark}
                   className={`w-0.5 h-full ${
-                    progressPercent >= mark ? 'bg-white/50' : 'bg-white/[0.08]'
+                    progressPercent >= mark ? 'bg-white/50' : 'bg-white/8'
                   }`}
                 />
               ))}
@@ -377,7 +377,7 @@ export default function Tutorials() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 text-white"
+          className="bg-linear-to-br from-slate-800 to-slate-900 rounded-2xl p-6 text-white"
         >
           <div className="flex items-center gap-2 mb-4">
             <Trophy className="w-5 h-5 text-amber-400" />
@@ -396,16 +396,16 @@ export default function Tutorials() {
                   className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
                     achievement.unlocked
                       ? achievement.id === 'complete'
-                        ? 'bg-gradient-to-r from-emerald-500/20 to-green-500/20 border border-emerald-500/30'
-                        : 'bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/30'
+                        ? 'bg-linear-to-r from-emerald-500/20 to-green-500/20 border border-emerald-500/30'
+                        : 'bg-linear-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/30'
                       : 'bg-white/5 border border-white/10 opacity-50'
                   }`}
                 >
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                     achievement.unlocked
                       ? achievement.id === 'complete'
-                        ? 'bg-gradient-to-br from-emerald-400 to-green-500'
-                        : 'bg-gradient-to-br from-amber-400 to-yellow-500'
+                        ? 'bg-linear-to-br from-emerald-400 to-green-500'
+                        : 'bg-linear-to-br from-amber-400 to-yellow-500'
                       : 'bg-slate-700'
                   }`}>
                     {achievement.unlocked ? (
@@ -435,16 +435,16 @@ export default function Tutorials() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
+        className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden"
       >
         <button
           onClick={() => toggleSection('videos')}
-          className="w-full flex items-center justify-between p-6 hover:bg-white/[0.03] transition-colors"
+          className="w-full flex items-center justify-between p-6 hover:bg-white/3 transition-colors"
         >
           <div className="flex items-center gap-4">
             <motion.div
               whileHover={{ rotate: 10 }}
-              className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center"
+              className="w-14 h-14 rounded-xl bg-linear-to-br from-primary to-orange-500 flex items-center justify-center"
             >
               <Video className="w-7 h-7 text-white" />
             </motion.div>
@@ -473,7 +473,7 @@ export default function Tutorials() {
               <div className="px-6 pb-6">
                 <div className="relative">
                   {/* Connection Line */}
-                  <div className="absolute left-8 top-8 bottom-8 w-1 bg-gradient-to-b from-primary via-violet-500 to-emerald-500 rounded-full" />
+                  <div className="absolute left-8 top-8 bottom-8 w-1 bg-linear-to-b from-primary via-violet-500 to-emerald-500 rounded-full" />
 
                   <div className="space-y-4">
                     {trainingVideos.map((video, index) => {
@@ -496,12 +496,12 @@ export default function Tutorials() {
                             whileTap={!isLocked ? { scale: 0.99 } : {}}
                             className={`ml-16 p-5 rounded-2xl border-2 transition-all ${
                               isLocked
-                                ? 'bg-white/[0.03] border-white/[0.08] opacity-60 cursor-not-allowed'
+                                ? 'bg-white/3 border-white/8 opacity-60 cursor-not-allowed'
                                 : completed
                                   ? 'bg-emerald-500/10 border-emerald-500/30 cursor-pointer hover:shadow-lg hover:shadow-emerald-500/10'
                                   : isNext
-                                    ? 'bg-gradient-to-r from-primary/5 to-orange-500/5 border-primary cursor-pointer hover:shadow-lg hover:shadow-primary/20'
-                                    : 'bg-white/[0.05] border-white/[0.08] cursor-pointer hover:border-white/[0.15] hover:shadow-md'
+                                    ? 'bg-linear-to-r from-primary/5 to-orange-500/5 border-primary cursor-pointer hover:shadow-lg hover:shadow-primary/20'
+                                    : 'bg-white/5 border-white/8 cursor-pointer hover:border-white/15 hover:shadow-md'
                             }`}
                           >
                             {/* Node indicator */}
@@ -511,8 +511,8 @@ export default function Tutorials() {
                                 : isNext
                                   ? 'bg-primary border-primary/30 animate-pulse'
                                   : isLocked
-                                    ? 'bg-white/[0.08] border-white/[0.08]'
-                                    : 'bg-white/[0.05] border-white/[0.1]'
+                                    ? 'bg-white/8 border-white/8'
+                                    : 'bg-white/5 border-white/10'
                             }`}>
                               {completed ? (
                                 <CheckCircle className="w-5 h-5 text-white" />
@@ -524,7 +524,7 @@ export default function Tutorials() {
                             </div>
 
                             <div className="flex items-center gap-4">
-                              <div className={`w-14 h-14 rounded-xl flex items-center justify-center bg-gradient-to-br ${video.gradient} ${isLocked ? 'opacity-50' : ''}`}>
+                              <div className={`w-14 h-14 rounded-xl flex items-center justify-center bg-linear-to-br ${video.gradient} ${isLocked ? 'opacity-50' : ''}`}>
                                 <Icon className="w-7 h-7 text-white" />
                               </div>
 
@@ -535,7 +535,7 @@ export default function Tutorials() {
                                       ? 'bg-emerald-500/15 text-emerald-400'
                                       : isNext
                                         ? 'bg-primary/10 text-primary'
-                                        : 'bg-white/[0.05] text-slate-400'
+                                        : 'bg-white/5 text-slate-400'
                                   }`}>
                                     MODULO {video.moduleNumber}
                                   </span>
@@ -575,7 +575,7 @@ export default function Tutorials() {
                                     className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                                       completed
                                         ? 'bg-emerald-500/15'
-                                        : 'bg-white/[0.05] group-hover:bg-primary/10'
+                                        : 'bg-white/5 group-hover:bg-primary/10'
                                     }`}
                                   >
                                     {completed ? (
@@ -604,16 +604,16 @@ export default function Tutorials() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
+        className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden"
       >
         <button
           onClick={() => toggleSection('materials')}
-          className="w-full flex items-center justify-between p-6 hover:bg-white/[0.03] transition-colors"
+          className="w-full flex items-center justify-between p-6 hover:bg-white/3 transition-colors"
         >
           <div className="flex items-center gap-4">
             <motion.div
               whileHover={{ rotate: -10 }}
-              className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center"
+              className="w-14 h-14 rounded-xl bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center"
             >
               <FileText className="w-7 h-7 text-white" />
             </motion.div>
@@ -652,15 +652,15 @@ export default function Tutorials() {
                       whileHover={{ scale: 1.02, y: -5 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setSelectedMaterial(material)}
-                      className="relative group p-5 rounded-2xl bg-white/[0.05] border-2 border-white/[0.08] hover:border-blue-500/30 hover:shadow-xl hover:shadow-blue-500/10 transition-all cursor-pointer overflow-hidden"
+                      className="relative group p-5 rounded-2xl bg-white/5 border-2 border-white/8 hover:border-blue-500/30 hover:shadow-xl hover:shadow-blue-500/10 transition-all cursor-pointer overflow-hidden"
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-cyan-500/0 group-hover:from-blue-500/5 group-hover:to-cyan-500/5 transition-all" />
+                      <div className="absolute inset-0 bg-linear-to-br from-blue-500/0 to-cyan-500/0 group-hover:from-blue-500/5 group-hover:to-cyan-500/5 transition-all" />
 
                       <div className="relative">
                         <div className="flex items-start gap-4">
                           <motion.div
                             whileHover={{ rotate: 10, scale: 1.1 }}
-                            className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 group-hover:from-blue-500 group-hover:to-cyan-500 flex items-center justify-center transition-all duration-300"
+                            className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-500/20 to-cyan-500/20 group-hover:from-blue-500 group-hover:to-cyan-500 flex items-center justify-center transition-all duration-300"
                           >
                             <Icon className="w-6 h-6 text-blue-400 group-hover:text-white transition-colors" />
                           </motion.div>
@@ -674,7 +674,7 @@ export default function Tutorials() {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.06]">
+                        <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/6">
                           <span className={`text-xs px-3 py-1 rounded-full font-bold ${
                             material.type === 'pdf'
                               ? 'bg-red-500/15 text-red-400'
@@ -701,7 +701,7 @@ export default function Tutorials() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-gradient-to-r from-slate-800 via-slate-900 to-slate-800 rounded-3xl p-8 text-white overflow-hidden relative"
+        className="bg-linear-to-r from-slate-800 via-slate-900 to-slate-800 rounded-3xl p-8 text-white overflow-hidden relative"
       >
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
@@ -734,11 +734,11 @@ export default function Tutorials() {
                 className="relative"
               >
                 {index < 2 && (
-                  <div className="hidden md:block absolute top-1/2 -right-3 w-6 h-0.5 bg-gradient-to-r from-white/20 to-transparent" />
+                  <div className="hidden md:block absolute top-1/2 -right-3 w-6 h-0.5 bg-linear-to-r from-white/20 to-transparent" />
                 )}
 
-                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all">
-                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-4`}>
+                <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs hover:bg-white/10 transition-all">
+                  <div className={`w-14 h-14 rounded-xl bg-linear-to-br ${item.color} flex items-center justify-center mb-4`}>
                     <item.icon className="w-7 h-7 text-white" />
                   </div>
                   <p className="text-slate-400 text-sm mb-1">{item.description}</p>
@@ -763,7 +763,7 @@ export default function Tutorials() {
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`relative overflow-hidden rounded-2xl bg-gradient-to-r ${selectedVideo.gradient} p-6`}
+              className={`relative overflow-hidden rounded-2xl bg-linear-to-r ${selectedVideo.gradient} p-6`}
             >
               <div className="absolute inset-0 bg-black/10" />
               <div className="absolute -right-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
@@ -772,7 +772,7 @@ export default function Tutorials() {
                 <motion.div
                   animate={{ rotate: [0, 5, -5, 0] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-sm"
+                  className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-xs"
                 >
                   {selectedVideo.icon && <selectedVideo.icon className="w-8 h-8 text-white" />}
                 </motion.div>
@@ -820,12 +820,12 @@ export default function Tutorials() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="aspect-video rounded-2xl bg-gradient-to-br from-white/[0.05] to-white/[0.02] flex flex-col items-center justify-center border-2 border-dashed border-white/[0.08]"
+                className="aspect-video rounded-2xl bg-linear-to-br from-white/5 to-white/2 flex flex-col items-center justify-center border-2 border-dashed border-white/8"
               >
                 <motion.div
                   animate={{ scale: [1, 1.1, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="w-20 h-20 rounded-full bg-white/[0.08] flex items-center justify-center mb-4"
+                  className="w-20 h-20 rounded-full bg-white/8 flex items-center justify-center mb-4"
                 >
                   <Play className="w-10 h-10 text-slate-400" />
                 </motion.div>
@@ -846,9 +846,9 @@ export default function Tutorials() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-xl bg-white/3 hover:bg-white/6 transition-colors"
                   >
-                    <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                    <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0" />
                     <span className="text-slate-300">{topic}</span>
                   </motion.div>
                 ))}
@@ -861,7 +861,7 @@ export default function Tutorials() {
                   <FileText className="w-5 h-5 text-primary" />
                   Conteudo do Modulo
                 </h4>
-                <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+                <div className="p-5 rounded-2xl bg-white/3 border border-white/6">
                   <div className="prose prose-sm max-w-none">
                     {selectedVideo.content.split('\n').map((line, i) => {
                       if (line.startsWith('# ')) {
@@ -878,7 +878,7 @@ export default function Tutorials() {
                       }
                       if (line.startsWith('- [ ]')) {
                         return <li key={i} className="text-slate-400 ml-4 list-none flex items-center gap-2 mb-1">
-                          <span className="w-4 h-4 border-2 border-white/[0.15] rounded" />
+                          <span className="w-4 h-4 border-2 border-white/15 rounded-sm" />
                           {line.replace('- [ ] ', '')}
                         </li>
                       }
@@ -899,7 +899,7 @@ export default function Tutorials() {
                     markAsCompleted(selectedVideo.id)
                     setSelectedVideo(null)
                   }}
-                  className="flex-1 px-6 py-4 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-emerald-200 transition-all"
+                  className="flex-1 px-6 py-4 bg-linear-to-r from-emerald-500 to-green-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-emerald-200 transition-all"
                 >
                   <CheckCircle className="w-5 h-5" />
                   Marcar como Concluido
@@ -912,7 +912,7 @@ export default function Tutorials() {
               )}
               <button
                 onClick={() => setSelectedVideo(null)}
-                className="px-6 py-4 bg-white/[0.05] text-slate-300 font-semibold rounded-xl hover:bg-white/[0.08] transition-colors"
+                className="px-6 py-4 bg-white/5 text-slate-300 font-semibold rounded-xl hover:bg-white/8 transition-colors"
               >
                 Fechar
               </button>
@@ -931,7 +931,7 @@ export default function Tutorials() {
         {selectedMaterial && (
           <div className="space-y-6">
             <div className="flex items-center gap-4 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                 {selectedMaterial.icon && <selectedMaterial.icon className="w-6 h-6 text-white" />}
               </div>
               <div>
@@ -948,7 +948,7 @@ export default function Tutorials() {
             </div>
 
             <div className="max-h-[60vh] overflow-y-auto">
-              <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] font-mono text-sm whitespace-pre-wrap text-slate-300">
+              <div className="p-5 rounded-2xl bg-white/3 border border-white/6 font-mono text-sm whitespace-pre-wrap text-slate-300">
                 {selectedMaterial.content}
               </div>
             </div>
@@ -957,14 +957,14 @@ export default function Tutorials() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 px-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-blue-200 transition-all"
+                className="flex-1 px-6 py-4 bg-linear-to-r from-blue-500 to-cyan-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-blue-200 transition-all"
               >
                 <Download className="w-5 h-5" />
                 Baixar {selectedMaterial.type.toUpperCase()}
               </motion.button>
               <button
                 onClick={() => setSelectedMaterial(null)}
-                className="px-6 py-4 bg-white/[0.05] text-slate-300 font-semibold rounded-xl hover:bg-white/[0.08] transition-colors"
+                className="px-6 py-4 bg-white/5 text-slate-300 font-semibold rounded-xl hover:bg-white/8 transition-colors"
               >
                 Fechar
               </button>

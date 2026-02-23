@@ -43,6 +43,7 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
         email: true,
         name: true,
         role: true,
+        avatar: true,
         createdAt: true,
       },
     })

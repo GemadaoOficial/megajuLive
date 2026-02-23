@@ -91,9 +91,17 @@ export default function LiveExecutor() {
 
     try {
       if (live) await livesAPI.end(live.id)
+      const duration = elapsedTime
       stopTimer()
       stopProductTimer()
-      navigate('/analytics')
+      navigate('/analytics', {
+        state: {
+          fromLive: true,
+          liveId: live?.id,
+          liveTitle: live?.title || '',
+          liveDuration: duration,
+        },
+      })
     } catch (error) {
       console.error('Erro ao encerrar live:', error)
     }
@@ -151,8 +159,8 @@ export default function LiveExecutor() {
           <div className="flex items-center gap-3 mb-2">
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
               isRunning
-                ? 'bg-gradient-to-br from-red-500 to-rose-600'
-                : 'bg-gradient-to-br from-primary to-orange-500'
+                ? 'bg-linear-to-br from-red-500 to-rose-600'
+                : 'bg-linear-to-br from-primary to-orange-500'
             }`}>
               {isRunning ? (
                 <Radio className="w-6 h-6 text-white" />
@@ -197,11 +205,11 @@ export default function LiveExecutor() {
             <motion.div
               whileHover={{ scale: 1.02, y: -2 }}
               onClick={() => setModalOpen(true)}
-              className="p-6 bg-gradient-to-br from-primary/10 to-orange-500/10 rounded-2xl border-2 border-primary/20 cursor-pointer group"
+              className="p-6 bg-linear-to-br from-primary/10 to-orange-500/10 rounded-2xl border-2 border-primary/20 cursor-pointer group"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary to-orange-500 flex items-center justify-center mb-4">
                     <Video className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="font-bold text-white">Live Rapida</h3>
@@ -214,11 +222,11 @@ export default function LiveExecutor() {
             <motion.div
               whileHover={{ scale: 1.02, y: -2 }}
               onClick={() => navigate('/calendar')}
-              className="p-6 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-2xl border-2 border-violet-500/30 cursor-pointer group"
+              className="p-6 bg-linear-to-br from-violet-500/10 to-purple-500/10 rounded-2xl border-2 border-violet-500/30 cursor-pointer group"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-4">
                     <Calendar className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="font-bold text-white">Agendar Live</h3>
@@ -231,11 +239,11 @@ export default function LiveExecutor() {
             <motion.div
               whileHover={{ scale: 1.02, y: -2 }}
               onClick={() => setTitleModalOpen(true)}
-              className="p-6 bg-gradient-to-br from-amber-500/10 to-yellow-500/10 rounded-2xl border-2 border-amber-500/30 cursor-pointer group"
+              className="p-6 bg-linear-to-br from-amber-500/10 to-yellow-500/10 rounded-2xl border-2 border-amber-500/30 cursor-pointer group"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-linear-to-br from-amber-500 to-yellow-500 flex items-center justify-center mb-4">
                     <Wand2 className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="font-bold text-white">Assistente IA</h3>
@@ -297,7 +305,7 @@ export default function LiveExecutor() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-3xl p-8 text-white"
+            className="bg-linear-to-r from-slate-800 to-slate-900 rounded-3xl p-8 text-white"
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">

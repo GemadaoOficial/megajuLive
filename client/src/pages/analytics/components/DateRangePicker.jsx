@@ -19,15 +19,15 @@ export default function DateRangePicker({ period, onPeriodChange, startDate, end
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <div className="flex items-center gap-1 bg-white/[0.05] border border-white/[0.08] rounded-2xl p-1.5">
+      <div className="flex items-center gap-1 bg-white/5 border border-white/8 rounded-2xl p-1.5">
         {PRESETS.map((preset) => (
           <button
             key={preset.value}
             onClick={() => handlePresetClick(preset.value)}
             className={`px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
               period === preset.value
-                ? 'bg-gradient-to-r from-primary to-orange-500 text-white shadow-sm shadow-orange-200'
-                : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
+                ? 'bg-linear-to-r from-primary to-orange-500 text-white shadow-xs shadow-orange-200'
+                : 'text-slate-400 hover:text-white hover:bg-white/6'
             }`}
           >
             {preset.label}
@@ -43,7 +43,7 @@ export default function DateRangePicker({ period, onPeriodChange, startDate, end
               type="date"
               value={startDate || ''}
               onChange={(e) => onStartDateChange(e.target.value)}
-              className="pl-9 pr-3 py-2 rounded-xl border border-white/[0.08] text-sm font-medium focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 bg-white/[0.05] text-white"
+              className="pl-9 pr-3 py-2 rounded-xl border border-white/8 text-sm font-medium focus:outline-hidden focus:border-primary focus:ring-1 focus:ring-primary/20 bg-white/5 text-white"
             />
           </div>
           <span className="text-slate-500 text-sm font-medium">ate</span>
@@ -53,7 +53,7 @@ export default function DateRangePicker({ period, onPeriodChange, startDate, end
               type="date"
               value={endDate || ''}
               onChange={(e) => onEndDateChange(e.target.value)}
-              className="pl-9 pr-3 py-2 rounded-xl border border-white/[0.08] text-sm font-medium focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 bg-white/[0.05] text-white"
+              className="pl-9 pr-3 py-2 rounded-xl border border-white/8 text-sm font-medium focus:outline-hidden focus:border-primary focus:ring-1 focus:ring-primary/20 bg-white/5 text-white"
             />
           </div>
         </div>

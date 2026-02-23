@@ -169,19 +169,19 @@ export default function Profile() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 text-white"
+        className="relative overflow-hidden bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 text-white"
       >
         {/* Background Effects */}
         <div className="absolute inset-0">
           <motion.div
             animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
             transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="absolute -right-40 -top-40 w-96 h-96 bg-gradient-to-br from-primary/30 to-orange-500/30 rounded-full blur-3xl"
+            className="absolute -right-40 -top-40 w-96 h-96 bg-linear-to-br from-primary/30 to-orange-500/30 rounded-full blur-3xl"
           />
           <motion.div
             animate={{ scale: [1.2, 1, 1.2], rotate: [360, 180, 0] }}
             transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-            className="absolute -left-40 -bottom-40 w-96 h-96 bg-gradient-to-br from-violet-500/30 to-purple-500/30 rounded-full blur-3xl"
+            className="absolute -left-40 -bottom-40 w-96 h-96 bg-linear-to-br from-violet-500/30 to-purple-500/30 rounded-full blur-3xl"
           />
         </div>
 
@@ -190,7 +190,7 @@ export default function Profile() {
           <div className="relative group">
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="w-32 h-32 rounded-3xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-5xl font-bold shadow-2xl overflow-hidden"
+              className="w-32 h-32 rounded-3xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-5xl font-bold shadow-2xl overflow-hidden"
             >
               {avatarPreview ? (
                 <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
@@ -220,7 +220,7 @@ export default function Profile() {
             />
 
             {/* Level Badge */}
-            <div className={`absolute -top-2 -left-2 w-10 h-10 rounded-xl bg-gradient-to-br ${currentLevel.color} flex items-center justify-center shadow-lg`}>
+            <div className={`absolute -top-2 -left-2 w-10 h-10 rounded-xl bg-linear-to-br ${currentLevel.color} flex items-center justify-center shadow-lg`}>
               <LevelIcon className="w-5 h-5 text-white" />
             </div>
           </div>
@@ -239,7 +239,7 @@ export default function Profile() {
             <p className="text-slate-400 mb-4">{user?.email}</p>
 
             <div className="flex flex-wrap items-center gap-4">
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r ${currentLevel.color}`}>
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl bg-linear-to-r ${currentLevel.color}`}>
                 <LevelIcon className="w-5 h-5" />
                 <span className="font-semibold">Nivel {currentLevel.level} - {currentLevel.title}</span>
               </div>
@@ -296,9 +296,9 @@ export default function Profile() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
             whileHover={{ scale: 1.02, y: -5 }}
-            className="bg-white/[0.05] rounded-2xl p-5 border border-white/[0.08]"
+            className="bg-white/5 rounded-2xl p-5 border border-white/8"
           >
-            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-4`}>
+            <div className={`w-12 h-12 rounded-xl bg-linear-to-br ${stat.color} flex items-center justify-center mb-4`}>
               <stat.icon className="w-6 h-6 text-white" />
             </div>
             <p className="text-3xl font-bold text-white">{stat.value}</p>
@@ -312,10 +312,10 @@ export default function Profile() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white/[0.05] rounded-2xl p-6 border border-white/[0.08]"
+        className="bg-white/5 rounded-2xl p-6 border border-white/8"
       >
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary to-orange-500 flex items-center justify-center">
             <GraduationCap className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -323,7 +323,7 @@ export default function Profile() {
             <p className="text-slate-500">Analista de Conteudo ao Vivo</p>
           </div>
           <div className="ml-auto text-right">
-            <p className={`text-3xl font-bold bg-gradient-to-r bg-clip-text text-transparent ${
+            <p className={`text-3xl font-bold bg-linear-to-r bg-clip-text text-transparent ${
               isTrainingComplete
                 ? 'from-emerald-500 to-green-500'
                 : 'from-primary to-orange-500'
@@ -334,12 +334,12 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className="relative h-4 bg-white/[0.08] rounded-full overflow-hidden mb-4">
+        <div className="relative h-4 bg-white/8 rounded-full overflow-hidden mb-4">
           <motion.div
             className={`h-full rounded-full ${
               isTrainingComplete
-                ? 'bg-gradient-to-r from-emerald-400 to-green-500'
-                : 'bg-gradient-to-r from-primary to-orange-500'
+                ? 'bg-linear-to-r from-emerald-400 to-green-500'
+                : 'bg-linear-to-r from-primary to-orange-500'
             }`}
             initial={{ width: 0 }}
             animate={{ width: `${progressPercent}%` }}
@@ -361,9 +361,9 @@ export default function Profile() {
       </motion.div>
 
       {/* Tabs */}
-      <div className="bg-white/[0.05] rounded-2xl border border-white/[0.08] overflow-hidden">
+      <div className="bg-white/5 rounded-2xl border border-white/8 overflow-hidden">
         {/* Tab Header */}
-        <div className="flex border-b border-white/[0.08]">
+        <div className="flex border-b border-white/8">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -371,7 +371,7 @@ export default function Profile() {
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 font-medium transition-colors ${
                 activeTab === tab.id
                   ? 'text-primary border-b-2 border-primary bg-primary/5'
-                  : 'text-slate-500 hover:text-white hover:bg-white/[0.03]'
+                  : 'text-slate-500 hover:text-white hover:bg-white/3'
               }`}
             >
               <tab.icon className="w-5 h-5" />
@@ -404,10 +404,10 @@ export default function Profile() {
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/5 border-2 border-white/8 text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-hidden transition-all"
                       />
                     ) : (
-                      <p className="px-4 py-3 rounded-xl bg-white/[0.03] text-white">{user?.name || '-'}</p>
+                      <p className="px-4 py-3 rounded-xl bg-white/3 text-white">{user?.name || '-'}</p>
                     )}
                   </div>
 
@@ -417,7 +417,7 @@ export default function Profile() {
                       <Mail className="w-4 h-4 inline mr-2" />
                       E-mail
                     </label>
-                    <p className="px-4 py-3 rounded-xl bg-white/[0.03] text-white">{user?.email || '-'}</p>
+                    <p className="px-4 py-3 rounded-xl bg-white/3 text-white">{user?.email || '-'}</p>
                   </div>
 
                   {/* Phone */}
@@ -432,10 +432,10 @@ export default function Profile() {
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         placeholder="(00) 00000-0000"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/5 border-2 border-white/8 text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-hidden transition-all"
                       />
                     ) : (
-                      <p className="px-4 py-3 rounded-xl bg-white/[0.03] text-white">{user?.phone || 'Nao informado'}</p>
+                      <p className="px-4 py-3 rounded-xl bg-white/3 text-white">{user?.phone || 'Nao informado'}</p>
                     )}
                   </div>
 
@@ -450,10 +450,10 @@ export default function Profile() {
                         type="date"
                         value={formData.birthdate}
                         onChange={(e) => setFormData({ ...formData, birthdate: e.target.value })}
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/5 border-2 border-white/8 text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-hidden transition-all"
                       />
                     ) : (
-                      <p className="px-4 py-3 rounded-xl bg-white/[0.03] text-white">
+                      <p className="px-4 py-3 rounded-xl bg-white/3 text-white">
                         {user?.birthdate ? new Date(user.birthdate).toLocaleDateString('pt-BR') : 'Nao informado'}
                       </p>
                     )}
@@ -471,10 +471,10 @@ export default function Profile() {
                         value={formData.address}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         placeholder="Rua, numero, bairro, cidade"
-                        className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/5 border-2 border-white/8 text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-hidden transition-all"
                       />
                     ) : (
-                      <p className="px-4 py-3 rounded-xl bg-white/[0.03] text-white">{user?.address || 'Nao informado'}</p>
+                      <p className="px-4 py-3 rounded-xl bg-white/3 text-white">{user?.address || 'Nao informado'}</p>
                     )}
                   </div>
 
@@ -490,33 +490,33 @@ export default function Profile() {
                         onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                         placeholder="Conte um pouco sobre voce..."
                         rows={3}
-                        className="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-slate-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none resize-none transition-all"
+                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/8 text-white placeholder-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-hidden resize-none transition-all"
                       />
                     ) : (
-                      <p className="px-4 py-3 rounded-xl bg-white/[0.03] text-white">{user?.bio || 'Nenhuma biografia adicionada'}</p>
+                      <p className="px-4 py-3 rounded-xl bg-white/3 text-white">{user?.bio || 'Nenhuma biografia adicionada'}</p>
                     )}
                   </div>
                 </div>
 
                 {/* Role & Dates */}
-                <div className="pt-6 border-t border-white/[0.08]">
+                <div className="pt-6 border-t border-white/8">
                   <h3 className="font-semibold text-white mb-4">Informacoes da Conta</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 rounded-xl bg-white/[0.03]">
+                    <div className="p-4 rounded-xl bg-white/3">
                       <p className="text-sm text-slate-500 mb-1">Funcao</p>
                       <p className="font-semibold text-white flex items-center gap-2">
                         <Briefcase className="w-4 h-4 text-slate-400" />
                         {user?.role === 'ADMIN' ? 'Administrador' : 'Analista de Conteudo ao Vivo'}
                       </p>
                     </div>
-                    <div className="p-4 rounded-xl bg-white/[0.03]">
+                    <div className="p-4 rounded-xl bg-white/3">
                       <p className="text-sm text-slate-500 mb-1">Membro desde</p>
                       <p className="font-semibold text-white flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-slate-400" />
                         {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : 'N/A'}
                       </p>
                     </div>
-                    <div className="p-4 rounded-xl bg-white/[0.03]">
+                    <div className="p-4 rounded-xl bg-white/3">
                       <p className="text-sm text-slate-500 mb-1">Status</p>
                       <p className="font-semibold text-emerald-600 flex items-center gap-2">
                         <CheckCircle className="w-4 h-4" />
@@ -549,7 +549,7 @@ export default function Profile() {
                         type={showPassword ? 'text' : 'password'}
                         value={passwordData.currentPassword}
                         onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                        className="w-full px-4 py-3 pr-12 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                        className="w-full px-4 py-3 pr-12 rounded-xl bg-white/5 border-2 border-white/8 text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-hidden transition-all"
                       />
                       <button
                         type="button"
@@ -569,7 +569,7 @@ export default function Profile() {
                       type={showPassword ? 'text' : 'password'}
                       value={passwordData.newPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-white/5 border-2 border-white/8 text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-hidden transition-all"
                     />
                   </div>
 
@@ -581,7 +581,7 @@ export default function Profile() {
                       type={showPassword ? 'text' : 'password'}
                       value={passwordData.confirmPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border-2 border-white/[0.08] text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-white/5 border-2 border-white/8 text-white placeholder-white/30 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-hidden transition-all"
                     />
                   </div>
 
@@ -591,9 +591,9 @@ export default function Profile() {
                   </Button>
                 </div>
 
-                <div className="pt-6 border-t border-white/[0.08]">
+                <div className="pt-6 border-t border-white/8">
                   <h3 className="font-semibold text-white mb-4">Sessoes Ativas</h3>
-                  <div className="p-4 rounded-xl bg-white/[0.03] flex items-center justify-between">
+                  <div className="p-4 rounded-xl bg-white/3 flex items-center justify-between">
                     <div>
                       <p className="font-medium text-white">Sessao Atual</p>
                       <p className="text-sm text-slate-500">Este dispositivo • Ultima atividade agora</p>
@@ -626,7 +626,7 @@ export default function Profile() {
                   ].map((item) => (
                     <div
                       key={item.key}
-                      className="flex items-center justify-between p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] transition-colors"
+                      className="flex items-center justify-between p-4 rounded-xl bg-white/3 hover:bg-white/6 transition-colors"
                     >
                       <div>
                         <p className="font-medium text-white">{item.label}</p>
@@ -635,12 +635,12 @@ export default function Profile() {
                       <button
                         onClick={() => setNotifications({ ...notifications, [item.key]: !notifications[item.key] })}
                         className={`relative w-12 h-6 rounded-full transition-colors ${
-                          notifications[item.key] ? 'bg-primary' : 'bg-white/[0.15]'
+                          notifications[item.key] ? 'bg-primary' : 'bg-white/15'
                         }`}
                       >
                         <motion.div
                           animate={{ x: notifications[item.key] ? 24 : 2 }}
-                          className="absolute top-1 w-4 h-4 bg-white rounded-full shadow"
+                          className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm"
                         />
                       </button>
                     </div>

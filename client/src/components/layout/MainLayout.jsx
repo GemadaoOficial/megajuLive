@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 
 export default function MainLayout() {
     return (
-        <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden relative">
+        <div className="flex h-screen bg-linear-to-br from-gray-50 to-gray-100 overflow-hidden relative">
             {/* Background Blobs for Atmosphere */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
                 <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-orange-200/20 rounded-full blur-[100px]"></div>

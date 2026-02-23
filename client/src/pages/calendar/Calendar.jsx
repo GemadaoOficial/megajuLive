@@ -39,7 +39,7 @@ const statusConfig = {
   SCHEDULED: { label: 'Agendada', color: 'bg-blue-500', lightColor: 'bg-blue-500/15 text-blue-400', icon: Clock, gradient: 'from-blue-500 to-blue-600' },
   LIVE: { label: 'Ao Vivo', color: 'bg-red-500', lightColor: 'bg-red-500/15 text-red-400', icon: Play, gradient: 'from-red-500 to-rose-600' },
   COMPLETED: { label: 'Concluida', color: 'bg-emerald-500', lightColor: 'bg-emerald-500/15 text-emerald-400', icon: CheckCircle, gradient: 'from-emerald-500 to-teal-600' },
-  CANCELLED: { label: 'Cancelada', color: 'bg-slate-400', lightColor: 'bg-white/[0.05] text-slate-400', icon: XCircle, gradient: 'from-slate-400 to-slate-500' },
+  CANCELLED: { label: 'Cancelada', color: 'bg-slate-400', lightColor: 'bg-white/5 text-slate-400', icon: XCircle, gradient: 'from-slate-400 to-slate-500' },
 }
 
 export default function Calendar() {
@@ -270,7 +270,7 @@ export default function Calendar() {
       {/* Header with Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* Main Header */}
-        <div className="lg:col-span-2 bg-gradient-to-br from-primary via-orange-500 to-amber-500 rounded-2xl p-6 text-white relative overflow-hidden">
+        <div className="lg:col-span-2 bg-linear-to-br from-primary via-orange-500 to-amber-500 rounded-2xl p-6 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
 
@@ -279,7 +279,7 @@ export default function Calendar() {
             <h1 className="text-2xl font-bold mt-1">{MONTHS[currentDate.getMonth()]} {currentDate.getFullYear()}</h1>
 
             {getStats.nextLive && (
-              <div className="mt-4 bg-white/20 backdrop-blur-sm rounded-xl p-3">
+              <div className="mt-4 bg-white/20 backdrop-blur-xs rounded-xl p-3">
                 <p className="text-xs text-white/70">Proxima live {formatTimeUntil(getStats.nextLive.scheduledAt)}</p>
                 <p className="font-semibold truncate">{getStats.nextLive.title}</p>
                 <p className="text-sm text-white/80">
@@ -294,7 +294,7 @@ export default function Calendar() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-5 flex flex-col justify-between"
+          className="bg-white/5 border border-white/8 rounded-2xl p-5 flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <div className="p-2.5 rounded-xl bg-blue-500/15">
@@ -312,7 +312,7 @@ export default function Calendar() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-5 flex flex-col justify-between"
+          className="bg-white/5 border border-white/8 rounded-2xl p-5 flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <div className="p-2.5 rounded-xl bg-violet-500/15">
@@ -328,23 +328,23 @@ export default function Calendar() {
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/[0.05] border border-white/[0.08] rounded-xl p-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/5 border border-white/8 rounded-xl p-3">
         <div className="flex items-center gap-2">
           <button
             onClick={handlePrevPeriod}
-            className="p-2 rounded-lg hover:bg-white/[0.08] transition-colors"
+            className="p-2 rounded-lg hover:bg-white/8 transition-colors"
           >
             <ChevronLeft className="w-5 h-5 text-slate-300" />
           </button>
           <button
             onClick={handleNextPeriod}
-            className="p-2 rounded-lg hover:bg-white/[0.08] transition-colors"
+            className="p-2 rounded-lg hover:bg-white/8 transition-colors"
           >
             <ChevronRight className="w-5 h-5 text-slate-300" />
           </button>
           <button
             onClick={handleToday}
-            className="px-3 py-1.5 text-sm font-medium text-slate-300 hover:bg-white/[0.08] rounded-lg transition-colors"
+            className="px-3 py-1.5 text-sm font-medium text-slate-300 hover:bg-white/8 rounded-lg transition-colors"
           >
             Hoje
           </button>
@@ -358,11 +358,11 @@ export default function Calendar() {
 
         <div className="flex items-center gap-2">
           {/* View Toggle */}
-          <div className="flex bg-white/[0.05] rounded-lg p-1">
+          <div className="flex bg-white/5 rounded-lg p-1">
             <button
               onClick={() => setView('month')}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                view === 'month' ? 'bg-white/[0.1] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+                view === 'month' ? 'bg-white/10 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <LayoutGrid className="w-4 h-4" />
@@ -370,7 +370,7 @@ export default function Calendar() {
             <button
               onClick={() => setView('week')}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                view === 'week' ? 'bg-white/[0.1] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+                view === 'week' ? 'bg-white/10 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <CalendarDays className="w-4 h-4" />
@@ -378,7 +378,7 @@ export default function Calendar() {
             <button
               onClick={() => setView('agenda')}
               className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                view === 'agenda' ? 'bg-white/[0.1] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+                view === 'agenda' ? 'bg-white/10 text-white shadow-xs' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <List className="w-4 h-4" />
@@ -410,10 +410,10 @@ export default function Calendar() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
+            className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden"
           >
             {/* Days header */}
-            <div className="grid grid-cols-7 bg-white/[0.03] border-b border-white/[0.06]">
+            <div className="grid grid-cols-7 bg-white/3 border-b border-white/6">
               {DAYS.map((day, i) => (
                 <div key={day} className={`text-center text-xs font-semibold py-3 ${i === 0 || i === 6 ? 'text-slate-400' : 'text-slate-300'}`}>
                   <span className="hidden sm:inline">{DAYS_FULL[i]}</span>
@@ -437,8 +437,8 @@ export default function Calendar() {
                     onMouseLeave={() => setHoveredDay(null)}
                     onClick={() => handleDayClick(date)}
                     className={`
-                      min-h-[110px] p-2 border-b border-r border-white/[0.06] cursor-pointer relative group transition-colors
-                      ${!isCurrentMonth ? 'bg-white/[0.02]' : 'hover:bg-white/[0.03]'}
+                      min-h-[110px] p-2 border-b border-r border-white/6 cursor-pointer relative group transition-colors
+                      ${!isCurrentMonth ? 'bg-white/2' : 'hover:bg-white/3'}
                       ${dayIsToday ? 'bg-primary/5 hover:bg-primary/10' : ''}
                     `}
                   >
@@ -475,7 +475,7 @@ export default function Calendar() {
                           onClick={(e) => handleViewLive(live, e)}
                           className={`
                             text-[11px] px-2 py-1 rounded-md font-medium truncate cursor-pointer
-                            bg-gradient-to-r ${statusConfig[live.status]?.gradient || 'from-slate-400 to-slate-500'} text-white
+                            bg-linear-to-r ${statusConfig[live.status]?.gradient || 'from-slate-400 to-slate-500'} text-white
                             hover:shadow-md transition-shadow
                           `}
                         >
@@ -509,17 +509,17 @@ export default function Calendar() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
+            className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden"
           >
             {/* Week header */}
-            <div className="grid grid-cols-8 bg-white/[0.03] border-b border-white/[0.06]">
-              <div className="p-3 text-center text-xs font-semibold text-slate-400 border-r border-white/[0.06]">
+            <div className="grid grid-cols-8 bg-white/3 border-b border-white/6">
+              <div className="p-3 text-center text-xs font-semibold text-slate-400 border-r border-white/6">
                 Horario
               </div>
               {weekDays.map((date, i) => {
                 const dayIsToday = isToday(date)
                 return (
-                  <div key={i} className={`p-3 text-center border-r border-white/[0.06] last:border-r-0 ${dayIsToday ? 'bg-primary/5' : ''}`}>
+                  <div key={i} className={`p-3 text-center border-r border-white/6 last:border-r-0 ${dayIsToday ? 'bg-primary/5' : ''}`}>
                     <p className={`text-xs font-medium ${dayIsToday ? 'text-primary' : 'text-slate-500'}`}>{DAYS[i]}</p>
                     <p className={`text-lg font-bold mt-1 ${dayIsToday ? 'text-primary' : 'text-white'}`}>{date.getDate()}</p>
                   </div>
@@ -530,8 +530,8 @@ export default function Calendar() {
             {/* Time grid */}
             <div className="max-h-[600px] overflow-y-auto">
               {HOURS.map((hour) => (
-                <div key={hour} className="grid grid-cols-8 border-b border-white/[0.06] last:border-b-0">
-                  <div className="p-2 text-xs text-slate-400 font-medium text-right pr-3 border-r border-white/[0.06]">
+                <div key={hour} className="grid grid-cols-8 border-b border-white/6 last:border-b-0">
+                  <div className="p-2 text-xs text-slate-400 font-medium text-right pr-3 border-r border-white/6">
                     {hour.toString().padStart(2, '0')}:00
                   </div>
                   {weekDays.map((date, i) => {
@@ -546,8 +546,8 @@ export default function Calendar() {
                         key={i}
                         onClick={() => handleDayClick(date, hour)}
                         className={`
-                          min-h-[60px] p-1 border-r border-white/[0.06] last:border-r-0 cursor-pointer
-                          hover:bg-white/[0.03] transition-colors relative group
+                          min-h-[60px] p-1 border-r border-white/6 last:border-r-0 cursor-pointer
+                          hover:bg-white/3 transition-colors relative group
                           ${dayIsToday ? 'bg-primary/5 hover:bg-primary/10' : ''}
                         `}
                       >
@@ -557,7 +557,7 @@ export default function Calendar() {
                             onClick={(e) => handleViewLive(live, e)}
                             className={`
                               text-[10px] px-2 py-1.5 rounded-md font-medium cursor-pointer
-                              bg-gradient-to-r ${statusConfig[live.status]?.gradient} text-white
+                              bg-linear-to-r ${statusConfig[live.status]?.gradient} text-white
                               hover:shadow-md transition-shadow
                             `}
                           >
@@ -587,7 +587,7 @@ export default function Calendar() {
             className="space-y-4"
           >
             {loading ? (
-              <div className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-12 flex items-center justify-center">
+              <div className="bg-white/5 border border-white/8 rounded-2xl p-12 flex items-center justify-center">
                 <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             ) : lives.length > 0 ? (
@@ -608,10 +608,10 @@ export default function Calendar() {
                   const isPast = date < new Date(today.toDateString())
 
                   return (
-                    <div key={dateKey} className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden">
-                      <div className={`px-5 py-3 border-b border-white/[0.06] flex items-center justify-between ${dayIsToday ? 'bg-primary/5' : 'bg-white/[0.03]'}`}>
+                    <div key={dateKey} className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden">
+                      <div className={`px-5 py-3 border-b border-white/6 flex items-center justify-between ${dayIsToday ? 'bg-primary/5' : 'bg-white/3'}`}>
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${dayIsToday ? 'bg-primary text-white' : 'bg-white/[0.08] text-slate-300'}`}>
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${dayIsToday ? 'bg-primary text-white' : 'bg-white/8 text-slate-300'}`}>
                             {date.getDate()}
                           </div>
                           <div>
@@ -626,7 +626,7 @@ export default function Calendar() {
                         <span className="text-sm text-slate-500">{dateLives.length} live{dateLives.length > 1 ? 's' : ''}</span>
                       </div>
 
-                      <div className="divide-y divide-white/[0.06]">
+                      <div className="divide-y divide-white/6">
                         {dateLives.map((live, index) => {
                           const StatusIcon = statusConfig[live.status]?.icon || Clock
                           return (
@@ -636,7 +636,7 @@ export default function Calendar() {
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: index * 0.03 }}
                               onClick={(e) => handleViewLive(live, e)}
-                              className="p-4 flex items-center gap-4 hover:bg-white/[0.03] cursor-pointer transition-colors group"
+                              className="p-4 flex items-center gap-4 hover:bg-white/3 cursor-pointer transition-colors group"
                             >
                               <div className="text-center min-w-[50px]">
                                 <p className="text-lg font-bold text-white">
@@ -645,7 +645,7 @@ export default function Calendar() {
                                 <p className="text-[10px] text-slate-400">{live.duration}min</p>
                               </div>
 
-                              <div className={`w-1 h-12 rounded-full bg-gradient-to-b ${statusConfig[live.status]?.gradient}`} />
+                              <div className={`w-1 h-12 rounded-full bg-linear-to-b ${statusConfig[live.status]?.gradient}`} />
 
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
@@ -673,7 +673,7 @@ export default function Calendar() {
                               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
                                   onClick={(e) => handleEditLive(live, e)}
-                                  className="p-2 rounded-lg hover:bg-white/[0.06] text-slate-400 hover:text-slate-200"
+                                  className="p-2 rounded-lg hover:bg-white/6 text-slate-400 hover:text-slate-200"
                                 >
                                   <Edit className="w-4 h-4" />
                                 </button>
@@ -693,8 +693,8 @@ export default function Calendar() {
                 })}
               </>
             ) : (
-              <div className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-12 text-center">
-                <div className="w-20 h-20 mx-auto rounded-2xl bg-white/[0.05] flex items-center justify-center mb-4">
+              <div className="bg-white/5 border border-white/8 rounded-2xl p-12 text-center">
+                <div className="w-20 h-20 mx-auto rounded-2xl bg-white/5 flex items-center justify-center mb-4">
                   <CalendarIcon className="w-10 h-10 text-slate-300" />
                 </div>
                 <p className="text-slate-500 font-medium">Nenhuma live encontrada</p>
@@ -730,7 +730,7 @@ export default function Calendar() {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={3}
-              className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/8 text-white placeholder-white/30 focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
             />
           </div>
 
@@ -748,7 +748,7 @@ export default function Calendar() {
               <select
                 value={formData.duration}
                 onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
-                className="w-full px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/8 text-white focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20"
               >
                 <option value={30}>30 minutos</option>
                 <option value={60}>1 hora</option>
@@ -782,11 +782,11 @@ export default function Calendar() {
         {selectedLive && (
           <div className="space-y-6">
             {/* Header with gradient */}
-            <div className={`-mx-6 -mt-6 px-6 py-8 bg-gradient-to-r ${statusConfig[selectedLive.status]?.gradient || 'from-slate-500 to-slate-600'} text-white relative overflow-hidden`}>
+            <div className={`-mx-6 -mt-6 px-6 py-8 bg-linear-to-r ${statusConfig[selectedLive.status]?.gradient || 'from-slate-500 to-slate-600'} text-white relative overflow-hidden`}>
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
 
               <div className="relative">
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-sm">
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-xs">
                   {statusConfig[selectedLive.status]?.label}
                 </span>
                 <h3 className="text-2xl font-bold mt-3">{selectedLive.title}</h3>
@@ -798,7 +798,7 @@ export default function Calendar() {
 
             {/* Info cards */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/[0.03] rounded-xl p-4">
+              <div className="bg-white/3 rounded-xl p-4">
                 <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
                   <CalendarIcon className="w-4 h-4" />
                   Data
@@ -811,7 +811,7 @@ export default function Calendar() {
                   })}
                 </p>
               </div>
-              <div className="bg-white/[0.03] rounded-xl p-4">
+              <div className="bg-white/3 rounded-xl p-4">
                 <div className="flex items-center gap-2 text-slate-500 text-sm mb-2">
                   <Clock className="w-4 h-4" />
                   Horario

@@ -52,12 +52,12 @@ export default function UpcomingLives() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
-      className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6"
+      className="bg-white/5 border border-white/8 rounded-2xl p-6"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-linear-to-r from-amber-500 to-orange-500 flex items-center justify-center">
             <Calendar className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -89,9 +89,9 @@ export default function UpcomingLives() {
               transition={{ delay: 0.5 + index * 0.1 }}
               className="group"
             >
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] hover:bg-violet-500/10 border border-white/[0.04] hover:border-violet-500/30 transition-all cursor-pointer">
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-md">
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-white/3 hover:bg-violet-500/10 border border-white/4 hover:border-violet-500/30 transition-all cursor-pointer">
+                <div className="shrink-0">
+                  <div className="w-12 h-12 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-md">
                     <Video className="w-5 h-5 text-white" />
                   </div>
                 </div>
@@ -118,7 +118,7 @@ export default function UpcomingLives() {
                   </div>
                 </div>
 
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <span className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-500/20 text-blue-400">
                     {getTimeUntil(live.scheduledAt)}
                   </span>
@@ -129,13 +129,13 @@ export default function UpcomingLives() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <div className="w-16 h-16 mx-auto rounded-full bg-white/[0.05] flex items-center justify-center mb-3">
+          <div className="w-16 h-16 mx-auto rounded-full bg-white/5 flex items-center justify-center mb-3">
             <Calendar className="w-8 h-8 text-slate-500" />
           </div>
           <p className="text-slate-400 mb-4">Nenhuma live agendada</p>
           <Link
             to="/live"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-orange-500 text-white font-medium rounded-xl hover:opacity-90 transition-opacity text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-primary to-orange-500 text-white font-medium rounded-xl hover:opacity-90 transition-opacity text-sm"
           >
             <Video className="w-4 h-4" />
             Agendar Live

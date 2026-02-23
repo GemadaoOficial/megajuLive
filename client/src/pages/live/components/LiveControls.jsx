@@ -26,18 +26,18 @@ export default function LiveControls({
           whileHover={{ scale: 1.05, boxShadow: '0 20px 40px -10px rgba(238, 77, 45, 0.4)' }}
           whileTap={{ scale: 0.95 }}
           onClick={onStart}
-          className="relative group px-12 py-5 bg-gradient-to-r from-primary via-orange-500 to-amber-500 text-white font-bold text-lg rounded-2xl flex items-center gap-3 shadow-xl overflow-hidden"
+          className="relative group px-12 py-5 bg-linear-to-r from-primary via-orange-500 to-amber-500 text-white font-bold text-lg rounded-2xl flex items-center gap-3 shadow-xl overflow-hidden"
         >
           {/* Animated background */}
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-amber-500 via-primary to-orange-500"
+            className="absolute inset-0 bg-linear-to-r from-amber-500 via-primary to-orange-500"
             animate={{ x: ['-100%', '100%'] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
             style={{ opacity: 0.3 }}
           />
 
           {/* Glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-t from-transparent to-white/20" />
+          <div className="absolute inset-0 bg-linear-to-t from-transparent to-white/20" />
 
           {/* Content */}
           <div className="relative flex items-center gap-3">
@@ -68,7 +68,7 @@ export default function LiveControls({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onPause}
-            className="group relative px-8 py-4 bg-white/[0.05] text-white font-semibold rounded-2xl flex items-center gap-3 shadow-lg border-2 border-white/[0.08] overflow-hidden"
+            className="group relative px-8 py-4 bg-white/5 text-white font-semibold rounded-2xl flex items-center gap-3 shadow-lg border-2 border-white/8 overflow-hidden"
           >
             <div className="absolute inset-0 bg-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <div className="relative flex items-center gap-3">
@@ -84,7 +84,7 @@ export default function LiveControls({
             whileHover={{ scale: 1.05, boxShadow: '0 10px 30px -5px rgba(239, 68, 68, 0.4)' }}
             whileTap={{ scale: 0.95 }}
             onClick={onStop}
-            className="group relative px-8 py-4 bg-gradient-to-br from-red-500 to-rose-600 text-white font-semibold rounded-2xl flex items-center gap-3 shadow-lg overflow-hidden"
+            className="group relative px-8 py-4 bg-linear-to-br from-red-500 to-rose-600 text-white font-semibold rounded-2xl flex items-center gap-3 shadow-lg overflow-hidden"
           >
             {/* Animated stripes */}
             <motion.div

@@ -5,12 +5,12 @@ import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 import fs from 'fs'
 import dotenv from 'dotenv'
-import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
 // ES Module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+import prisma from './utils/prisma.js'
 import authRoutes from './routes/auth.js'
 import livesRoutes from './routes/lives.js'
 import modulesRoutes from './routes/modules.js'
@@ -24,13 +24,13 @@ import liveReportsRoutes from './routes/live-reports.js'
 import notesRoutes from './routes/notes.js'
 import backupRoutes from './routes/backup.js'
 import settingsRoutes from './routes/settings.js'
+import goalsRoutes from './routes/goals.js'
 import { loadConfig } from './utils/config.js'
 
 dotenv.config()
 
 const app = express()
 const PORT = Number(process.env.PORT) || 5000
-const prisma = new PrismaClient()
 
 // Seed database on first run (Electron mode)
 async function seedDatabase() {
@@ -39,7 +39,7 @@ async function seedDatabase() {
       where: { email: 'admin@megaju.com' }
     })
 
-    if (!existingAdmin) {
+    if (!existingAdmin && process.env.NODE_ENV !== 'production') {
       console.log('🌱 Creating default users...')
 
       const hashedAdminPassword = await bcrypt.hash('admin123', 10)
@@ -75,8 +75,11 @@ loadConfig()
   .catch(console.error)
 
 // Middlewares
-app.use(cors())
-app.use(express.json())
+app.use(cors({
+  origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:5173'],
+  credentials: true,
+}))
+app.use(express.json({ limit: '10mb' }))
 
 // Serve uploaded files (with no-download headers)
 app.use('/uploads', (req, res, next) => {
@@ -99,6 +102,7 @@ app.use('/api/live-reports', liveReportsRoutes)
 app.use('/api/notes', notesRoutes)
 app.use('/api/admin/backup', backupRoutes)
 app.use('/api/admin/settings', settingsRoutes)
+app.use('/api/goals', goalsRoutes)
 
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {
@@ -117,7 +121,7 @@ if (clientDistExists) {
   app.use(express.static(clientPath))
 
   // Serve index.html for all non-API routes (SPA fallback)
-  app.get('*', (req: Request, res: Response) => {
+  app.get('{*splat}', (req: Request, res: Response) => {
     if (!req.url.startsWith('/api') && !req.url.startsWith('/uploads')) {
       res.sendFile(path.join(clientPath, 'index.html'))
     }

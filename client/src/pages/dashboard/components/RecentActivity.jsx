@@ -35,13 +35,13 @@ const getActionColor = (action) => {
     case 'LOGIN':
       return 'text-green-400 bg-green-500/15'
     case 'LOGOUT':
-      return 'text-slate-400 bg-white/[0.05]'
+      return 'text-slate-400 bg-white/5'
     case 'START_LIVE':
       return 'text-violet-400 bg-violet-500/15'
     case 'END_LIVE':
       return 'text-orange-400 bg-orange-500/15'
     default:
-      return 'text-slate-400 bg-white/[0.05]'
+      return 'text-slate-400 bg-white/5'
   }
 }
 
@@ -129,11 +129,11 @@ export default function RecentActivity() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
-      className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6"
+      className="bg-white/5 border border-white/8 rounded-2xl p-6"
     >
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-linear-to-r from-indigo-500 to-purple-500 flex items-center justify-center">
           <Activity className="w-5 h-5 text-white" />
         </div>
         <div>
@@ -159,9 +159,9 @@ export default function RecentActivity() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 + index * 0.05 }}
-                className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/[0.06] transition-colors"
+                className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/6 transition-colors"
               >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${colorClass}`}>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${colorClass}`}>
                   <ActionIcon className="w-4 h-4" />
                 </div>
 
@@ -186,7 +186,7 @@ export default function RecentActivity() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <div className="w-16 h-16 mx-auto rounded-full bg-white/[0.05] flex items-center justify-center mb-3">
+          <div className="w-16 h-16 mx-auto rounded-full bg-white/5 flex items-center justify-center mb-3">
             <Activity className="w-8 h-8 text-slate-500" />
           </div>
           <p className="text-slate-400">Nenhuma atividade recente</p>

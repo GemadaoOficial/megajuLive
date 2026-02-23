@@ -29,7 +29,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs"
           onClick={onClose}
         >
           <motion.div
@@ -41,11 +41,11 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/8">
               <h2 className="text-xl font-semibold text-white">{title}</h2>
               <button
                 onClick={onClose}
-                className="p-2 rounded-lg hover:bg-white/[0.06] transition-colors"
+                className="p-2 rounded-lg hover:bg-white/6 transition-colors"
               >
                 <X className="w-5 h-5 text-slate-400" />
               </button>

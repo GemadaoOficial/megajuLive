@@ -15,6 +15,7 @@ import {
   Activity,
   HardDrive,
   Shield,
+  Brain,
 } from 'lucide-react'
 
 export default function AdminPanel() {
@@ -58,7 +59,7 @@ export default function AdminPanel() {
       value: stats.totalLives,
       icon: Video,
       gradient: 'from-violet-500 to-purple-500',
-      bgColor: 'bg-violet-500/100/20',
+      bgColor: 'bg-violet-500/20',
       change: '+23 esta semana',
       to: '/admin/lives',
     },
@@ -67,7 +68,7 @@ export default function AdminPanel() {
       value: `R$ ${(stats.totalRevenue || 0).toLocaleString('pt-BR')}`,
       icon: DollarSign,
       gradient: 'from-emerald-500 to-teal-500',
-      bgColor: 'bg-emerald-500/100/100/20',
+      bgColor: 'bg-emerald-500/20',
       change: '+12.5%',
       to: null,
     },
@@ -76,7 +77,7 @@ export default function AdminPanel() {
       value: `${((stats.totalViews || 0) / 1000).toFixed(1)}K`,
       icon: Eye,
       gradient: 'from-amber-500 to-orange-500',
-      bgColor: 'bg-amber-500/100/100/20',
+      bgColor: 'bg-amber-500/20',
       change: '+18.3%',
       to: null,
     },
@@ -125,6 +126,13 @@ export default function AdminPanel() {
       to: '/admin/settings',
       color: 'rose',
     },
+    {
+      label: 'Monitorar IA',
+      description: 'Tokens, custos e uso por funcionalidade',
+      icon: Brain,
+      to: '/admin/ai-usage',
+      color: 'violet',
+    },
   ]
 
   const getActivityIcon = (type) => {
@@ -159,7 +167,7 @@ export default function AdminPanel() {
         </div>
         <Link
           to="/admin/settings"
-          className="p-3 rounded-xl bg-white/[0.05] text-slate-300 hover:bg-white/[0.08] transition-colors"
+          className="p-3 rounded-xl bg-white/5 text-slate-300 hover:bg-white/8 transition-colors"
         >
           <Settings className="w-5 h-5" />
         </Link>
@@ -183,14 +191,14 @@ export default function AdminPanel() {
               <motion.div key={stat.label} variants={item}>
                 <Card
                   to={stat.to}
-                  className={`block bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6 hover:shadow-md transition-all ${
+                  className={`block bg-white/5 border border-white/8 rounded-2xl p-6 hover:shadow-md transition-all ${
                     stat.to ? 'cursor-pointer hover:border-primary/30' : ''
                   }`}
                 >
                   <div className="flex items-start justify-between">
                     <div>
                       <p className="text-slate-400 text-sm">{stat.label}</p>
-                      <p className={`text-3xl font-bold mt-2 bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
+                      <p className={`text-3xl font-bold mt-2 bg-linear-to-r ${stat.gradient} bg-clip-text text-transparent`}>
                         {stat.value}
                       </p>
                       <div className="flex items-center gap-1 mt-2 text-emerald-400 text-sm">
@@ -229,15 +237,15 @@ export default function AdminPanel() {
             <Link
               key={action.to}
               to={action.to}
-              className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-5 hover:border-primary/30 hover:shadow-md transition-all group"
+              className="bg-white/5 border border-white/8 rounded-2xl p-5 hover:border-primary/30 hover:shadow-md transition-all group"
             >
               <div className={`w-12 h-12 rounded-xl mb-4 flex items-center justify-center transition-colors ${
                 action.color === 'primary' ? 'bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white' :
-                action.color === 'violet' ? 'bg-violet-500/100/20 text-violet-400 group-hover:bg-violet-500/100 group-hover:text-white' :
-                action.color === 'emerald' ? 'bg-emerald-500/100/100/20 text-emerald-400 group-hover:bg-emerald-500/100/100/100/100 group-hover:text-white' :
+                action.color === 'violet' ? 'bg-violet-500/20 text-violet-400 group-hover:bg-violet-500 group-hover:text-white' :
+                action.color === 'emerald' ? 'bg-emerald-500/20 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white' :
                 action.color === 'sky' ? 'bg-sky-500/20 text-sky-400 group-hover:bg-sky-500 group-hover:text-white' :
                 action.color === 'rose' ? 'bg-rose-500/20 text-rose-400 group-hover:bg-rose-500 group-hover:text-white' :
-                'bg-amber-500/100/100/20 text-amber-400 group-hover:bg-amber-500/100/100 group-hover:text-white'
+                'bg-amber-500/20 text-amber-400 group-hover:bg-amber-500 group-hover:text-white'
               }`}>
                 <action.icon className="w-6 h-6" />
               </div>
@@ -255,7 +263,7 @@ export default function AdminPanel() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6"
+        className="bg-white/5 border border-white/8 rounded-2xl p-6"
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white">Atividade Recente</h2>
@@ -272,9 +280,9 @@ export default function AdminPanel() {
             return (
               <div
                 key={activity.id}
-                className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.05] transition-colors"
+                className="flex items-center gap-4 p-4 rounded-xl bg-white/3 hover:bg-white/5 transition-colors"
               >
-                <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center">
                   <Icon className="w-5 h-5 text-slate-400" />
                 </div>
                 <div className="flex-1">

@@ -65,12 +65,12 @@ export default function AdminDashboard() {
 
             {/* Metrics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-2">
-                <TiltCard delay={100} color="green" className="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-lg">
+                <TiltCard delay={100} color="green" className="bg-white border border-slate-100 p-6 rounded-4xl shadow-lg">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm">
+                        <div className="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-xs">
                             <DollarSign size={24} />
                         </div>
-                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 shadow-sm">+12%</span>
+                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 shadow-xs">+12%</span>
                     </div>
                     <p className="text-slate-500 text-sm font-medium mb-1">Faturamento Total</p>
                     <p className="text-3xl font-black text-slate-800 tracking-tight">
@@ -78,12 +78,12 @@ export default function AdminDashboard() {
                     </p>
                 </TiltCard>
 
-                <TiltCard delay={200} color="blue" className="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-lg">
+                <TiltCard delay={200} color="blue" className="bg-white border border-slate-100 p-6 rounded-4xl shadow-lg">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-sm">
+                        <div className="p-3 bg-blue-100 text-blue-600 rounded-2xl shadow-xs">
                             <Video size={24} />
                         </div>
-                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100 shadow-sm">
+                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100 shadow-xs">
                             {metrics.activeLives} Ao Vivo
                         </span>
                     </div>
@@ -91,9 +91,9 @@ export default function AdminDashboard() {
                     <p className="text-3xl font-black text-slate-800 tracking-tight">{metrics.totalLives}</p>
                 </TiltCard>
 
-                <TiltCard delay={300} color="purple" className="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-lg">
+                <TiltCard delay={300} color="purple" className="bg-white border border-slate-100 p-6 rounded-4xl shadow-lg">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-sm">
+                        <div className="p-3 bg-purple-100 text-purple-600 rounded-2xl shadow-xs">
                             <Users size={24} />
                         </div>
                     </div>
@@ -101,9 +101,9 @@ export default function AdminDashboard() {
                     <p className="text-3xl font-black text-slate-800 tracking-tight">{metrics.totalUsers}</p>
                 </TiltCard>
 
-                <TiltCard delay={400} color="orange" className="bg-white border border-slate-100 p-6 rounded-[2rem] shadow-lg">
+                <TiltCard delay={400} color="orange" className="bg-white border border-slate-100 p-6 rounded-4xl shadow-lg">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-sm">
+                        <div className="p-3 bg-orange-100 text-orange-600 rounded-2xl shadow-xs">
                             <TrendingUp size={24} />
                         </div>
                     </div>
@@ -115,7 +115,7 @@ export default function AdminDashboard() {
 
             {/* Active Lives Section */}
             {stats.activeLivesList && stats.activeLivesList.length > 0 && (
-                <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-[2.5rem] shadow-[#ff57221a] shadow-2xl border border-red-100 p-8 animate-pulse-slow relative overflow-hidden">
+                <div className="bg-linear-to-r from-red-50 to-orange-50 rounded-[2.5rem] shadow-[#ff57221a] shadow-2xl border border-red-100 p-8 animate-pulse-slow relative overflow-hidden">
                     {/* Dynamic Background */}
                     <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
@@ -155,7 +155,7 @@ export default function AdminDashboard() {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-red-600 to-orange-600 text-white text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider shadow-md">
+                                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-linear-to-r from-red-600 to-orange-600 text-white text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider shadow-md">
                                             LIVE
                                         </div>
                                     </div>
@@ -178,7 +178,7 @@ export default function AdminDashboard() {
                                                 href={live.liveLink}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="bg-white border border-red-100/50 p-5 rounded-[2rem] flex items-center gap-5 shadow-lg hover:shadow-xl transition-all hover:border-red-200 h-full relative overflow-hidden"
+                                                className="bg-white border border-red-100/50 p-5 rounded-4xl flex items-center gap-5 shadow-lg hover:shadow-xl transition-all hover:border-red-200 h-full relative overflow-hidden"
                                                 title="Clique para assistir"
                                             >
                                                 <div className="absolute right-0 top-0 p-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
@@ -195,7 +195,7 @@ export default function AdminDashboard() {
                                             </button>
                                         </div>
                                     ) : (
-                                        <div className="bg-white border border-red-100 p-5 rounded-[2rem] flex items-center gap-5 shadow-sm h-full">
+                                        <div className="bg-white border border-red-100 p-5 rounded-4xl flex items-center gap-5 shadow-xs h-full">
                                             <CardContent />
                                         </div>
                                     )}
@@ -226,15 +226,15 @@ export default function AdminDashboard() {
                             <div key={streamer.id} className="group flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-2xl hover:bg-white hover:shadow-lg hover:scale-[1.01] hover:border-orange-100 transition-all duration-300">
                                 <div className="flex items-center gap-5">
                                     <div className={`
-                                        w-10 h-10 flex items-center justify-center font-black text-lg rounded-xl shadow-sm
-                                        ${index === 0 ? 'bg-gradient-to-br from-yellow-300 to-yellow-500 text-white shadow-yellow-200 ring-2 ring-yellow-100' :
-                                            index === 1 ? 'bg-gradient-to-br from-slate-300 to-slate-400 text-white shadow-slate-200' :
-                                                index === 2 ? 'bg-gradient-to-br from-orange-300 to-orange-400 text-white shadow-orange-200' :
+                                        w-10 h-10 flex items-center justify-center font-black text-lg rounded-xl shadow-xs
+                                        ${index === 0 ? 'bg-linear-to-br from-yellow-300 to-yellow-500 text-white shadow-yellow-200 ring-2 ring-yellow-100' :
+                                            index === 1 ? 'bg-linear-to-br from-slate-300 to-slate-400 text-white shadow-slate-200' :
+                                                index === 2 ? 'bg-linear-to-br from-orange-300 to-orange-400 text-white shadow-orange-200' :
                                                     'bg-white text-slate-400 border border-slate-200'}
                                     `}>
                                         {index + 1}
                                     </div>
-                                    <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold border-2 border-white shadow-sm overflow-hidden">
+                                    <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 font-bold border-2 border-white shadow-xs overflow-hidden">
                                         {streamer.avatar ? <img src={streamer.avatar} className="w-full h-full object-cover" /> : streamer.name.charAt(0)}
                                     </div>
                                     <div>

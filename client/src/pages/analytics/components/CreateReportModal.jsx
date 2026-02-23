@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react'
-import { X, Loader2, Sparkles, AlertTriangle, Info } from 'lucide-react'
+import { useState, useCallback, useRef } from 'react'
+import { X, Loader2, Sparkles, AlertTriangle, Info, Check } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { liveReportsAPI, aiAPI } from '../../../services/api'
@@ -21,6 +21,19 @@ const CORE_FIELDS = {
   newFollowers: 'Novos Seguidores',
 }
 
+// Fields that belong to each category - used to filter AI response
+const STATS_FIELDS = new Set([
+  'liveTitle', 'reportDate', 'reportTime', 'liveDuration',
+  'totalRevenue', 'totalOrders', 'totalItemsSold', 'avgOrderValue', 'avgRevenuePerBuyer',
+  'totalViewers', 'engagedViewers', 'totalViews', 'peakViewers', 'avgWatchTime',
+  'clickRate', 'totalBuyers', 'productClicks', 'productClickRate', 'conversionRate', 'addToCart', 'gpm',
+  'totalLikes', 'totalShares', 'totalComments', 'commentRate', 'newFollowers',
+  'couponsUsed', 'coinsUsed', 'coinsCost', 'coinRedemptions', 'auctionRounds',
+])
+const TRAFFIC_FIELDS = new Set([
+  'productImpressions', 'funnelClickRate', 'funnelProductClicks', 'orderRate', 'funnelOrders', 'impressionToOrderRate', 'trafficSources',
+])
+
 const emptyReport = {
   liveTitle: '', store: 'MADA', reportDate: new Date().toISOString().split('T')[0], reportTime: '',
   totalRevenue: 0, totalOrders: 0, totalItemsSold: 0, avgOrderValue: 0, avgRevenuePerBuyer: 0,
@@ -28,11 +41,13 @@ const emptyReport = {
   clickRate: 0, totalBuyers: 0, productClicks: 0, productClickRate: 0, conversionRate: 0, addToCart: 0, gpm: 0,
   totalLikes: 0, totalShares: 0, totalComments: 0, commentRate: 0, newFollowers: 0,
   couponsUsed: 0, coinsUsed: 0, coinsCost: 0, coinRedemptions: 0, auctionRounds: 0,
-  productImpressions: 0, orderRate: 0, impressionToOrderRate: 0,
+  productImpressions: 0, funnelClickRate: 0, funnelProductClicks: 0, orderRate: 0, funnelOrders: 0, impressionToOrderRate: 0,
+  trafficSources: [],
 }
 
-export default function CreateReportModal({ onClose, onCreated, editReport }) {
+export default function CreateReportModal({ onClose, onCreated, editReport, prefillData }) {
   const isEdit = !!editReport
+  const fromLive = !!prefillData
   const [data, setData] = useState(() => {
     if (editReport) {
       const d = { ...emptyReport }
@@ -49,6 +64,15 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
       if (editReport.liveTitle) d.liveTitle = editReport.liveTitle
       return d
     }
+    if (prefillData) {
+      return {
+        ...emptyReport,
+        liveTitle: prefillData.liveTitle || '',
+        reportDate: prefillData.reportDate || new Date().toISOString().split('T')[0],
+        reportTime: prefillData.reportTime || '',
+        liveDuration: prefillData.liveDuration || 0,
+      }
+    }
     return { ...emptyReport }
   })
   const [products, setProducts] = useState(() => {
@@ -56,98 +80,145 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
     return []
   })
   const [saving, setSaving] = useState(false)
-  const [aiLoading, setAiLoading] = useState(false)
-  const [aiStep, setAiStep] = useState('')
-  const [aiProgress, setAiProgress] = useState(0)
   const [aiError, setAiError] = useState('')
   const [aiWarnings, setAiWarnings] = useState([])
   const [undetectedFields, setUndetectedFields] = useState([])
+
+  // Per-category state
   const [statsFiles, setStatsFiles] = useState([])
   const [productFiles, setProductFiles] = useState([])
   const [trafficFiles, setTrafficFiles] = useState([])
+  const [statsLoading, setStatsLoading] = useState(false)
+  const [productsLoading, setProductsLoading] = useState(false)
+  const [trafficLoading, setTrafficLoading] = useState(false)
+  const [statsProgress, setStatsProgress] = useState(0)
+  const [productsProgress, setProductsProgress] = useState(0)
+  const [trafficProgress, setTrafficProgress] = useState(0)
+  const [statsDone, setStatsDone] = useState(false)
+  const [productsDone, setProductsDone] = useState(false)
+  const [trafficDone, setTrafficDone] = useState(false)
+  const [statsStep, setStatsStep] = useState('')
+  const [productsStep, setProductsStep] = useState('')
+  const [trafficStep, setTrafficStep] = useState('')
+  const progressRefs = useRef({})
 
-  const onDropStats = useCallback((f) => setStatsFiles(prev => [...prev, ...f].slice(0, 10)), [])
-  const onDropProducts = useCallback((f) => setProductFiles(prev => [...prev, ...f].slice(0, 10)), [])
-  const onDropTraffic = useCallback((f) => setTrafficFiles(prev => [...prev, ...f].slice(0, 5)), [])
+  const anyLoading = statsLoading || productsLoading || trafficLoading
 
-  const handleAiExtract = async () => {
-    if (statsFiles.length === 0 && productFiles.length === 0 && trafficFiles.length === 0) return
-    setAiLoading(true)
-    setAiProgress(0)
+  const onDropStats = useCallback((f) => { setStatsFiles(prev => [...prev, ...f].slice(0, 10)); setStatsDone(false) }, [])
+  const onDropProducts = useCallback((f) => { setProductFiles(prev => [...prev, ...f].slice(0, 10)); setProductsDone(false) }, [])
+  const onDropTraffic = useCallback((f) => { setTrafficFiles(prev => [...prev, ...f].slice(0, 5)); setTrafficDone(false) }, [])
+
+  // Validate AI extraction for suspicious data
+  const validateExtraction = (fields) => {
+    const warnings = []
+    if (fields.totalOrders > fields.addToCart && fields.addToCart > 0)
+      warnings.push('Pedidos maior que Add to Cart - verificar')
+    if (fields.conversionRate > 100)
+      warnings.push('Taxa de conversao acima de 100%')
+    if (fields.clickRate > 100)
+      warnings.push('Taxa de clique acima de 100%')
+    if (fields.totalViewers > 0 && fields.totalOrders > fields.totalViewers)
+      warnings.push('Mais pedidos que espectadores')
+    if (fields.peakViewers > fields.totalViewers && fields.totalViewers > 0)
+      warnings.push('Pico de viewers maior que total de espectadores')
+    if (fields.totalBuyers > fields.totalOrders && fields.totalOrders > 0)
+      warnings.push('Mais compradores que pedidos')
+    if (fields.engagedViewers > fields.totalViewers && fields.totalViewers > 0)
+      warnings.push('Engajados maior que espectadores')
+
+    // Detect undetected core fields
+    const undetected = []
+    Object.entries(CORE_FIELDS).forEach(([key, label]) => {
+      if (!fields[key] && fields[key] !== 0) undetected.push(key)
+    })
+
+    return { warnings, undetected }
+  }
+
+  // Extract a single category
+  const handleExtractCategory = async (category) => {
+    const files = category === 'stats' ? statsFiles : category === 'products' ? productFiles : trafficFiles
+    if (files.length === 0) return
+
+    const setLoading = category === 'stats' ? setStatsLoading : category === 'products' ? setProductsLoading : setTrafficLoading
+    const setProgress = category === 'stats' ? setStatsProgress : category === 'products' ? setProductsProgress : setTrafficProgress
+    const setDone = category === 'stats' ? setStatsDone : category === 'products' ? setProductsDone : setTrafficDone
+    const setStep = category === 'stats' ? setStatsStep : category === 'products' ? setProductsStep : setTrafficStep
+
+    setLoading(true)
+    setProgress(0)
+    setDone(false)
     setAiError('')
-    setAiWarnings([])
-    setUndetectedFields([])
+
+    // Fake progress
+    let p = 0
+    const refKey = category
+    progressRefs.current[refKey] = setInterval(() => {
+      p += Math.random() * 8 + 2
+      if (p > 85) p = 85
+      setProgress(Math.round(p))
+    }, 600)
+
     try {
       const formData = new FormData()
+      const fieldName = category === 'stats' ? 'statsScreenshots' : category === 'products' ? 'productScreenshots' : 'trafficScreenshots'
+      files.forEach(f => formData.append(fieldName, f))
 
-      setAiStep('Preparando imagens...')
-      setAiProgress(15)
-      statsFiles.forEach(f => formData.append('statsScreenshots', f))
-      productFiles.forEach(f => formData.append('productScreenshots', f))
-      trafficFiles.forEach(f => formData.append('trafficScreenshots', f))
-
-      setAiStep('Enviando para a IA...')
-      setAiProgress(35)
-
-      const progressInterval = setInterval(() => {
-        setAiProgress(prev => {
-          if (prev >= 75) { clearInterval(progressInterval); return prev }
-          return prev + 1
-        })
-      }, 800)
-
-      setAiStep('IA analisando screenshots...')
+      setStep('Analisando...')
       const response = await aiAPI.extractLiveReport(formData)
-      clearInterval(progressInterval)
+      clearInterval(progressRefs.current[refKey])
+      setProgress(100)
 
       const result = response.data
+      const { products: aiProducts, ...aiFields } = result
 
-      setAiStep('Processando resultados...')
-      setAiProgress(85)
-      const { products: aiProducts, ...aiStats } = result
-      // So sobrescreve campos que a IA realmente detectou (valor != 0, != null, != '')
-      setData(prev => {
-        const merged = { ...prev }
-        Object.entries(aiStats).forEach(([key, value]) => {
-          if (value !== null && value !== undefined && value !== '' && value !== 0) {
+      if (category === 'stats') {
+        // Only apply stats fields
+        const merged = { ...data }
+        Object.entries(aiFields).forEach(([key, value]) => {
+          if (STATS_FIELDS.has(key) && value !== null && value !== undefined && value !== '' && (!Array.isArray(value) || value.length > 0)) {
             merged[key] = value
           }
         })
-        return merged
-      })
-      // So atualiza produtos se screenshots de produtos foram enviados explicitamente
-      if (productFiles.length > 0 && aiProducts?.length) setProducts(aiProducts)
+        setData(merged)
 
-      // Detectar campos nao reconhecidos (verifica estado final, nao so a IA)
-      const notDetected = []
-      const warnings = []
-      setData(current => {
-        Object.entries(CORE_FIELDS).forEach(([field, label]) => {
-          if (!current[field] || current[field] === 0) {
-            notDetected.push(field)
-            warnings.push(label)
-          }
+        // Validate extracted data
+        const { warnings, undetected } = validateExtraction(merged)
+        if (warnings.length > 0) {
+          warnings.forEach(w => toast.warning(w, { duration: 6000 }))
+        }
+        if (undetected.length > 0) {
+          setUndetectedFields(undetected)
+        }
+        setStep('Concluido!')
+      } else if (category === 'products') {
+        if (aiProducts?.length) setProducts(aiProducts)
+        setStep(`${aiProducts?.length || 0} produtos`)
+      } else if (category === 'traffic') {
+        // Only apply traffic fields
+        setData(prev => {
+          const merged = { ...prev }
+          Object.entries(aiFields).forEach(([key, value]) => {
+            if (TRAFFIC_FIELDS.has(key) && value !== null && value !== undefined && value !== '' && (!Array.isArray(value) || value.length > 0)) {
+              merged[key] = value
+            }
+          })
+          return merged
         })
-        return current
-      })
-      setUndetectedFields(notDetected)
-      setAiWarnings(warnings)
+        setStep('Concluido!')
+      }
 
-      setAiStep('Concluido!')
-      setAiProgress(100)
-
-      setTimeout(() => {
-        setAiStep('')
-        setAiProgress(0)
-      }, 2000)
+      setDone(true)
+      setTimeout(() => { setStep(''); setProgress(0) }, 2000)
     } catch (error) {
-      console.error('Erro AI:', error)
-      const msg = error.response?.data?.message || error.message || 'Erro desconhecido ao processar imagens'
+      console.error(`Erro AI ${category}:`, error)
+      clearInterval(progressRefs.current[refKey])
+      const msg = error.response?.data?.message || error.message || 'Erro ao processar imagens'
       setAiError(msg)
-      setAiStep('')
-      setAiProgress(0)
+      setStep('')
+      setProgress(0)
     } finally {
-      setAiLoading(false)
+      setLoading(false)
     }
   }
 
@@ -163,8 +234,9 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
         ...rest,
         reportDate,
         products,
-        createdManually: !isEdit ? true : undefined,
-        aiAnalyzed: statsFiles.length > 0 || productFiles.length > 0 || trafficFiles.length > 0,
+        ...(prefillData?.liveId ? { liveId: prefillData.liveId } : {}),
+        createdManually: !isEdit && !fromLive ? true : undefined,
+        aiAnalyzed: statsDone || productsDone || trafficDone,
       }
       if (isEdit) {
         await liveReportsAPI.update(editReport.id, payload)
@@ -182,6 +254,60 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
     }
   }
 
+  // Category analyze button component
+  const CategoryButton = ({ category, files, loading, progress, done, step }) => {
+    const labels = { stats: 'Analisar Estatisticas', products: 'Analisar Produtos', traffic: 'Analisar Trafego' }
+    const colors = {
+      stats: 'from-blue-500 to-indigo-600',
+      products: 'from-violet-500 to-purple-600',
+      traffic: 'from-emerald-500 to-teal-600',
+    }
+
+    return (
+      <div className="mt-2 space-y-1.5">
+        {loading && progress > 0 && (
+          <div>
+            <div className="flex items-center justify-between text-[10px] text-slate-400 mb-0.5">
+              <span>{step}</span>
+              <span>{progress}%</span>
+            </div>
+            <div className="w-full h-1.5 bg-white/6 rounded-full overflow-hidden">
+              <motion.div
+                className={`h-full bg-linear-to-r ${colors[category]} rounded-full`}
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => handleExtractCategory(category)}
+          disabled={anyLoading || files.length === 0}
+          className={`w-full flex items-center justify-center gap-1.5 py-2 bg-linear-to-r ${colors[category]} text-white text-xs font-semibold rounded-xl hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity`}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              Analisando...
+            </>
+          ) : done ? (
+            <>
+              <Check className="w-3.5 h-3.5" />
+              {step || 'Extraido'}
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-3.5 h-3.5" />
+              {labels[category]}
+            </>
+          )}
+        </button>
+      </div>
+    )
+  }
+
   return (
     <AnimatePresence>
       <motion.div
@@ -195,45 +321,34 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
           initial={{ opacity: 0, y: 20, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20 }}
-          className="bg-[#0f1117] border border-white/[0.08] rounded-2xl w-full max-w-5xl my-8 shadow-2xl"
+          className="bg-[#0f1117] border border-white/8 rounded-2xl w-full max-w-5xl my-8 shadow-2xl"
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-white/[0.08] bg-white/[0.03] rounded-t-2xl">
+          <div className="flex items-center justify-between p-6 border-b border-white/8 bg-white/3 rounded-t-2xl">
             <div>
-              <h2 className="text-xl font-bold text-white">{isEdit ? 'Editar Relatorio' : 'Criar Relatorio Manual'}</h2>
-              <p className="text-sm text-slate-400">{isEdit ? 'Edite os dados do relatorio da live' : 'Registre dados de uma live retroativa'}</p>
+              <h2 className="text-xl font-bold text-white">{isEdit ? 'Editar Relatorio' : fromLive ? 'Relatorio da Live' : 'Criar Relatorio Manual'}</h2>
+              <p className="text-sm text-slate-400">{isEdit ? 'Edite os dados do relatorio da live' : fromLive ? 'Preencha as estatisticas da live que acabou de encerrar' : 'Registre dados de uma live retroativa'}</p>
             </div>
-            <button onClick={onClose} className="p-2 hover:bg-white/[0.06] rounded-lg text-slate-400 hover:text-white"><X className="w-5 h-5" /></button>
+            <button onClick={onClose} className="p-2 hover:bg-white/6 rounded-lg text-slate-400 hover:text-white"><X className="w-5 h-5" /></button>
           </div>
 
           <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto relative">
-            {/* Sticky AI Loading Bar - always visible when scrolling */}
-            {aiLoading && (
+            {/* Sticky AI Loading Bar */}
+            {anyLoading && (
               <div className="sticky top-0 z-20 -mx-6 -mt-6 mb-2">
-                <div className="bg-white/[0.05] backdrop-blur-sm border-b border-white/[0.08] px-5 py-2.5">
+                <div className="bg-white/5 backdrop-blur-xs border-b border-white/8 px-5 py-2.5">
                   <div className="flex items-center gap-3">
-                    <Loader2 className="w-4 h-4 text-indigo-400 animate-spin flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium text-slate-300 truncate">{aiStep}</span>
-                        <span className="text-xs font-bold text-indigo-400 ml-2">{aiProgress}%</span>
-                      </div>
-                      <div className="w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${aiProgress}%` }}
-                          transition={{ duration: 0.5 }}
-                        />
-                      </div>
-                    </div>
+                    <Loader2 className="w-4 h-4 text-indigo-400 animate-spin shrink-0" />
+                    <span className="text-xs font-medium text-slate-300">
+                      {statsLoading ? 'Analisando estatisticas...' : productsLoading ? 'Analisando produtos...' : 'Analisando trafego...'}
+                    </span>
                   </div>
                 </div>
               </div>
             )}
 
             {/* Meta info */}
-            <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
+            <div className="bg-white/5 border border-white/8 rounded-xl p-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">Nome da Live *</label>
@@ -242,7 +357,7 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
                     value={data.liveTitle}
                     onChange={(e) => setData(prev => ({ ...prev, liveTitle: e.target.value }))}
                     placeholder="Ex: Super Promo de Quinta"
-                    className="w-full px-3 py-2 rounded-lg border border-white/[0.08] bg-white/[0.05] text-white text-sm focus:outline-none focus:border-primary placeholder:text-slate-500"
+                    className="w-full px-3 py-2 rounded-lg border border-white/8 bg-white/5 text-white text-sm focus:outline-hidden focus:border-primary placeholder:text-slate-500"
                   />
                 </div>
                 {/* Loja */}
@@ -255,7 +370,7 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
                         className={`px-3 py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${
                           data.store === 'MADA'
                             ? 'border-[#EE4D2D] bg-[#EE4D2D]/10 text-[#EE4D2D]'
-                            : 'border-white/[0.08] text-slate-400 hover:border-white/[0.12]'
+                            : 'border-white/8 text-slate-400 hover:border-white/12'
                         }`}
                       >
                         Mada
@@ -266,7 +381,7 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
                         className={`px-3 py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${
                           data.store === 'STAR_IMPORT'
                             ? 'border-[#EE4D2D] bg-[#EE4D2D]/10 text-[#EE4D2D]'
-                            : 'border-white/[0.08] text-slate-400 hover:border-white/[0.12]'
+                            : 'border-white/8 text-slate-400 hover:border-white/12'
                         }`}
                       >
                         Star Import
@@ -279,7 +394,7 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
                     type="date"
                     value={data.reportDate}
                     onChange={(e) => setData(prev => ({ ...prev, reportDate: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg border border-white/[0.08] bg-white/[0.05] text-white text-sm focus:outline-none focus:border-primary"
+                    className="w-full px-3 py-2 rounded-lg border border-white/8 bg-white/5 text-white text-sm focus:outline-hidden focus:border-primary"
                   />
                 </div>
                 <div>
@@ -288,87 +403,43 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
                     type="time"
                     value={data.reportTime || ''}
                     onChange={(e) => setData(prev => ({ ...prev, reportTime: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg border border-white/[0.08] bg-white/[0.05] text-white text-sm focus:outline-none focus:border-primary"
+                    className="w-full px-3 py-2 rounded-lg border border-white/8 bg-white/5 text-white text-sm focus:outline-hidden focus:border-primary"
                   />
                 </div>
               </div>
             </div>
 
-            {/* AI Upload Section */}
-            <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
+            {/* AI Upload Section - each category has its own analyze button */}
+            <div className="bg-white/5 border border-white/8 rounded-xl p-4">
               <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-primary" />
                 Preencher com IA (opcional)
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <ImageDropZone onDrop={onDropStats} files={statsFiles} setFiles={setStatsFiles} label="Estatisticas" max={10} disabled={aiLoading} category="stats" />
-                <ImageDropZone onDrop={onDropProducts} files={productFiles} setFiles={setProductFiles} label="Produtos" max={10} disabled={aiLoading} category="products" />
-                <ImageDropZone onDrop={onDropTraffic} files={trafficFiles} setFiles={setTrafficFiles} label="Trafego" max={5} disabled={aiLoading} category="traffic" />
-              </div>
-
-              {/* Progress bar */}
-              {aiLoading && aiProgress > 0 && (
-                <div className="mb-3">
-                  <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
-                    <span>{aiStep}</span>
-                    <span>{aiProgress}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${aiProgress}%` }}
-                      transition={{ duration: 0.5 }}
-                    />
-                  </div>
+              <p className="text-xs text-slate-500 mb-4">Suba screenshots de cada categoria separadamente e clique em "Analisar" em cada uma.</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <ImageDropZone onDrop={onDropStats} files={statsFiles} setFiles={setStatsFiles} label="Estatisticas" max={10} disabled={anyLoading} category="stats" />
+                  <CategoryButton category="stats" files={statsFiles} loading={statsLoading} progress={statsProgress} done={statsDone} step={statsStep} />
                 </div>
-              )}
-
-              <button
-                type="button"
-                onClick={handleAiExtract}
-                disabled={aiLoading || (statsFiles.length === 0 && productFiles.length === 0 && trafficFiles.length === 0)}
-                className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-medium rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity"
-              >
-                {aiLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    {aiStep}
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4" />
-                    Analisar com IA
-                  </>
-                )}
-              </button>
+                <div>
+                  <ImageDropZone onDrop={onDropProducts} files={productFiles} setFiles={setProductFiles} label="Produtos" max={10} disabled={anyLoading} category="products" />
+                  <CategoryButton category="products" files={productFiles} loading={productsLoading} progress={productsProgress} done={productsDone} step={productsStep} />
+                </div>
+                <div>
+                  <ImageDropZone onDrop={onDropTraffic} files={trafficFiles} setFiles={setTrafficFiles} label="Trafego" max={5} disabled={anyLoading} category="traffic" />
+                  <CategoryButton category="traffic" files={trafficFiles} loading={trafficLoading} progress={trafficProgress} done={trafficDone} step={trafficStep} />
+                </div>
+              </div>
             </div>
 
             {/* AI Error */}
             {aiError && (
               <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <p className="font-semibold text-red-400 text-sm">Erro ao processar imagens</p>
                   <p className="text-xs text-red-300 mt-1">{aiError}</p>
                   <button onClick={() => setAiError('')} className="text-xs text-red-400 underline mt-2 hover:text-red-300">Fechar</button>
-                </div>
-              </div>
-            )}
-
-            {/* AI Warnings */}
-            {aiWarnings.length > 0 && !aiLoading && (
-              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3">
-                <Info className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="font-semibold text-amber-400 text-sm">{aiWarnings.length} campo(s) nao detectados</p>
-                  <p className="text-xs text-amber-300 mt-1">Verifique se estao visiveis nos screenshots ou preencha manualmente.</p>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {aiWarnings.map((w, i) => (
-                      <span key={i} className="px-2 py-0.5 bg-amber-500/15 text-amber-400 rounded-full text-xs font-medium">{w}</span>
-                    ))}
-                  </div>
-                  <button onClick={() => setAiWarnings([])} className="text-xs text-amber-400 underline mt-2 hover:text-amber-300">Fechar</button>
                 </div>
               </div>
             )}
@@ -378,14 +449,14 @@ export default function CreateReportModal({ onClose, onCreated, editReport }) {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 p-6 border-t border-white/[0.08] bg-white/[0.03] rounded-b-2xl">
-            <button onClick={onClose} className="px-6 py-2.5 rounded-xl border border-white/[0.08] text-slate-300 font-medium hover:bg-white/[0.06]">
+          <div className="flex items-center justify-end gap-3 p-6 border-t border-white/8 bg-white/3 rounded-b-2xl">
+            <button onClick={onClose} className="px-6 py-2.5 rounded-xl border border-white/8 text-slate-300 font-medium hover:bg-white/6">
               Cancelar
             </button>
             <button
               onClick={handleSave}
               disabled={saving || !data.liveTitle || !data.reportDate || !data.reportTime}
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-primary to-orange-500 text-white font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl bg-linear-to-r from-primary to-orange-500 text-white font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
             >
               {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Salvando...</> : isEdit ? 'Atualizar Relatorio' : 'Salvar Relatorio'}
             </button>

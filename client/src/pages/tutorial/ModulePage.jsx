@@ -64,7 +64,7 @@ export default function ModulePage() {
                 Voltar para Tutoriais
             </button>
 
-            <div className="bg-white/[0.05] rounded-xl border border-white/[0.08] overflow-hidden">
+            <div className="bg-white/5 rounded-xl border border-white/8 overflow-hidden">
                 <div className="p-8">
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-3xl font-bold text-white">{module.title}</h1>
@@ -91,7 +91,7 @@ export default function ModulePage() {
                                             <code className={className} {...props}>{children}</code>
                                         </div>
                                     ) : (
-                                        <code className="bg-white/[0.08] px-1 py-0.5 rounded text-sm font-mono text-red-400" {...props}>
+                                        <code className="bg-white/8 px-1 py-0.5 rounded-sm text-sm font-mono text-red-400" {...props}>
                                             {children}
                                         </code>
                                     )
@@ -103,7 +103,7 @@ export default function ModulePage() {
                     </div>
                 </div>
 
-                <div className="bg-white/[0.03] px-8 py-6 border-t border-white/[0.06] flex justify-end">
+                <div className="bg-white/3 px-8 py-6 border-t border-white/6 flex justify-end">
                     {module.completed ? (
                         <button
                             disabled
@@ -116,7 +116,7 @@ export default function ModulePage() {
                         <button
                             onClick={handleComplete}
                             disabled={markingComplete}
-                            className="flex items-center px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-orange-600 transition-colors shadow-sm disabled:opacity-70"
+                            className="flex items-center px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-orange-600 transition-colors shadow-xs disabled:opacity-70"
                         >
                             {markingComplete ? 'Registrando...' : 'Marcar como Concluído'}
                             {!markingComplete && <CheckCircle size={20} className="ml-2" />}

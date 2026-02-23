@@ -52,14 +52,14 @@ export default function TutorialEditor() {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-amber-500/100/10 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3"
+        className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 flex items-start gap-3"
       >
-        <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+        <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
         <div>
           <p className="font-medium text-amber-400">Conteúdo gerenciado por código</p>
           <p className="text-sm text-amber-400 mt-1">
             Os módulos de treinamento estão definidos em{' '}
-            <code className="px-1.5 py-0.5 bg-amber-500/100/100/20 rounded text-xs font-mono">
+            <code className="px-1.5 py-0.5 bg-amber-500/20 rounded-sm text-xs font-mono">
               src/pages/tutorials/data/trainingData.js
             </code>
             . Para adicionar ou editar módulos, modifique este arquivo diretamente.
@@ -69,7 +69,7 @@ export default function TutorialEditor() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4 flex items-center gap-4">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4 flex items-center gap-4">
           <div className="p-3 rounded-xl bg-primary/10">
             <BookOpen className="w-5 h-5 text-primary" />
           </div>
@@ -78,8 +78,8 @@ export default function TutorialEditor() {
             <p className="text-xs text-slate-400">Módulos</p>
           </div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4 flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-violet-500/100/20">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4 flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-violet-500/20">
             <Video className="w-5 h-5 text-violet-400" />
           </div>
           <div>
@@ -87,8 +87,8 @@ export default function TutorialEditor() {
             <p className="text-xs text-slate-400">Com vídeo</p>
           </div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4 flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-emerald-500/100/100/20">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4 flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-emerald-500/20">
             <FileText className="w-5 h-5 text-emerald-400" />
           </div>
           <div>
@@ -96,8 +96,8 @@ export default function TutorialEditor() {
             <p className="text-xs text-slate-400">Com conteúdo</p>
           </div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4 flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-blue-500/100/100/20">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4 flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-blue-500/20">
             <Download className="w-5 h-5 text-blue-400" />
           </div>
           <div>
@@ -108,7 +108,7 @@ export default function TutorialEditor() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-white/[0.08]">
+      <div className="flex gap-2 border-b border-white/8">
         <button
           onClick={() => setActiveTab('modules')}
           className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
@@ -138,7 +138,7 @@ export default function TutorialEditor() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6"
+          className="bg-white/5 border border-white/8 rounded-2xl p-6"
         >
           <h2 className="text-xl font-semibold text-white mb-6">Trilha de Aprendizado</h2>
 
@@ -148,16 +148,16 @@ export default function TutorialEditor() {
               return (
                 <div
                   key={tutorial.id}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.05] transition-colors"
+                  className="flex items-center gap-4 p-4 rounded-xl bg-white/3 hover:bg-white/5 transition-colors"
                 >
                   <div
-                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${tutorial.gradient} flex items-center justify-center text-white shadow-lg`}
+                    className={`w-12 h-12 rounded-xl bg-linear-to-br ${tutorial.gradient} flex items-center justify-center text-white shadow-lg`}
                   >
                     <IconComponent className="w-6 h-6" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded">
+                      <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-sm">
                         MÓDULO {tutorial.moduleNumber}
                       </span>
                     </div>
@@ -177,18 +177,18 @@ export default function TutorialEditor() {
                     </div>
                     <div className="flex items-center gap-2">
                       {tutorial.videoUrl ? (
-                        <span className="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-500/100/100/20 text-emerald-400 text-xs font-medium">
+                        <span className="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 text-xs font-medium">
                           <Video className="w-3 h-3 mr-1" />
                           Vídeo
                         </span>
                       ) : (
-                        <span className="inline-flex items-center px-2 py-1 rounded-lg bg-amber-500/100/100/20 text-amber-400 text-xs font-medium">
+                        <span className="inline-flex items-center px-2 py-1 rounded-lg bg-amber-500/20 text-amber-400 text-xs font-medium">
                           <AlertCircle className="w-3 h-3 mr-1" />
                           Sem vídeo
                         </span>
                       )}
                       {tutorial.content && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-lg bg-blue-500/100/100/20 text-blue-400 text-xs font-medium">
+                        <span className="inline-flex items-center px-2 py-1 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-medium">
                           <FileText className="w-3 h-3 mr-1" />
                           Texto
                         </span>
@@ -196,7 +196,7 @@ export default function TutorialEditor() {
                     </div>
                     <button
                       onClick={() => handlePreview(tutorial)}
-                      className="p-2 rounded-lg hover:bg-white/[0.08] text-slate-400 hover:text-primary transition-colors"
+                      className="p-2 rounded-lg hover:bg-white/8 text-slate-400 hover:text-primary transition-colors"
                       title="Visualizar"
                     >
                       <Eye className="w-5 h-5" />
@@ -214,7 +214,7 @@ export default function TutorialEditor() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6"
+          className="bg-white/5 border border-white/8 rounded-2xl p-6"
         >
           <h2 className="text-xl font-semibold text-white mb-6">Materiais de Apoio</h2>
 
@@ -225,9 +225,9 @@ export default function TutorialEditor() {
                 <div
                   key={material.id}
                   onClick={() => handleMaterialPreview(material)}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.05] transition-colors cursor-pointer group"
+                  className="flex items-center gap-4 p-4 rounded-xl bg-white/3 hover:bg-white/5 transition-colors cursor-pointer group"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white shadow-lg">
+                  <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white shadow-lg">
                     <IconComponent className="w-6 h-6" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -237,7 +237,7 @@ export default function TutorialEditor() {
                     <p className="text-sm text-slate-400 truncate">{material.description}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center px-2 py-1 rounded-lg bg-white/[0.08] text-slate-300 text-xs font-medium uppercase">
+                    <span className="inline-flex items-center px-2 py-1 rounded-lg bg-white/8 text-slate-300 text-xs font-medium uppercase">
                       {material.type}
                     </span>
                     <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-primary transition-colors" />
@@ -259,14 +259,14 @@ export default function TutorialEditor() {
         {previewTutorial && (
           <div className="space-y-6">
             {/* Header */}
-            <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${previewTutorial.gradient} p-6 text-white`}>
+            <div className={`relative overflow-hidden rounded-2xl bg-linear-to-br ${previewTutorial.gradient} p-6 text-white`}>
               <div className="absolute inset-0 bg-black/10" />
               <div className="relative flex items-center gap-4">
                 <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
                   <previewTutorial.icon className="w-8 h-8" />
                 </div>
                 <div>
-                  <span className="text-sm font-semibold bg-white/20 px-2 py-0.5 rounded">
+                  <span className="text-sm font-semibold bg-white/20 px-2 py-0.5 rounded-sm">
                     MÓDULO {previewTutorial.moduleNumber}
                   </span>
                   <h2 className="text-2xl font-bold mt-1">{previewTutorial.title}</h2>
@@ -277,7 +277,7 @@ export default function TutorialEditor() {
 
             {/* Topics */}
             {previewTutorial.topics && previewTutorial.topics.length > 0 && (
-              <div className="bg-white/[0.03] rounded-xl p-4">
+              <div className="bg-white/3 rounded-xl p-4">
                 <h3 className="font-semibold text-white mb-3 flex items-center gap-2">
                   <List className="w-5 h-5 text-primary" />
                   Tópicos Abordados
@@ -285,7 +285,7 @@ export default function TutorialEditor() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {previewTutorial.topics.map((topic, idx) => (
                     <div key={idx} className="flex items-center gap-2 text-slate-300">
-                      <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                      <CheckCircle className="w-4 h-4 text-emerald-500 shrink-0" />
                       <span className="text-sm">{topic}</span>
                     </div>
                   ))}
@@ -295,13 +295,13 @@ export default function TutorialEditor() {
 
             {/* Content Preview */}
             {previewTutorial.content && (
-              <div className="bg-white/[0.03] rounded-xl p-4 max-h-64 overflow-y-auto">
+              <div className="bg-white/3 rounded-xl p-4 max-h-64 overflow-y-auto">
                 <h3 className="font-semibold text-white mb-3 flex items-center gap-2">
                   <FileText className="w-5 h-5 text-primary" />
                   Conteúdo
                 </h3>
                 <div className="prose prose-sm prose-slate max-w-none">
-                  <pre className="whitespace-pre-wrap text-xs text-slate-300 font-mono bg-white/[0.05] p-4 rounded-lg">
+                  <pre className="whitespace-pre-wrap text-xs text-slate-300 font-mono bg-white/5 p-4 rounded-lg">
                     {previewTutorial.content.substring(0, 1000)}
                     {previewTutorial.content.length > 1000 && '...'}
                   </pre>
@@ -310,7 +310,7 @@ export default function TutorialEditor() {
             )}
 
             {/* Video Status */}
-            <div className={`p-4 rounded-xl ${previewTutorial.videoUrl ? 'bg-emerald-500/100/10' : 'bg-amber-500/100/10'}`}>
+            <div className={`p-4 rounded-xl ${previewTutorial.videoUrl ? 'bg-emerald-500/10' : 'bg-amber-500/10'}`}>
               <div className="flex items-center gap-3">
                 <Video className={`w-5 h-5 ${previewTutorial.videoUrl ? 'text-emerald-400' : 'text-amber-400'}`} />
                 <div>
@@ -341,7 +341,7 @@ export default function TutorialEditor() {
         {previewMaterial && (
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white">
+              <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-400 to-cyan-500 flex items-center justify-center text-white">
                 <previewMaterial.icon className="w-6 h-6" />
               </div>
               <div>
@@ -351,7 +351,7 @@ export default function TutorialEditor() {
             </div>
 
             {previewMaterial.content && (
-              <div className="bg-white/[0.03] rounded-xl p-4 max-h-96 overflow-y-auto">
+              <div className="bg-white/3 rounded-xl p-4 max-h-96 overflow-y-auto">
                 <pre className="whitespace-pre-wrap text-sm text-slate-200 font-mono">
                   {previewMaterial.content}
                 </pre>

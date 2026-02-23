@@ -77,14 +77,14 @@ export default function AITitlesModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Assistente IA - Shopee Live" size="lg">
       {/* Header gradient */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 p-5 text-white mb-5">
+      <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-violet-500 via-purple-500 to-fuchsia-500 p-5 text-white mb-5">
         <div className="absolute -right-10 -bottom-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
         <div className="absolute -left-10 -top-10 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
         <div className="relative flex items-center gap-3">
           <motion.div
             animate={{ rotate: [0, 10, -10, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm"
+            className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-xs"
           >
             <Wand2 className="w-6 h-6" />
           </motion.div>
@@ -102,7 +102,7 @@ export default function AITitlesModal({
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             tab === 'title'
               ? 'bg-violet-500/20 text-violet-400'
-              : 'text-slate-400 hover:bg-white/[0.06]'
+              : 'text-slate-400 hover:bg-white/6'
           }`}
         >
           <Type className="w-4 h-4" />
@@ -113,7 +113,7 @@ export default function AITitlesModal({
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             tab === 'description'
               ? 'bg-violet-500/20 text-violet-400'
-              : 'text-slate-400 hover:bg-white/[0.06]'
+              : 'text-slate-400 hover:bg-white/6'
           }`}
         >
           <FileText className="w-4 h-4" />
@@ -136,7 +136,7 @@ export default function AITitlesModal({
               : 'Ex: live de ofertas relampago com cupons de frete gratis e sorteio...'
             }
             rows={2}
-            className="w-full px-4 py-3 pr-12 rounded-xl border border-white/[0.08] bg-white/[0.05] text-white text-sm resize-none focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20 placeholder-white/30"
+            className="w-full px-4 py-3 pr-12 rounded-xl border border-white/8 bg-white/5 text-white text-sm resize-none focus:outline-hidden focus:border-violet-400 focus:ring-2 focus:ring-violet-500/20 placeholder-white/30"
           />
           <button
             onClick={handleGenerate}
@@ -158,7 +158,7 @@ export default function AITitlesModal({
       {/* Error message */}
       {aiError && (
         <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-2">
-          <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium text-red-400">Falha na IA</p>
             <p className="text-xs text-red-400/80 mt-0.5 break-all">{aiError}</p>
@@ -209,10 +209,10 @@ export default function AITitlesModal({
                 if (tab === 'title') onSelectTitle(item)
                 else onSelectDescription(item)
               }}
-              className="w-full p-4 rounded-xl bg-white/[0.03] hover:bg-violet-500/10 border border-white/[0.08] hover:border-violet-500/30 text-left transition-all group"
+              className="w-full p-4 rounded-xl bg-white/3 hover:bg-violet-500/10 border border-white/8 hover:border-violet-500/30 text-left transition-all group"
             >
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-violet-500/15 group-hover:bg-violet-500/25 flex items-center justify-center flex-shrink-0 transition-colors">
+                <div className="w-10 h-10 rounded-lg bg-violet-500/15 group-hover:bg-violet-500/25 flex items-center justify-center shrink-0 transition-colors">
                   {index === 0 ? (
                     <Star className="w-5 h-5 text-violet-500" />
                   ) : (
@@ -234,7 +234,7 @@ export default function AITitlesModal({
                     </span>
                   )}
                 </div>
-                <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-violet-400 flex-shrink-0 mt-1 transition-colors" />
+                <ChevronRight className="w-5 h-5 text-slate-600 group-hover:text-violet-400 shrink-0 mt-1 transition-colors" />
               </div>
             </motion.button>
           ))}

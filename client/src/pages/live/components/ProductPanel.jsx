@@ -47,11 +47,11 @@ export default function ProductPanel({
   const quickTimeOptions = [30, 60, 90, 120, 180]
 
   return (
-    <div className="bg-white/[0.05] border border-white/[0.08] rounded-3xl p-6 h-full">
+    <div className="bg-white/5 border border-white/8 rounded-3xl p-6 h-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
+          <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
             <ShoppingBag className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -65,8 +65,8 @@ export default function ProductPanel({
           onClick={() => setShowForm(!showForm)}
           className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
             showForm
-              ? 'bg-white/[0.1] text-slate-300 rotate-45'
-              : 'bg-gradient-to-br from-primary to-orange-500 text-white shadow-lg'
+              ? 'bg-white/10 text-slate-300 rotate-45'
+              : 'bg-linear-to-br from-primary to-orange-500 text-white shadow-lg'
           }`}
         >
           <Plus className="w-5 h-5" />
@@ -82,7 +82,7 @@ export default function ProductPanel({
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden mb-6"
           >
-            <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/[0.08] space-y-4">
+            <div className="p-4 rounded-2xl bg-white/5 border border-white/8 space-y-4">
               <div className="flex items-center gap-2 text-slate-200 font-medium mb-2">
                 <Sparkles className="w-4 h-4 text-primary" />
                 Novo Produto
@@ -94,7 +94,7 @@ export default function ProductPanel({
                   placeholder="Nome do produto"
                   value={productForm.name}
                   onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/8 text-white placeholder-white/30 focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
@@ -106,7 +106,7 @@ export default function ProductPanel({
                     placeholder="Preco"
                     value={productForm.price}
                     onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/8 text-white placeholder-white/30 focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
                 <div className="relative">
@@ -118,7 +118,7 @@ export default function ProductPanel({
                     onChange={(e) =>
                       setProductForm({ ...productForm, timeSlot: parseInt(e.target.value) || 60 })
                     }
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/8 text-white placeholder-white/30 focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
               </div>
@@ -134,7 +134,7 @@ export default function ProductPanel({
                       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                         productForm.timeSlot === time
                           ? 'bg-primary text-white'
-                          : 'bg-white/[0.05] border border-white/[0.08] text-slate-300 hover:border-primary'
+                          : 'bg-white/5 border border-white/8 text-slate-300 hover:border-primary'
                       }`}
                     >
                       {time}s
@@ -147,7 +147,7 @@ export default function ProductPanel({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleSubmit}
-                className="w-full py-3 bg-gradient-to-r from-primary to-orange-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-primary/30 transition-shadow"
+                className="w-full py-3 bg-linear-to-r from-primary to-orange-500 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg hover:shadow-primary/30 transition-shadow"
               >
                 <Plus className="w-5 h-5" />
                 Adicionar Produto
@@ -165,7 +165,7 @@ export default function ProductPanel({
             animate={{ opacity: 1 }}
             className="text-center py-12"
           >
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/[0.05] flex items-center justify-center">
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center">
               <Package className="w-10 h-10 text-slate-500" />
             </div>
             <p className="text-slate-400 font-medium">Nenhum produto na fila</p>
@@ -188,10 +188,10 @@ export default function ProductPanel({
                   className={`
                     group relative flex items-center gap-3 p-4 rounded-2xl transition-all cursor-pointer
                     ${isActive
-                      ? 'bg-gradient-to-r from-primary/10 to-orange-500/10 border-2 border-primary shadow-lg scale-[1.02]'
+                      ? 'bg-linear-to-r from-primary/10 to-orange-500/10 border-2 border-primary shadow-lg scale-[1.02]'
                       : isPast
                         ? 'bg-emerald-500/10 border-2 border-emerald-500/30 opacity-70'
-                        : 'bg-white/[0.03] border-2 border-white/[0.06] hover:border-white/[0.12]'
+                        : 'bg-white/3 border-2 border-white/6 hover:border-white/12'
                     }
                   `}
                 >
@@ -204,10 +204,10 @@ export default function ProductPanel({
                   <div className={`
                     w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg shrink-0
                     ${isActive
-                      ? 'bg-gradient-to-br from-primary to-orange-500 text-white shadow-lg'
+                      ? 'bg-linear-to-br from-primary to-orange-500 text-white shadow-lg'
                       : isPast
                         ? 'bg-emerald-500 text-white'
-                        : 'bg-white/[0.05] text-slate-300'
+                        : 'bg-white/5 text-slate-300'
                     }
                   `}>
                     {isPast ? <CheckCircle className="w-5 h-5" /> : index + 1}
@@ -267,16 +267,16 @@ export default function ProductPanel({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="mt-6 pt-4 border-t border-white/[0.08]"
+          className="mt-6 pt-4 border-t border-white/8"
         >
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-xl bg-white/[0.03]">
+            <div className="p-3 rounded-xl bg-white/3">
               <p className="text-xs text-slate-400">Total estimado</p>
               <p className="text-lg font-bold text-white">
                 R$ {products.reduce((acc, p) => acc + p.price, 0).toFixed(2)}
               </p>
             </div>
-            <div className="p-3 rounded-xl bg-white/[0.03]">
+            <div className="p-3 rounded-xl bg-white/3">
               <p className="text-xs text-slate-400">Tempo total</p>
               <p className="text-lg font-bold text-white">
                 {Math.floor(products.reduce((acc, p) => acc + p.timeSlot, 0) / 60)}min

@@ -79,7 +79,7 @@ export default function NotesWidget() {
       <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-linear-to-r from-amber-400 to-yellow-500 flex items-center justify-center">
               <StickyNote className="w-5 h-5 text-white" />
             </div>
             <h2 className="text-xl font-bold text-white">Lembretes</h2>
@@ -107,7 +107,7 @@ export default function NotesWidget() {
           onChange={handleChange}
           onBlur={handleBlur}
           placeholder={"Escreva seus lembretes aqui...\n\nEx: Nao falar sobre desconto de concorrente\nLembrar de mostrar produto X..."}
-          className="w-full h-40 bg-transparent text-slate-200 placeholder-amber-400/40 text-sm leading-relaxed resize-none outline-none"
+          className="w-full h-40 bg-transparent text-slate-200 placeholder-amber-400/40 text-sm leading-relaxed resize-none outline-hidden"
         />
       </div>
     </motion.div>

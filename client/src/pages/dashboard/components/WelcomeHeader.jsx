@@ -4,7 +4,7 @@ import { Flame, Play, Calendar } from 'lucide-react'
 
 export default function WelcomeHeader({ userName }) {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary via-orange-500 to-amber-500 p-8">
+    <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-primary via-orange-500 to-amber-500 p-8">
       <div
         className="absolute inset-0 opacity-30"
         style={{
@@ -18,7 +18,7 @@ export default function WelcomeHeader({ userName }) {
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center gap-4"
         >
-          <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+          <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center">
             <Flame className="w-8 h-8 text-white" />
           </div>
           <div>
@@ -42,7 +42,7 @@ export default function WelcomeHeader({ userName }) {
           </Link>
           <Link
             to="/calendar"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white/20 text-white font-medium rounded-xl hover:bg-white/30 transition-all backdrop-blur-sm"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white/20 text-white font-medium rounded-xl hover:bg-white/30 transition-all backdrop-blur-xs"
           >
             <Calendar className="w-5 h-5" />
             Ver Agenda

@@ -56,15 +56,15 @@ export default function TutorialHome() {
                     <>
                         <div className="flex justify-between items-end mb-4">
                             <span className="text-slate-400 font-medium uppercase text-xs tracking-widest">Seu Nível</span>
-                            <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-300">
+                            <span className="text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-orange-400 to-yellow-300">
                                 {Math.round(progressPercentage)}%
                             </span>
                         </div>
 
                         <div className="relative w-full bg-slate-800 rounded-full h-4 mb-4 shadow-inner overflow-hidden">
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 translate-x-[-100%] animate-shimmer"></div>
+                            <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent skew-x-12 -translate-x-full animate-shimmer"></div>
                             <div
-                                className="h-full rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-[0_0_20px_rgba(249,115,22,0.5)] transition-all duration-1000 ease-out relative"
+                                className="h-full rounded-full bg-linear-to-r from-orange-500 to-red-500 shadow-[0_0_20px_rgba(249,115,22,0.5)] transition-all duration-1000 ease-out relative"
                                 style={{ width: `${progressPercentage}%` }}
                             >
                                 <div className="absolute right-0 top-0 bottom-0 w-1 bg-white/50 blur-[1px]"></div>
@@ -102,12 +102,12 @@ export default function TutorialHome() {
                             onClick={handleModuleClick}
                             style={{ animationDelay: `${index * 100}ms` }}
                             className={`
-                                h-full rounded-[2rem] border transition-all duration-300 animate-slide-up
+                                h-full rounded-4xl border transition-all duration-300 animate-slide-up
                                 ${isCompleted
-                                    ? 'bg-white/[0.05] border-emerald-500/30 shadow-[0_20px_40px_-12px_rgba(16,185,129,0.1)] group'
+                                    ? 'bg-white/5 border-emerald-500/30 shadow-[0_20px_40px_-12px_rgba(16,185,129,0.1)] group'
                                     : isLocked
-                                        ? 'bg-white/[0.02] border-white/[0.06] cursor-not-allowed opacity-80'
-                                        : 'bg-white/[0.05] border-white/[0.08] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)] hover:shadow-[0_25px_50px_-12px_rgba(249,115,22,0.15)] cursor-pointer group hover:border-orange-500/30'
+                                        ? 'bg-white/2 border-white/6 cursor-not-allowed opacity-80'
+                                        : 'bg-white/5 border-white/8 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)] hover:shadow-[0_25px_50px_-12px_rgba(249,115,22,0.15)] cursor-pointer group hover:border-orange-500/30'
                                 }
                             `}
                         >
@@ -115,7 +115,7 @@ export default function TutorialHome() {
                                 {/* LOCKED OVERLAY */}
                                 {isLocked && (
                                     <div className="absolute inset-0 z-30 backdrop-blur-[3px] bg-black/40 flex flex-col items-center justify-center text-center p-6 grayscale">
-                                        <div className="bg-white/[0.08] p-4 rounded-2xl shadow-xl shadow-black/20 mb-3 transform scale-90">
+                                        <div className="bg-white/8 p-4 rounded-2xl shadow-xl shadow-black/20 mb-3 transform scale-90">
                                             <Lock size={24} className="text-slate-400" />
                                         </div>
                                         <span className="text-xs font-black text-slate-400 tracking-widest uppercase">Bloqueado</span>
@@ -127,10 +127,10 @@ export default function TutorialHome() {
                                     <div className={`
                                         w-16 h-16 rounded-2xl flex items-center justify-center relative transition-all duration-500
                                         ${isCompleted
-                                            ? 'bg-gradient-to-br from-emerald-500/20 to-teal-500/10 text-emerald-400 shadow-inner group-hover:scale-110 group-hover:rotate-3'
+                                            ? 'bg-linear-to-br from-emerald-500/20 to-teal-500/10 text-emerald-400 shadow-inner group-hover:scale-110 group-hover:rotate-3'
                                             : isLocked
-                                                ? 'bg-white/[0.05] text-slate-500'
-                                                : 'bg-gradient-to-br from-orange-500/15 to-rose-500/10 text-orange-400 shadow-sm group-hover:shadow-orange-500/10 group-hover:scale-110 group-hover:-rotate-3'
+                                                ? 'bg-white/5 text-slate-500'
+                                                : 'bg-linear-to-br from-orange-500/15 to-rose-500/10 text-orange-400 shadow-xs group-hover:shadow-orange-500/10 group-hover:scale-110 group-hover:-rotate-3'
                                         }
                                     `}>
                                         <IconComponent size={30} strokeWidth={1.5} />
@@ -165,7 +165,7 @@ export default function TutorialHome() {
                                 </div>
 
                                 {/* Footer Action */}
-                                <div className="mt-8 pt-6 border-t border-white/[0.06] flex items-center justify-between">
+                                <div className="mt-8 pt-6 border-t border-white/6 flex items-center justify-between">
                                     <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
                                         Aula 0{index + 1}
                                     </span>
@@ -189,7 +189,7 @@ export default function TutorialHome() {
                 <div className="col-span-1 md:col-span-2 lg:col-span-3 relative h-64 rounded-[2.5rem] overflow-hidden group">
                     <div className="absolute inset-0 bg-slate-900"></div>
                     <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-luminosity group-hover:scale-105 transition-transform duration-1000"></div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-slate-900/80 to-transparent"></div>
+                    <div className="absolute inset-0 bg-linear-to-t from-black via-slate-900/80 to-transparent"></div>
 
                     <div className="relative z-10 h-full flex flex-col items-center justify-center text-center p-8">
                         <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-4 border border-white/10 shadow-2xl animate-float">
@@ -197,7 +197,7 @@ export default function TutorialHome() {
                         </div>
                         <h3 className="text-2xl font-bold text-white mb-2">Dominando o TikTok Live</h3>
                         <p className="text-slate-400 mb-6 font-light">Expanda suas fronteiras. Em breve na plataforma.</p>
-                        <span className="px-5 py-2 rounded-full border border-white/10 bg-white/5 text-xs text-slate-300 uppercase tracking-widest backdrop-blur-sm">
+                        <span className="px-5 py-2 rounded-full border border-white/10 bg-white/5 text-xs text-slate-300 uppercase tracking-widest backdrop-blur-xs">
                             Em Desenvolvimento
                         </span>
                     </div>
@@ -211,7 +211,7 @@ export default function TutorialHome() {
                 title="Conteúdo Bloqueado"
             >
                 <div className="text-center py-8">
-                    <div className="w-24 h-24 bg-white/[0.05] rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                    <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
                         <Lock size={40} className="text-slate-400" />
                     </div>
                     <h3 className="text-xl font-bold text-white mb-2">Continue sua Jornada!</h3>

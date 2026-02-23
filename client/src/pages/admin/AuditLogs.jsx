@@ -95,11 +95,11 @@ export default function AuditLogs() {
 
   const getEntityColor = (entity) => {
     switch (entity) {
-      case 'USER': return 'bg-blue-500/100/100/20 text-blue-400'
-      case 'LIVE': return 'bg-violet-500/100/20 text-violet-400'
-      case 'PRODUCT': return 'bg-emerald-500/100/100/20 text-emerald-400'
-      case 'AUTH': return 'bg-amber-500/100/100/20 text-amber-400'
-      default: return 'bg-white/[0.05] text-slate-300'
+      case 'USER': return 'bg-blue-500/20 text-blue-400'
+      case 'LIVE': return 'bg-violet-500/20 text-violet-400'
+      case 'PRODUCT': return 'bg-emerald-500/20 text-emerald-400'
+      case 'AUTH': return 'bg-amber-500/20 text-amber-400'
+      default: return 'bg-white/5 text-slate-300'
     }
   }
 
@@ -169,7 +169,8 @@ export default function AuditLogs() {
   }
 
   const buildDescription = (log) => {
-    const details = log.details ? JSON.parse(log.details) : {}
+    let details = {}
+    try { details = log.details ? JSON.parse(log.details) : {} } catch {}
     const actionLabel = getActionLabel(log.action)
     const entityLabel = getEntityLabel(log.entity).toLowerCase()
 
@@ -215,9 +216,9 @@ export default function AuditLogs() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-white/[0.05]">
+            <div className="p-2 rounded-lg bg-white/5">
               <FileText className="w-5 h-5 text-slate-300" />
             </div>
             <div>
@@ -226,9 +227,9 @@ export default function AuditLogs() {
             </div>
           </div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/100/100/20">
+            <div className="p-2 rounded-lg bg-emerald-500/20">
               <Calendar className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
@@ -237,9 +238,9 @@ export default function AuditLogs() {
             </div>
           </div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-500/100/100/20">
+            <div className="p-2 rounded-lg bg-blue-500/20">
               <User className="w-5 h-5 text-blue-400" />
             </div>
             <div>
@@ -248,9 +249,9 @@ export default function AuditLogs() {
             </div>
           </div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-amber-500/100/100/20">
+            <div className="p-2 rounded-lg bg-amber-500/20">
               <Shield className="w-5 h-5 text-amber-400" />
             </div>
             <div>
@@ -270,7 +271,7 @@ export default function AuditLogs() {
             placeholder="Buscar nos logs..."
             value={searchTerm}
             onChange={handleSearch}
-            className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/5 border border-white/8 text-white placeholder-white/30 focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </div>
         <div className="flex gap-2">
@@ -279,7 +280,7 @@ export default function AuditLogs() {
             <select
               value={entityFilter}
               onChange={handleEntityFilter}
-              className="px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="px-4 py-3 rounded-xl bg-white/5 border border-white/8 text-white focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20"
             >
               <option value="all">Todas as entidades</option>
               <option value="USER">Usuarios</option>
@@ -291,7 +292,7 @@ export default function AuditLogs() {
           <select
             value={actionFilter}
             onChange={handleActionFilter}
-            className="px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="px-4 py-3 rounded-xl bg-white/5 border border-white/8 text-white focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
             <option value="all">Todas as acoes</option>
             <option value="CREATE">Criacao</option>
@@ -307,7 +308,7 @@ export default function AuditLogs() {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-500/100/10 border border-red-500/20 rounded-xl p-4 text-red-400">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-red-400">
           {error}
         </div>
       )}
@@ -316,14 +317,14 @@ export default function AuditLogs() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
+        className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden"
       >
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="divide-y divide-white/[0.06]">
+          <div className="divide-y divide-white/6">
             {logs.map((log) => {
               const EntityIcon = getEntityIcon(log.entity)
               const ActionIcon = getActionIcon(log.action)
@@ -331,7 +332,7 @@ export default function AuditLogs() {
               return (
                 <div
                   key={log.id}
-                  className="flex items-start gap-4 p-4 hover:bg-white/[0.03] transition-colors"
+                  className="flex items-start gap-4 p-4 hover:bg-white/3 transition-colors"
                 >
                   <div className={`p-2 rounded-xl ${getEntityColor(log.entity)}`}>
                     <EntityIcon className="w-5 h-5" />
@@ -368,7 +369,7 @@ export default function AuditLogs() {
 
         {!loading && logs.length === 0 && (
           <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto rounded-full bg-white/[0.05] flex items-center justify-center mb-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-white/5 flex items-center justify-center mb-4">
               <FileText className="w-8 h-8 text-slate-400" />
             </div>
             <p className="text-slate-400">Nenhum log encontrado</p>
@@ -377,7 +378,7 @@ export default function AuditLogs() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-white/[0.04]">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-white/4">
             <p className="text-sm text-slate-400">
               Mostrando {(page - 1) * logsPerPage + 1} a {Math.min(page * logsPerPage, total)} de {total}
             </p>
@@ -385,7 +386,7 @@ export default function AuditLogs() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-lg hover:bg-white/[0.05] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -395,7 +396,7 @@ export default function AuditLogs() {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-lg hover:bg-white/[0.05] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>

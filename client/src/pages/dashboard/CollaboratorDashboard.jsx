@@ -14,10 +14,10 @@ import PremiumPageHeader from '../../components/ui/PremiumPageHeader';
 const PremiumStatCard = ({ title, value, icon: Icon, trend, trendValue, color, delay }) => {
     // Color mapping for TiltCard styling
     const colorStyles = {
-        orange: 'bg-gradient-to-br from-orange-50 to-white text-orange-600 border-orange-100',
-        green: 'bg-gradient-to-br from-emerald-50 to-white text-emerald-600 border-emerald-100',
-        blue: 'bg-gradient-to-br from-blue-50 to-white text-blue-600 border-blue-100',
-        purple: 'bg-gradient-to-br from-purple-50 to-white text-purple-600 border-purple-100',
+        orange: 'bg-linear-to-br from-orange-50 to-white text-orange-600 border-orange-100',
+        green: 'bg-linear-to-br from-emerald-50 to-white text-emerald-600 border-emerald-100',
+        blue: 'bg-linear-to-br from-blue-50 to-white text-blue-600 border-blue-100',
+        purple: 'bg-linear-to-br from-purple-50 to-white text-purple-600 border-purple-100',
     };
 
     const trendColor = trend === 'up' ? 'text-emerald-500 bg-emerald-100/50' : 'text-rose-500 bg-rose-100/50';
@@ -29,11 +29,11 @@ const PremiumStatCard = ({ title, value, icon: Icon, trend, trendValue, color, d
         >
             <div className="relative z-10 p-6 flex flex-col justify-between h-full">
                 <div className="flex justify-between items-start mb-4">
-                    <div className={`p-3 rounded-2xl bg-white shadow-sm ring-1 ring-black/5`}>
+                    <div className={`p-3 rounded-2xl bg-white shadow-xs ring-1 ring-black/5`}>
                         <Icon size={24} className="opacity-90" />
                     </div>
                     {trend && (
-                        <div className={`flex items-center text-xs font-bold ${trendColor} px-2.5 py-1 rounded-full border border-white/50 backdrop-blur-sm shadow-sm`}>
+                        <div className={`flex items-center text-xs font-bold ${trendColor} px-2.5 py-1 rounded-full border border-white/50 backdrop-blur-xs shadow-xs`}>
                             <TrendingUp size={12} className="mr-1" />
                             {trendValue}
                         </div>
@@ -115,7 +115,7 @@ export default function CollaboratorDashboard() {
                         onClick={() => navigate('/live/start')}
                         className="group relative px-8 py-4 bg-white text-purple-600 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:bg-purple-50 transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center gap-3 overflow-hidden"
                     >
-                        <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-purple-100/50 to-transparent -translate-x-full group-hover:animate-shine"></div>
+                        <div className="absolute inset-0 w-full h-full bg-linear-to-r from-transparent via-purple-100/50 to-transparent -translate-x-full group-hover:animate-shine"></div>
                         <div className="bg-purple-100 p-2 rounded-full group-hover:bg-purple-200 transition-colors">
                             <Play size={20} className="fill-purple-600" />
                         </div>
@@ -174,7 +174,7 @@ export default function CollaboratorDashboard() {
                             <p className="text-sm text-slate-500 font-medium ml-9">Evolução dos seus ganhos nas últimas lives</p>
                         </div>
                         <div className="bg-slate-50 p-1.5 rounded-xl flex text-xs font-bold text-slate-500 border border-slate-100">
-                            <button className="px-4 py-2 bg-white shadow-sm rounded-lg text-slate-900 ring-1 ring-black/5">Semana</button>
+                            <button className="px-4 py-2 bg-white shadow-xs rounded-lg text-slate-900 ring-1 ring-black/5">Semana</button>
                             <button className="px-4 py-2 hover:text-slate-900 transition-colors">Mês</button>
                         </div>
                     </div>

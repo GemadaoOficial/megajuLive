@@ -12,14 +12,14 @@ export default function StatCard({ stat, index }) {
       className="relative group"
     >
       <div
-        className={`absolute inset-0 bg-gradient-to-r ${stat.gradient} rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity`}
+        className={`absolute inset-0 bg-linear-to-r ${stat.gradient} rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity`}
       />
-      <div className="relative bg-white/[0.05] border border-white/[0.08] rounded-2xl p-5 hover:border-white/[0.12] transition-all">
+      <div className="relative bg-white/5 border border-white/8 rounded-2xl p-5 hover:border-white/12 transition-all">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-slate-400 text-sm font-medium">{stat.label}</p>
             <p
-              className={`text-3xl font-bold mt-2 bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}
+              className={`text-3xl font-bold mt-2 bg-linear-to-r ${stat.gradient} bg-clip-text text-transparent`}
             >
               {stat.value}
             </p>

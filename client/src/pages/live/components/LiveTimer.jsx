@@ -20,15 +20,15 @@ export default function LiveTimer({
       {/* Main Timer Card */}
       <div className={`relative rounded-3xl p-8 shadow-xl border-2 transition-all duration-500 ${
         isRunning
-          ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-red-500/50'
-          : 'bg-gradient-to-br from-white/[0.05] to-white/[0.02] border-white/[0.08]'
+          ? 'bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 border-red-500/50'
+          : 'bg-linear-to-br from-white/5 to-white/2 border-white/8'
       }`}>
         {/* Animated Background Effects */}
         {isRunning && (
           <>
             <div className="absolute inset-0 overflow-hidden rounded-3xl">
-              <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-r from-primary/20 to-transparent rotate-12 animate-pulse" />
-              <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-l from-orange-500/20 to-transparent -rotate-12 animate-pulse" />
+              <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-linear-to-r from-primary/20 to-transparent rotate-12 animate-pulse" />
+              <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-linear-to-l from-orange-500/20 to-transparent -rotate-12 animate-pulse" />
             </div>
             {/* Floating particles */}
             {[...Array(5)].map((_, i) => (
@@ -60,7 +60,7 @@ export default function LiveTimer({
               exit={{ opacity: 0, scale: 0.8 }}
               className="relative flex items-center justify-center gap-3 mb-8"
             >
-              <div className="flex items-center gap-2 px-6 py-2 rounded-full bg-red-500/20 backdrop-blur-sm border border-red-500/30">
+              <div className="flex items-center gap-2 px-6 py-2 rounded-full bg-red-500/20 backdrop-blur-xs border border-red-500/30">
                 <motion.div
                   className="w-3 h-3 rounded-full bg-red-500"
                   animate={{ scale: [1, 1.2, 1], opacity: [1, 0.7, 1] }}
@@ -99,7 +99,7 @@ export default function LiveTimer({
             animate={{ opacity: 1, y: 0 }}
             className="grid grid-cols-3 gap-4 mb-8"
           >
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+            <div className="bg-white/5 backdrop-blur-xs rounded-2xl p-4 border border-white/10">
               <div className="flex items-center gap-2 mb-1">
                 <Eye className="w-4 h-4 text-blue-400" />
                 <span className="text-slate-400 text-xs">Visualizacoes</span>
@@ -113,7 +113,7 @@ export default function LiveTimer({
                 {stats.views.toLocaleString()}
               </motion.p>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+            <div className="bg-white/5 backdrop-blur-xs rounded-2xl p-4 border border-white/10">
               <div className="flex items-center gap-2 mb-1">
                 <TrendingUp className="w-4 h-4 text-emerald-400" />
                 <span className="text-slate-400 text-xs">Vendas</span>
@@ -127,7 +127,7 @@ export default function LiveTimer({
                 {stats.sales}
               </motion.p>
             </div>
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-4 border border-white/10">
+            <div className="bg-white/5 backdrop-blur-xs rounded-2xl p-4 border border-white/10">
               <div className="flex items-center gap-2 mb-1">
                 <DollarSign className="w-4 h-4 text-amber-400" />
                 <span className="text-slate-400 text-xs">Receita</span>
@@ -153,8 +153,8 @@ export default function LiveTimer({
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               className={`relative p-6 rounded-2xl border-2 transition-all ${
                 isProductEnding
-                  ? 'bg-gradient-to-r from-amber-500/20 to-red-500/20 border-amber-500/50'
-                  : 'bg-gradient-to-r from-primary/20 to-orange-500/20 border-primary/30'
+                  ? 'bg-linear-to-r from-amber-500/20 to-red-500/20 border-amber-500/50'
+                  : 'bg-linear-to-r from-primary/20 to-orange-500/20 border-primary/30'
               }`}
             >
               {/* Product ending warning */}
@@ -176,7 +176,7 @@ export default function LiveTimer({
                   <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${
                     isProductEnding
                       ? 'bg-amber-500'
-                      : 'bg-gradient-to-br from-primary to-orange-500'
+                      : 'bg-linear-to-br from-primary to-orange-500'
                   }`}>
                     <Package className="w-7 h-7 text-white" />
                   </div>
@@ -208,8 +208,8 @@ export default function LiveTimer({
                 <motion.div
                   className={`h-full rounded-full ${
                     isProductEnding
-                      ? 'bg-gradient-to-r from-amber-500 to-red-500'
-                      : 'bg-gradient-to-r from-primary to-orange-500'
+                      ? 'bg-linear-to-r from-amber-500 to-red-500'
+                      : 'bg-linear-to-r from-primary to-orange-500'
                   }`}
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercent}%` }}
@@ -217,7 +217,7 @@ export default function LiveTimer({
                 />
                 {/* Glow effect */}
                 <motion.div
-                  className="absolute top-0 h-full w-20 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                  className="absolute top-0 h-full w-20 bg-linear-to-r from-transparent via-white/30 to-transparent"
                   animate={{ x: [-80, 400] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                 />
@@ -229,7 +229,7 @@ export default function LiveTimer({
         {/* Idle State */}
         {!isRunning && !currentProduct && (
           <div className="text-center py-4">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/[0.05] flex items-center justify-center">
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center">
               <Radio className="w-10 h-10 text-slate-500" />
             </div>
             <p className="text-slate-400">Clique em "Iniciar Live" para comecar</p>

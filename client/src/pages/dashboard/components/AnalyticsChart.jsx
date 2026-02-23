@@ -58,8 +58,8 @@ export default function AnalyticsChart() {
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-[#0a0a12]/95 backdrop-blur-sm border border-white/[0.08] rounded-xl shadow-xl p-4 min-w-[180px]">
-          <p className="text-sm font-bold text-white mb-3 pb-2 border-b border-white/[0.06]">{payload[0].payload.date}</p>
+        <div className="bg-[#0a0a12]/95 backdrop-blur-xs border border-white/8 rounded-xl shadow-xl p-4 min-w-[180px]">
+          <p className="text-sm font-bold text-white mb-3 pb-2 border-b border-white/6">{payload[0].payload.date}</p>
           <div className="space-y-2">
             {payload.map((entry, index) => (
               <div key={index} className="flex items-center justify-between gap-4">
@@ -92,12 +92,12 @@ export default function AnalyticsChart() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
+      className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-6 pb-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-linear-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -106,14 +106,14 @@ export default function AnalyticsChart() {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 bg-white/[0.05] rounded-xl p-1">
+        <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1">
           {['7d', '30d', '90d'].map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                 period === p
-                  ? 'bg-white/[0.1] text-white'
+                  ? 'bg-white/10 text-white'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >

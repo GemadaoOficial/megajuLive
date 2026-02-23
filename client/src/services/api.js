@@ -139,6 +139,7 @@ export const adminAPI = {
   updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
   getAnalytics: () => api.get('/admin/analytics'),
+  getAiUsage: (days = 30) => api.get(`/admin/ai-usage?days=${days}`),
   getLives: (params = {}) => {
     const searchParams = new URLSearchParams()
     Object.entries(params).forEach(([key, value]) => {
@@ -171,8 +172,8 @@ export const aiAPI = {
   suggestTitle: (data) => api.post('/ai/suggest-title', data),
   suggestDescription: (data) => api.post('/ai/suggest-description', data),
   extractLiveReport: (formData) => api.post('/ai/extract-live-report', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
     timeout: 300000,
+    headers: { 'Content-Type': undefined },
   }),
 }
 
@@ -231,6 +232,26 @@ export const liveReportsAPI = {
   create: (data) => api.post('/live-reports', data),
   update: (id, data) => api.put(`/live-reports/${id}`, data),
   delete: (id) => api.delete(`/live-reports/${id}`),
+  aiDedup: (params) => api.post('/live-reports/products/ai-dedup', params),
+  undoDedup: (params) => api.post('/live-reports/products/undo-dedup', params),
+  getAiInsights: (params) => api.post('/live-reports/ai-insights', params, { timeout: 120000 }),
+  getTopProducts: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') searchParams.append(key, String(value))
+    })
+    return api.get(`/live-reports/products/top?${searchParams.toString()}`)
+  },
+  exportExcel: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') searchParams.append(key, String(value))
+    })
+    return api.get(`/live-reports/export-excel?${searchParams.toString()}`, {
+      responseType: 'blob',
+      timeout: 60000,
+    })
+  },
 }
 
 export const notesAPI = {
@@ -247,4 +268,16 @@ export const settingsAPI = {
   delete: (key) => api.delete(`/admin/settings/${key}`),
   migrate: () => api.post('/admin/settings/migrate'),
   reload: () => api.post('/admin/settings/reload'),
+}
+
+export const goalsAPI = {
+  getAll: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') searchParams.append(key, String(value))
+    })
+    return api.get(`/goals?${searchParams.toString()}`)
+  },
+  upsert: (data) => api.post('/goals', data),
+  delete: (id) => api.delete(`/goals/${id}`),
 }

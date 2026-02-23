@@ -63,15 +63,15 @@ export default function LivesManagement() {
   const getStatusStyle = (status) => {
     switch (status) {
       case 'LIVE':
-        return 'bg-red-500/100/100/20 text-red-400 animate-pulse'
+        return 'bg-red-500/20 text-red-400 animate-pulse'
       case 'COMPLETED':
-        return 'bg-emerald-500/100/100/20 text-emerald-400'
+        return 'bg-emerald-500/20 text-emerald-400'
       case 'SCHEDULED':
-        return 'bg-blue-500/100/100/20 text-blue-400'
+        return 'bg-blue-500/20 text-blue-400'
       case 'CANCELLED':
-        return 'bg-white/[0.05] text-slate-300'
+        return 'bg-white/5 text-slate-300'
       default:
-        return 'bg-white/[0.05] text-slate-300'
+        return 'bg-white/5 text-slate-300'
     }
   }
 
@@ -122,9 +122,9 @@ export default function LivesManagement() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-white/[0.05]">
+            <div className="p-2 rounded-lg bg-white/5">
               <Video className="w-5 h-5 text-slate-300" />
             </div>
             <div>
@@ -133,9 +133,9 @@ export default function LivesManagement() {
             </div>
           </div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-red-500/100/100/20">
+            <div className="p-2 rounded-lg bg-red-500/20">
               <Play className="w-5 h-5 text-red-400" />
             </div>
             <div>
@@ -144,9 +144,9 @@ export default function LivesManagement() {
             </div>
           </div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-500/100/100/20">
+            <div className="p-2 rounded-lg bg-blue-500/20">
               <Calendar className="w-5 h-5 text-blue-400" />
             </div>
             <div>
@@ -155,9 +155,9 @@ export default function LivesManagement() {
             </div>
           </div>
         </div>
-        <div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-4">
+        <div className="bg-white/5 border border-white/8 rounded-xl p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/100/100/20">
+            <div className="p-2 rounded-lg bg-emerald-500/20">
               <StopCircle className="w-5 h-5 text-emerald-400" />
             </div>
             <div>
@@ -177,7 +177,7 @@ export default function LivesManagement() {
             placeholder="Buscar por titulo ou usuario..."
             value={searchTerm}
             onChange={handleSearch}
-            className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/5 border border-white/8 text-white placeholder-white/30 focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -185,7 +185,7 @@ export default function LivesManagement() {
           <select
             value={statusFilter}
             onChange={handleStatusFilter}
-            className="px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className="px-4 py-3 rounded-xl bg-white/5 border border-white/8 text-white focus:outline-hidden focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
             <option value="all">Todos os status</option>
             <option value="LIVE">Ao Vivo</option>
@@ -198,7 +198,7 @@ export default function LivesManagement() {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-500/100/10 border border-red-500/20 rounded-xl p-4 text-red-400">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-red-400">
           {error}
         </div>
       )}
@@ -207,7 +207,7 @@ export default function LivesManagement() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
+        className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden"
       >
         {loading ? (
           <div className="flex items-center justify-center py-12">
@@ -216,7 +216,7 @@ export default function LivesManagement() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-white/[0.03]">
+              <thead className="bg-white/3">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Live</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-slate-300">Usuario</th>
@@ -228,12 +228,12 @@ export default function LivesManagement() {
                   <th className="px-6 py-4 text-right text-sm font-semibold text-slate-300">Acoes</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.06]">
+              <tbody className="divide-y divide-white/6">
                 {lives.map((live) => (
-                  <tr key={live.id} className="hover:bg-white/[0.03] transition-colors">
+                  <tr key={live.id} className="hover:bg-white/3 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary to-orange-500 flex items-center justify-center">
                           <Video className="w-5 h-5 text-white" />
                         </div>
                         <span className="font-medium text-white truncate max-w-[200px]">
@@ -282,21 +282,21 @@ export default function LivesManagement() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => setSelectedLive(live)}
-                          className="p-2 rounded-lg hover:bg-white/[0.05] text-slate-400 hover:text-slate-200 transition-colors"
+                          className="p-2 rounded-lg hover:bg-white/5 text-slate-400 hover:text-slate-200 transition-colors"
                           title="Ver detalhes"
                         >
                           <BarChart3 className="w-5 h-5" />
                         </button>
                         {live.status === 'LIVE' && (
                           <button
-                            className="p-2 rounded-lg hover:bg-red-500/100/100/100/100/20 text-slate-400 hover:text-red-500 transition-colors"
+                            className="p-2 rounded-lg hover:bg-red-500/20 text-slate-400 hover:text-red-500 transition-colors"
                             title="Encerrar live"
                           >
                             <StopCircle className="w-5 h-5" />
                           </button>
                         )}
                         <button
-                          className="p-2 rounded-lg hover:bg-red-500/100/100/100/100/20 text-slate-400 hover:text-red-500 transition-colors"
+                          className="p-2 rounded-lg hover:bg-red-500/20 text-slate-400 hover:text-red-500 transition-colors"
                           title="Excluir"
                         >
                           <Trash2 className="w-5 h-5" />
@@ -312,7 +312,7 @@ export default function LivesManagement() {
 
         {!loading && lives.length === 0 && (
           <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto rounded-full bg-white/[0.05] flex items-center justify-center mb-4">
+            <div className="w-16 h-16 mx-auto rounded-full bg-white/5 flex items-center justify-center mb-4">
               <Video className="w-8 h-8 text-slate-400" />
             </div>
             <p className="text-slate-400">Nenhuma live encontrada</p>
@@ -321,7 +321,7 @@ export default function LivesManagement() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-white/[0.04]">
+          <div className="flex items-center justify-between px-6 py-4 border-t border-white/4">
             <p className="text-sm text-slate-400">
               Mostrando {(page - 1) * livesPerPage + 1} a {Math.min(page * livesPerPage, total)} de {total}
             </p>
@@ -329,7 +329,7 @@ export default function LivesManagement() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 rounded-lg hover:bg-white/[0.05] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
@@ -339,7 +339,7 @@ export default function LivesManagement() {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 rounded-lg hover:bg-white/[0.05] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 rounded-lg hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -357,7 +357,7 @@ export default function LivesManagement() {
       >
         {selectedLive && (
           <div className="space-y-6">
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-primary to-orange-500 text-white">
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-linear-to-r from-primary to-orange-500 text-white">
               <div className="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center">
                 <Video className="w-7 h-7" />
               </div>
@@ -368,39 +368,39 @@ export default function LivesManagement() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 rounded-xl bg-white/[0.03]">
+              <div className="p-4 rounded-xl bg-white/3">
                 <p className="text-sm text-slate-400">Status</p>
                 <span className={`inline-flex items-center px-2 py-1 mt-1 rounded-full text-xs font-semibold ${getStatusStyle(selectedLive.status)}`}>
                   {getStatusLabel(selectedLive.status)}
                 </span>
               </div>
-              <div className="p-4 rounded-xl bg-white/[0.03]">
+              <div className="p-4 rounded-xl bg-white/3">
                 <p className="text-sm text-slate-400">Visualizacoes</p>
                 <p className="text-xl font-bold text-white">{(selectedLive.analytics?.views || 0).toLocaleString()}</p>
               </div>
-              <div className="p-4 rounded-xl bg-white/[0.03]">
+              <div className="p-4 rounded-xl bg-white/3">
                 <p className="text-sm text-slate-400">Vendas</p>
                 <p className="text-xl font-bold text-white">{selectedLive.analytics?.sales || 0}</p>
               </div>
-              <div className="p-4 rounded-xl bg-white/[0.03]">
+              <div className="p-4 rounded-xl bg-white/3">
                 <p className="text-sm text-slate-400">Receita</p>
                 <p className="text-xl font-bold text-emerald-400">R$ {(selectedLive.analytics?.revenue || 0).toLocaleString()}</p>
               </div>
             </div>
 
             {selectedLive.description && (
-              <div className="p-4 rounded-xl bg-white/[0.03]">
+              <div className="p-4 rounded-xl bg-white/3">
                 <p className="text-sm text-slate-400 mb-2">Descricao</p>
                 <p className="text-slate-200">{selectedLive.description}</p>
               </div>
             )}
 
             {selectedLive.products && selectedLive.products.length > 0 && (
-              <div className="p-4 rounded-xl bg-white/[0.03]">
+              <div className="p-4 rounded-xl bg-white/3">
                 <p className="text-sm text-slate-400 mb-2">Produtos ({selectedLive.products.length})</p>
                 <div className="space-y-2">
                   {selectedLive.products.map((product) => (
-                    <div key={product.id} className="flex items-center justify-between bg-white/[0.05] rounded-lg p-3">
+                    <div key={product.id} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
                       <span className="text-slate-200">{product.name}</span>
                       <span className="text-emerald-400 font-medium">R$ {product.price.toLocaleString()}</span>
                     </div>
@@ -412,7 +412,7 @@ export default function LivesManagement() {
             <div className="flex gap-3">
               <button
                 onClick={() => setSelectedLive(null)}
-                className="flex-1 px-6 py-3 bg-white/[0.05] text-slate-200 font-semibold rounded-xl hover:bg-white/[0.08] transition-colors"
+                className="flex-1 px-6 py-3 bg-white/5 text-slate-200 font-semibold rounded-xl hover:bg-white/8 transition-colors"
               >
                 Fechar
               </button>

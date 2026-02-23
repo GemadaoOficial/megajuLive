@@ -131,7 +131,7 @@ export default function Backup() {
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
         <div className="flex items-center gap-4 mb-2">
-          <div className="p-3 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-900 shadow-lg">
+          <div className="p-3 rounded-2xl bg-linear-to-br from-slate-700 to-slate-900 shadow-lg">
             <HardDrive className="w-7 h-7 text-white" />
           </div>
           <div>
@@ -146,16 +146,16 @@ export default function Backup() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
+        className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden"
       >
         {/* Card Header with gradient accent */}
-        <div className="h-1.5 bg-gradient-to-r from-[#EE4D2D] via-orange-400 to-amber-400" />
+        <div className="h-1.5 bg-linear-to-r from-[#EE4D2D] via-orange-400 to-amber-400" />
 
         <div className="p-8">
           {/* Status: IDLE */}
           {status === 'idle' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-8">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/[0.08] flex items-center justify-center">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/8 flex items-center justify-center">
                 <FolderArchive className="w-10 h-10 text-slate-400" />
               </div>
               <h2 className="text-xl font-bold text-slate-200 mb-2">Gerar Novo Backup</h2>
@@ -178,7 +178,7 @@ export default function Backup() {
               </div>
               <button
                 onClick={generateBackup}
-                className="px-8 py-4 bg-gradient-to-r from-[#EE4D2D] to-orange-500 text-white font-bold text-lg rounded-xl hover:shadow-lg hover:shadow-orange-500/25 transform hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-3 mx-auto"
+                className="px-8 py-4 bg-linear-to-r from-[#EE4D2D] to-orange-500 text-white font-bold text-lg rounded-xl hover:shadow-lg hover:shadow-orange-500/25 transform hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-3 mx-auto"
               >
                 <HardDrive className="w-5 h-5" />
                 Gerar Backup Completo
@@ -207,14 +207,14 @@ export default function Backup() {
                   <span>{progressStep === 'database' ? 'Banco de dados' : progressStep === 'uploads' ? 'Uploads' : progressStep === 'finalizing' ? 'Finalizando' : 'Preparando'}</span>
                   <span className="font-bold text-slate-200">{Math.round(progress)}%</span>
                 </div>
-                <div className="h-4 bg-white/[0.05] rounded-full overflow-hidden">
+                <div className="h-4 bg-white/5 rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-[#EE4D2D] via-orange-400 to-amber-400 rounded-full relative"
+                    className="h-full bg-linear-to-r from-[#EE4D2D] via-orange-400 to-amber-400 rounded-full relative"
                     initial={{ width: '0%' }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.5, ease: 'easeOut' }}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 animate-pulse" />
+                    <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/30 to-white/0 animate-pulse" />
                   </motion.div>
                 </div>
 
@@ -231,9 +231,9 @@ export default function Backup() {
                     return (
                       <div key={s.key} className="flex flex-col items-center gap-1">
                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
-                          isDone ? 'bg-emerald-500/100/100/20 text-emerald-400' :
+                          isDone ? 'bg-emerald-500/20 text-emerald-400' :
                           isActive ? 'bg-[#EE4D2D]/10 text-[#EE4D2D]' :
-                          'bg-white/[0.05] text-slate-400'
+                          'bg-white/5 text-slate-400'
                         }`}>
                           {isDone ? <CheckCircle className="w-4 h-4" /> : <s.icon className="w-4 h-4" />}
                         </div>
@@ -255,7 +255,7 @@ export default function Backup() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                className="w-20 h-20 mx-auto mb-6 rounded-full bg-emerald-500/100/100/20 flex items-center justify-center"
+                className="w-20 h-20 mx-auto mb-6 rounded-full bg-emerald-500/20 flex items-center justify-center"
               >
                 <CheckCircle className="w-10 h-10 text-emerald-400" />
               </motion.div>
@@ -268,7 +268,7 @@ export default function Backup() {
                   <p className="text-2xl font-bold text-white">{result.sizeMB}</p>
                   <p className="text-xs text-slate-400">Tamanho</p>
                 </div>
-                <div className="w-px h-10 bg-white/[0.08]" />
+                <div className="w-px h-10 bg-white/8" />
                 <div className="text-center">
                   <p className="text-2xl font-bold text-white">{result.records?.toLocaleString('pt-BR')}</p>
                   <p className="text-xs text-slate-400">Registros</p>
@@ -278,14 +278,14 @@ export default function Backup() {
               <div className="flex items-center justify-center gap-3">
                 <button
                   onClick={() => downloadBackup(result.filename)}
-                  className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-emerald-500/25 transition-all flex items-center gap-2"
+                  className="px-6 py-3 bg-linear-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-emerald-500/25 transition-all flex items-center gap-2"
                 >
                   <Download className="w-5 h-5" />
                   Baixar Backup
                 </button>
                 <button
                   onClick={() => { setStatus('idle'); setProgress(0) }}
-                  className="px-6 py-3 bg-white/[0.05] border border-white/[0.08] text-slate-200 font-semibold rounded-xl hover:bg-white/[0.03] transition-all"
+                  className="px-6 py-3 bg-white/5 border border-white/8 text-slate-200 font-semibold rounded-xl hover:bg-white/3 transition-all"
                 >
                   Novo Backup
                 </button>
@@ -296,14 +296,14 @@ export default function Backup() {
           {/* Status: ERROR */}
           {status === 'error' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-8">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/100/100/20 flex items-center justify-center">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-500/20 flex items-center justify-center">
                 <AlertCircle className="w-10 h-10 text-red-400" />
               </div>
               <h2 className="text-xl font-bold text-slate-200 mb-2">Erro no Backup</h2>
               <p className="text-slate-400 mb-6">Ocorreu um erro ao gerar o backup. Tente novamente.</p>
               <button
                 onClick={() => { setStatus('idle'); setProgress(0) }}
-                className="px-6 py-3 bg-gradient-to-r from-[#EE4D2D] to-orange-500 text-white font-bold rounded-xl hover:shadow-lg transition-all"
+                className="px-6 py-3 bg-linear-to-r from-[#EE4D2D] to-orange-500 text-white font-bold rounded-xl hover:shadow-lg transition-all"
               >
                 Tentar Novamente
               </button>
@@ -317,11 +317,11 @@ export default function Backup() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden"
+        className="bg-white/5 border border-white/8 rounded-2xl overflow-hidden"
       >
-        <div className="p-6 border-b border-white/[0.04]">
+        <div className="p-6 border-b border-white/4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-violet-500 to-purple-500 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-linear-to-r from-violet-500 to-purple-500 flex items-center justify-center">
               <Clock className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -341,7 +341,7 @@ export default function Backup() {
             <p>Nenhum backup encontrado</p>
           </div>
         ) : (
-          <div className="divide-y divide-white/[0.06]">
+          <div className="divide-y divide-white/6">
             {backups.map((backup, index) => (
               <motion.div
                 key={backup.filename}
@@ -351,7 +351,7 @@ export default function Backup() {
                 className="flex items-center justify-between px-6 py-4 hover:bg-white/[0.03]/50 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.05] flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
                     <FileArchive className="w-5 h-5 text-slate-400" />
                   </div>
                   <div>
@@ -362,7 +362,7 @@ export default function Backup() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => downloadBackup(backup.filename)}
-                    className="p-2 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/100/100/100/10 transition-all"
+                    className="p-2 rounded-lg text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 transition-all"
                     title="Baixar"
                   >
                     <Download className="w-4 h-4" />
@@ -370,7 +370,7 @@ export default function Backup() {
                   <button
                     onClick={() => deleteBackup(backup.filename)}
                     disabled={deletingId === backup.filename}
-                    className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/100/100/100/10 transition-all disabled:opacity-50"
+                    className="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
                     title="Excluir"
                   >
                     {deletingId === backup.filename ? (

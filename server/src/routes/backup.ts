@@ -122,7 +122,7 @@ router.get('/generate', async (req: Request, res: Response): Promise<void> => {
 
 // GET /download/:filename — Download a backup file
 router.get('/download/:filename', (req: Request, res: Response): void => {
-  const filename = req.params.filename
+  const filename = req.params.filename as string
   // SECURITY: prevent path traversal
   if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
     res.status(400).json({ message: 'Nome de arquivo invalido' })
@@ -166,7 +166,7 @@ router.get('/list', async (req: Request, res: Response): Promise<void> => {
 
 // DELETE /:filename — Delete a backup
 router.delete('/:filename', (req: Request, res: Response): void => {
-  const filename = req.params.filename
+  const filename = req.params.filename as string
   if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
     res.status(400).json({ message: 'Nome de arquivo invalido' })
     return
