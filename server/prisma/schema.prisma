@@ -328,7 +328,7 @@ model AIInsight {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  @@unique([userId, period, store])
+  @@index([userId, period, store])
   @@index([userId])
 }
 

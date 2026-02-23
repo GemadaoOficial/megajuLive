@@ -466,35 +466,27 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
       tokensUsed: tokens?.total_tokens || 0,
     }
 
-    // Save/replace insights in database
-    const savedInsight = await prisma.aIInsight.upsert({
-      where: {
-        userId_period_store: {
-          userId: req.user.id,
-          period: period || '30d',
-          store: store || null,
-        },
-      },
-      update: {
-        insightsContent: insights,
-        meta: metaData,
-        livesAnalyzed: livesCount,
-        tokensUsed: tokens?.total_tokens || 0,
-        startDate: start || null,
-        endDate: end || null,
-      },
-      create: {
-        userId: req.user.id,
-        period: period || '30d',
-        store: store || null,
-        startDate: start || null,
-        endDate: end || null,
-        insightsContent: insights,
-        meta: metaData,
-        livesAnalyzed: livesCount,
-        tokensUsed: tokens?.total_tokens || 0,
-      },
+    // Save/replace insights in database (findFirst + update/create to handle nullable store)
+    const storeVal = store || null
+    const periodVal = period || '30d'
+    const existing = await prisma.aIInsight.findFirst({
+      where: { userId: req.user.id, period: periodVal, store: storeVal },
     })
+
+    const saveData = {
+      insightsContent: insights,
+      meta: metaData,
+      livesAnalyzed: livesCount,
+      tokensUsed: tokens?.total_tokens || 0,
+      startDate: start || null,
+      endDate: end || null,
+    }
+
+    const savedInsight = existing
+      ? await prisma.aIInsight.update({ where: { id: existing.id }, data: saveData })
+      : await prisma.aIInsight.create({
+          data: { ...saveData, userId: req.user.id, period: periodVal, store: storeVal },
+        })
 
     res.json({
       success: true,
