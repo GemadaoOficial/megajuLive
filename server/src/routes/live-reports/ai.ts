@@ -475,16 +475,18 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
     const errMsg = error?.message || String(error)
     const errStatus = error?.status || error?.statusCode
     console.error(`[AI Insights] Error (status=${errStatus}):`, errMsg)
+    console.error('[AI Insights] Full error:', JSON.stringify({ status: errStatus, code: error?.code, type: error?.type, message: errMsg }, null, 2))
 
     // OpenAI specific error handling
     if (errStatus === 429) {
       res.status(429).json({ message: 'Limite de requisicoes da IA atingido. Aguarde 1 minuto e tente novamente.' })
-    } else if (errStatus === 400 || errMsg.includes('maximum context length') || errMsg.includes('token')) {
+    } else if (errMsg.includes('maximum context length')) {
       res.status(400).json({ message: 'Prompt muito grande. Selecione um periodo menor ou uma loja especifica.' })
     } else if (errMsg.includes('timeout') || errMsg.includes('timed out') || error?.code === 'ETIMEDOUT') {
       res.status(504).json({ message: 'A IA demorou demais para responder. Tente novamente.' })
     } else {
-      res.status(500).json({ message: `Erro ao gerar insights: ${errMsg.slice(0, 150)}` })
+      // Show actual error for debugging
+      res.status(errStatus || 500).json({ message: `Erro da IA: ${errMsg.slice(0, 200)}` })
     }
   }
 })
