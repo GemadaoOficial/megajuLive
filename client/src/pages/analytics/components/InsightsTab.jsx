@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Sparkles, Star, AlertTriangle, Trash2, Coins, Trophy, TrendingDown,
@@ -248,13 +248,89 @@ function ProgressSteps({ progress }) {
 }
 
 // ─── Main Component ─────────────────────────────────────────────────────────
+// ─── Time Ago Formatter ──────────────────────────────────────────────────────
+function timeAgo(date) {
+  if (!date) return ''
+  const now = new Date()
+  const d = new Date(date)
+  const diffMs = now - d
+  const mins = Math.floor(diffMs / 60000)
+  if (mins < 1) return 'agora mesmo'
+  if (mins < 60) return `ha ${mins} min`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `ha ${hours}h`
+  const days = Math.floor(hours / 24)
+  return `ha ${days}d`
+}
+
+// ─── Skeleton Loader ─────────────────────────────────────────────────────────
+function InsightsSkeleton() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      {/* Score skeleton */}
+      <div className="bg-white/5 border border-white/8 rounded-2xl p-8">
+        <div className="flex items-center gap-6">
+          <div className="w-[120px] h-[120px] rounded-full bg-white/10" />
+          <div className="flex-1 space-y-3">
+            <div className="h-5 w-48 bg-white/10 rounded-lg" />
+            <div className="h-4 w-full bg-white/10 rounded-lg" />
+            <div className="h-4 w-3/4 bg-white/10 rounded-lg" />
+          </div>
+        </div>
+      </div>
+      {/* Cards skeleton */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="bg-white/5 border border-white/8 rounded-2xl p-6">
+            <div className="h-4 w-32 bg-white/10 rounded-lg mb-4" />
+            <div className="space-y-2">
+              <div className="h-3 w-full bg-white/10 rounded-lg" />
+              <div className="h-3 w-2/3 bg-white/10 rounded-lg" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function InsightsTab({ period, startDate, endDate, store }) {
   const [insights, setInsights] = useState(null)
   const [meta, setMeta] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [loadingSaved, setLoadingSaved] = useState(true)
   const [error, setError] = useState(null)
   const [progress, setProgress] = useState(0)
+  const [generatedAt, setGeneratedAt] = useState(null)
   const progressRef = useRef(null)
+
+  // Load saved insights on mount or when filters change
+  useEffect(() => {
+    let cancelled = false
+    const loadSaved = async () => {
+      setLoadingSaved(true)
+      try {
+        const params = { period, ...(store && { store }) }
+        const { data } = await liveReportsAPI.getSavedInsights(params)
+        if (cancelled) return
+        if (data.found) {
+          setInsights(data.insights)
+          setMeta(data.meta)
+          setGeneratedAt(data.generatedAt)
+        } else {
+          setInsights(null)
+          setMeta(null)
+          setGeneratedAt(null)
+        }
+      } catch {
+        // Silently fail - user can generate manually
+      } finally {
+        if (!cancelled) setLoadingSaved(false)
+      }
+    }
+    loadSaved()
+    return () => { cancelled = true }
+  }, [period, store])
 
   const handleGenerate = async () => {
     setLoading(true)
@@ -277,6 +353,7 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
       const { data } = await liveReportsAPI.getAiInsights(params)
       setInsights(data.insights)
       setMeta(data.meta)
+      setGeneratedAt(data.generatedAt)
       setProgress(100)
     } catch (err) {
       const msg = err.response?.data?.message || 'Erro ao gerar insights'
@@ -303,6 +380,11 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
                   ? `${meta?.livesCount || 0} lives analisadas individualmente`
                   : 'Analise completa e individual de cada live com IA'}
               </p>
+              {generatedAt && !loading && (
+                <p className="text-xs text-slate-500 mt-1">
+                  Ultima analise: {timeAgo(generatedAt)} &middot; {new Date(generatedAt).toLocaleDateString('pt-BR')} as {new Date(generatedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                </p>
+              )}
             </div>
           </div>
 
@@ -332,9 +414,12 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
         )}
       </Glass>
 
+      {/* ── Loading skeleton ── */}
+      {loadingSaved && !insights && !loading && <InsightsSkeleton />}
+
       {/* ── Insights Content ── */}
       <AnimatePresence>
-        {insights && !loading && (
+        {insights && !loading && !loadingSaved && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

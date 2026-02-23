@@ -8,6 +8,37 @@ import '../../types/index.js'
 
 const router = Router()
 
+// GET /ai-insights - Load saved insights from cache
+router.get('/ai-insights', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { period, store } = req.query as Record<string, string>
+
+    const saved = await prisma.aIInsight.findFirst({
+      where: {
+        userId: req.user.id,
+        period: period || '30d',
+        store: store || null,
+      },
+      orderBy: { updatedAt: 'desc' },
+    })
+
+    if (!saved) {
+      res.json({ found: false })
+      return
+    }
+
+    res.json({
+      found: true,
+      insights: saved.insightsContent,
+      meta: saved.meta,
+      generatedAt: saved.updatedAt,
+    })
+  } catch (error) {
+    console.error('Get saved insights error:', error)
+    res.status(500).json({ message: 'Erro ao buscar insights salvos' })
+  }
+})
+
 // POST /ai-insights - AI-powered analytics insights
 router.post('/ai-insights', async (req: Request, res: Response): Promise<void> => {
   try {
@@ -395,17 +426,50 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
     const tokens = completion.usage
     console.log(`[AI Insights] Tokens: ${tokens?.prompt_tokens} in, ${tokens?.completion_tokens} out, ${tokens?.total_tokens} total`)
 
+    const metaData = {
+      livesCount,
+      totalRevenue,
+      totalProducts: products.length,
+      totalCoinsCost,
+      coinsROI: Math.round(coinsROI),
+      tokensUsed: tokens?.total_tokens || 0,
+    }
+
+    // Save/replace insights in database
+    const savedInsight = await prisma.aIInsight.upsert({
+      where: {
+        userId_period_store: {
+          userId: req.user.id,
+          period: period || '30d',
+          store: store || null,
+        },
+      },
+      update: {
+        insightsContent: insights,
+        meta: metaData,
+        livesAnalyzed: livesCount,
+        tokensUsed: tokens?.total_tokens || 0,
+        startDate: start || null,
+        endDate: end || null,
+      },
+      create: {
+        userId: req.user.id,
+        period: period || '30d',
+        store: store || null,
+        startDate: start || null,
+        endDate: end || null,
+        insightsContent: insights,
+        meta: metaData,
+        livesAnalyzed: livesCount,
+        tokensUsed: tokens?.total_tokens || 0,
+      },
+    })
+
     res.json({
       success: true,
       insights,
-      meta: {
-        livesCount,
-        totalRevenue,
-        totalProducts: products.length,
-        totalCoinsCost,
-        coinsROI: Math.round(coinsROI),
-        tokensUsed: tokens?.total_tokens || 0,
-      },
+      meta: metaData,
+      generatedAt: savedInsight.updatedAt,
     })
   } catch (error: any) {
     console.error('AI insights error:', error?.message || error)

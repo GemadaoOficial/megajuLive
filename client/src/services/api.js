@@ -234,6 +234,7 @@ export const liveReportsAPI = {
   delete: (id) => api.delete(`/live-reports/${id}`),
   aiDedup: (params) => api.post('/live-reports/products/ai-dedup', params),
   undoDedup: (params) => api.post('/live-reports/products/undo-dedup', params),
+  getSavedInsights: (params) => api.get('/live-reports/ai-insights', { params }),
   getAiInsights: (params) => api.post('/live-reports/ai-insights', params, { timeout: 120000 }),
   getTopProducts: (params = {}) => {
     const searchParams = new URLSearchParams()

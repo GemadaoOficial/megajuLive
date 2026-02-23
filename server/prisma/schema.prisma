@@ -21,6 +21,7 @@ model User {
   notes         Note[]
   aiTokenUsages AITokenUsage[]
   goals         Goal[]
+  aiInsights    AIInsight[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -308,6 +309,26 @@ model Goal {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, metric, period, month, year])
+  @@index([userId])
+}
+
+// Cache de insights gerados pela IA
+model AIInsight {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  period          String    // '1d', '7d', '30d', '90d', '365d', 'custom'
+  startDate       DateTime?
+  endDate         DateTime?
+  store           String?   // null = todas as lojas
+  insightsContent Json      // JSON completo da resposta da IA
+  meta            Json?     // { livesCount, totalRevenue, totalCoinsCost, coinsROI, tokensUsed }
+  livesAnalyzed   Int
+  tokensUsed      Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([userId, period, store])
   @@index([userId])
 }
 
