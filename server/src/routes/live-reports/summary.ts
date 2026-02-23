@@ -129,7 +129,7 @@ router.get('/export-excel', async (req: Request, res: Response): Promise<void> =
     wsResumo.mergeCells(1, 1, 1, 2)
     addResumoRow('Periodo', periodLabel)
     addResumoRow('Loja', storeLabel)
-    addResumoRow('Gerado em', new Date(), 'dd/mm/yyyy hh:mm')
+    addResumoRow('Gerado em', new Date(new Date().getTime() - 3 * 60 * 60 * 1000), 'dd/mm/yyyy hh:mm')
 
     addSection('TRANSACAO', 'FF2E7D32')
     addResumoRow('Receita Total', summary.totalRevenue, '"R$" #,##0.00')

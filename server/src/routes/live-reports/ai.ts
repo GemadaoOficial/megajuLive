@@ -218,13 +218,36 @@ router.post('/ai-insights', async (req: Request, res: Response): Promise<void> =
     const formatBRL = (v: number) => `R$${v.toFixed(2).replace('.', ',')}`
     const formatMin = (secs: number) => `${Math.round(secs / 60)} min`
 
-    const prompt = `Analise os dados de performance da Shopee Live abaixo e forneca insights ACIONAVEIS e ESPECIFICOS. Use numeros concretos dos dados nas recomendacoes.
+    // Per-live detailed breakdown (max 20 lives to keep prompt manageable)
+    const livesForPrompt = reports.slice(0, 20)
+    const perLiveBreakdown = livesForPrompt.map((r, i) => {
+      const conv = r.totalViewers > 0 ? (r.totalOrders / r.totalViewers * 100).toFixed(1) : '0'
+      const engRate = r.totalViewers > 0 ? (r.engagedViewers / r.totalViewers * 100).toFixed(1) : '0'
+      return `${i + 1}. "${r.liveTitle || 'Sem titulo'}" (${new Date(r.reportDate).toLocaleDateString('pt-BR')}) - ${formatBRL(r.totalRevenue)}, ${r.totalOrders} pedidos, ${r.totalViewers} viewers, ${r.coinsUsed.toLocaleString('pt-BR')} moedas (${formatBRL(r.coinsCost)}), ${formatMin(r.liveDuration)}\n   Conversao: ${conv}%, Engajamento: ${engRate}%, Cliques: ${r.productClicks}, AddCart: ${r.addToCart}, Likes: ${r.totalLikes}, Comentarios: ${r.totalComments}, Seguidores: ${r.newFollowers}`
+    }).join('\n')
+
+    // Coin investment summary
+    const avgCoinsCostPerLive = livesWithCoins.length > 0 ? totalCoinsCost / livesWithCoins.length : 0
+
+    const prompt = `Analise os dados de performance da Shopee Live abaixo e forneca insights ACIONAVEIS e ESPECIFICOS. Use numeros concretos dos dados nas recomendacoes. Analise CADA LIVE individualmente identificando acertos e erros.
 
 RESUMO DO PERIODO (${store || 'Todas as lojas'}):
 - ${livesCount} lives realizadas
 - Revenue total: ${formatBRL(totalRevenue)} (media ${formatBRL(totalRevenue / livesCount)}/live)
 - Total de pedidos: ${totalOrders}
 - Total de viewers: ${totalViewers.toLocaleString('pt-BR')}
+
+DETALHAMENTO POR LIVE (analise cada uma individualmente):
+${perLiveBreakdown}
+
+INVESTIMENTO EM MOEDAS (DINHEIRO REAL):
+- Total investido em moedas: ${formatBRL(totalCoinsCost)} (comprou ${totalCoinsUsed.toLocaleString('pt-BR')} moedas)
+- Custo medio por live com moedas: ${formatBRL(avgCoinsCostPerLive)}
+- Receita total das lives com moedas: ${formatBRL(coinsRevenue)}
+- ROI do investimento: ${coinsROI.toFixed(0)}% (cada R$1 investido retornou R$${totalCoinsCost > 0 ? (coinsRevenue / totalCoinsCost).toFixed(2) : '0'})
+- Receita media COM moedas: ${formatBRL(avgRevenueWithCoins)}/live
+- Receita media SEM moedas: ${formatBRL(avgRevenueWithoutCoins)}/live
+- Diferenca: ${avgRevenueWithCoins > avgRevenueWithoutCoins ? '+' : ''}${formatBRL(avgRevenueWithCoins - avgRevenueWithoutCoins)}/live com moedas
 
 TICKET MEDIO E PRECO:
 - Ticket medio (avgOrderValue): ${formatBRL(avgOrderValue)}
@@ -255,26 +278,13 @@ QUALIDADE DO PUBLICO:
 - Taxa de comentarios media: ${avgCommentRate.toFixed(1)}%
 
 MOEDAS/MARKETING:
-- Lives com moedas: ${livesWithCoins.length} (media ${formatBRL(avgRevenueWithCoins)}/live)
-- Lives sem moedas: ${livesWithoutCoins.length} (media ${formatBRL(avgRevenueWithoutCoins)}/live)
-- Total de moedas usadas: ${totalCoinsUsed.toLocaleString('pt-BR')}
-- Custo total moedas: ${formatBRL(totalCoinsCost)}
-- ROI moedas: ${coinsROI.toFixed(0)}%
 - Faixas de moedas:
 ${coinRangeStats.map(cr => `  ${cr.range} moedas: ${cr.lives} lives, media ${formatBRL(cr.avgRevenue)}/live`).join('\n')}
-
-RODADAS DE MOEDAS E RESGATES:
-- Total rodadas de moedas: ${totalAuctionRounds}
-- Total resgates de moedas: ${totalCoinRedemptions}
+- Rodadas de moedas: ${totalAuctionRounds}
+- Resgates de moedas (usuarios unicos): ${totalCoinRedemptions}
 
 DIAS DA SEMANA:
 ${dayStats.map(d => `- ${d.dia}: ${d.lives} lives, media ${formatBRL(d.avgRevenue)}/live, media ${Math.round(d.avgViewers)} viewers`).join('\n')}
-
-MELHORES LIVES:
-${top3Lives.map((l, i) => `${i + 1}. "${l.titulo}" (${l.data}) - ${formatBRL(l.revenue)}, ${l.orders} pedidos, ${l.viewers} viewers, ${l.coins.toLocaleString('pt-BR')} moedas, ${formatMin(l.duracao)}`).join('\n')}
-
-PIORES LIVES:
-${worst3Lives.map((l, i) => `${i + 1}. "${l.titulo}" (${l.data}) - ${formatBRL(l.revenue)}, ${l.orders} pedidos, ${l.viewers} viewers, ${l.coins.toLocaleString('pt-BR')} moedas, ${formatMin(l.duracao)}`).join('\n')}
 
 DURACAO:
 - Media de duracao: ${Math.round(avgDuration / 60)} minutos
@@ -297,6 +307,19 @@ ${topSources.map(s => `- ${s.source}: ${s.pageViews.toLocaleString('pt-BR')} vie
 
 Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exata:
 {
+  "nota": 7.5,
+  "analiseDiaria": [
+    {"titulo": "...", "data": "DD/MM", "nota": 8, "acertos": ["ponto positivo 1"], "erros": ["problema 1"], "explicacao": "resumo da live"}
+  ],
+  "investimento": {
+    "totalInvestido": "R$...",
+    "totalMoedasUsadas": "...",
+    "receitaGerada": "R$...",
+    "roi": "...%",
+    "custoMedio": "R$... por live",
+    "analise": "texto explicando se o investimento esta valendo a pena",
+    "recomendacao": "sugestao concreta de quanto investir"
+  },
   "produtos": {
     "estrelas": [{"nome": "...", "motivo": "...", "acao": "..."}],
     "alerta": [{"nome": "...", "problema": "...", "acao": "..."}],
@@ -344,15 +367,15 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
   "proximosPassos": ["...", "...", "..."]
 }`
 
-    const openai = new OpenAI({ apiKey, timeout: 60_000, maxRetries: 1 })
+    const openai = new OpenAI({ apiKey, timeout: 90_000, maxRetries: 0 })
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4.1-mini',
       messages: [
-        { role: 'system', content: 'Voce e um consultor senior especialista em Shopee Live Brasil com experiencia em e-commerce e growth hacking. Seu papel e analisar dados de performance e fornecer insights ACIONAVEIS e ESPECIFICOS (nunca genericos). Use numeros concretos dos dados fornecidos nas suas recomendacoes. Responda em portugues brasileiro. Retorne APENAS JSON valido, sem markdown.' },
+        { role: 'system', content: 'Voce e um consultor senior especialista em Shopee Live Brasil com experiencia em e-commerce e growth hacking. Seu papel e analisar dados de performance e fornecer insights ACIONAVEIS e ESPECIFICOS (nunca genericos). Use numeros concretos dos dados fornecidos nas suas recomendacoes. Analise CADA live individualmente, identificando onde o lojista acertou e onde errou - se uma live teve queda, explique por que.\n\nIMPORTANTE sobre MOEDAS SHOPEE: 1 moeda = R$0,01. O lojista COMPRA moedas investindo dinheiro real. Exemplo: investir R$500 = comprar 50.000 moedas para distribuir nas lives do mes. O campo coinsCost ja representa o custo em reais. Ao analisar moedas, sempre calcule o ROI real: (receita gerada - custo moedas) / custo moedas. Se gastou R$200 em moedas e faturou R$3.000, o ROI = 1400%.\n\nDe uma nota geral de 0 a 10 para o desempenho no periodo. E de uma nota de 0 a 10 para CADA live individual.\n\nResponda em portugues brasileiro. Retorne APENAS JSON valido, sem markdown.' },
         { role: 'user', content: prompt },
       ],
-      max_tokens: 3000,
+      max_tokens: 4500,
       temperature: 0.3,
     })
 
@@ -379,12 +402,18 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
         livesCount,
         totalRevenue,
         totalProducts: products.length,
+        totalCoinsCost,
+        coinsROI: Math.round(coinsROI),
         tokensUsed: tokens?.total_tokens || 0,
       },
     })
-  } catch (error) {
-    console.error('AI insights error:', error)
-    res.status(500).json({ message: 'Erro ao gerar insights com IA' })
+  } catch (error: any) {
+    console.error('AI insights error:', error?.message || error)
+    if (error?.code === 'ETIMEDOUT' || error?.message?.includes('timeout') || error?.message?.includes('timed out')) {
+      res.status(504).json({ message: 'A IA demorou demais para responder. Tente novamente ou selecione um periodo menor.' })
+    } else {
+      res.status(500).json({ message: 'Erro ao gerar insights com IA' })
+    }
   }
 })
 
