@@ -406,21 +406,52 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
         { role: 'system', content: 'Voce e um consultor senior especialista em Shopee Live Brasil com experiencia em e-commerce e growth hacking. Seu papel e analisar dados de performance e fornecer insights ACIONAVEIS e ESPECIFICOS (nunca genericos). Use numeros concretos dos dados fornecidos nas suas recomendacoes. Analise CADA live individualmente, identificando onde o lojista acertou e onde errou - se uma live teve queda, explique por que.\n\nIMPORTANTE sobre MOEDAS SHOPEE: 1 moeda = R$0,01. O lojista COMPRA moedas investindo dinheiro real. Exemplo: investir R$500 = comprar 50.000 moedas para distribuir nas lives do mes. O campo coinsCost ja representa o custo em reais. Ao analisar moedas, sempre calcule o ROI real: (receita gerada - custo moedas) / custo moedas. Se gastou R$200 em moedas e faturou R$3.000, o ROI = 1400%.\n\nDe uma nota geral de 0 a 10 para o desempenho no periodo. E de uma nota de 0 a 10 para CADA live individual.\n\nResponda em portugues brasileiro. Retorne APENAS JSON valido, sem markdown.' },
         { role: 'user', content: prompt },
       ],
-      max_tokens: 4500,
+      max_tokens: 10000,
       temperature: 0.3,
     })
 
     trackTokenUsage(req.user.id, 'ai-insights', completion.usage)
 
     const text = completion.choices[0].message.content || '{}'
-    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    const finishReason = completion.choices[0].finish_reason
+    console.log(`[AI Insights] finish_reason: ${finishReason}, response length: ${text.length}`)
+
+    let jsonStr = text
+    // Strip markdown code fences if present
+    jsonStr = jsonStr.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '')
+    const jsonMatch = jsonStr.match(/\{[\s\S]*\}/)
     let insights: any = {}
     try {
-      insights = JSON.parse(jsonMatch ? jsonMatch[0] : text)
+      insights = JSON.parse(jsonMatch ? jsonMatch[0] : jsonStr)
     } catch {
-      console.error('[AI Insights] Failed to parse response:', text)
-      res.status(500).json({ message: 'Erro ao processar resposta da IA' })
-      return
+      // If truncated (finish_reason=length), try to fix by closing open brackets
+      if (finishReason === 'length' && jsonMatch) {
+        let fixedJson = jsonMatch[0]
+        // Count open/close brackets and add missing closers
+        const opens = (fixedJson.match(/\{/g) || []).length
+        const closes = (fixedJson.match(/\}/g) || []).length
+        const openBrackets = (fixedJson.match(/\[/g) || []).length
+        const closeBrackets = (fixedJson.match(/\]/g) || []).length
+        // Remove trailing comma or incomplete value
+        fixedJson = fixedJson.replace(/,\s*$/, '')
+        // Remove incomplete key-value pair at the end
+        fixedJson = fixedJson.replace(/,\s*"[^"]*":\s*"?[^"}\]]*$/, '')
+        for (let i = 0; i < openBrackets - closeBrackets; i++) fixedJson += ']'
+        for (let i = 0; i < opens - closes; i++) fixedJson += '}'
+        try {
+          insights = JSON.parse(fixedJson)
+          console.log('[AI Insights] Successfully recovered truncated JSON')
+        } catch {
+          console.error('[AI Insights] Failed to recover truncated JSON. First 500 chars:', text.slice(0, 500))
+          console.error('[AI Insights] Last 200 chars:', text.slice(-200))
+          res.status(500).json({ message: 'Resposta da IA foi cortada. Tente novamente.' })
+          return
+        }
+      } else {
+        console.error('[AI Insights] Invalid JSON response. First 500 chars:', text.slice(0, 500))
+        res.status(500).json({ message: 'Resposta da IA invalida. Tente novamente.' })
+        return
+      }
     }
 
     const tokens = completion.usage
