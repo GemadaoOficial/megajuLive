@@ -398,7 +398,7 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
   "proximosPassos": ["...", "...", "..."]
 }`
 
-    const openai = new OpenAI({ apiKey, timeout: 90_000, maxRetries: 0 })
+    const openai = new OpenAI({ apiKey, timeout: 120_000, maxRetries: 1 })
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4.1-mini',
@@ -472,11 +472,19 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
       generatedAt: savedInsight.updatedAt,
     })
   } catch (error: any) {
-    console.error('AI insights error:', error?.message || error)
-    if (error?.code === 'ETIMEDOUT' || error?.message?.includes('timeout') || error?.message?.includes('timed out')) {
-      res.status(504).json({ message: 'A IA demorou demais para responder. Tente novamente ou selecione um periodo menor.' })
+    const errMsg = error?.message || String(error)
+    const errStatus = error?.status || error?.statusCode
+    console.error(`[AI Insights] Error (status=${errStatus}):`, errMsg)
+
+    // OpenAI specific error handling
+    if (errStatus === 429) {
+      res.status(429).json({ message: 'Limite de requisicoes da IA atingido. Aguarde 1 minuto e tente novamente.' })
+    } else if (errStatus === 400 || errMsg.includes('maximum context length') || errMsg.includes('token')) {
+      res.status(400).json({ message: 'Prompt muito grande. Selecione um periodo menor ou uma loja especifica.' })
+    } else if (errMsg.includes('timeout') || errMsg.includes('timed out') || error?.code === 'ETIMEDOUT') {
+      res.status(504).json({ message: 'A IA demorou demais para responder. Tente novamente.' })
     } else {
-      res.status(500).json({ message: 'Erro ao gerar insights com IA' })
+      res.status(500).json({ message: `Erro ao gerar insights: ${errMsg.slice(0, 150)}` })
     }
   }
 })
