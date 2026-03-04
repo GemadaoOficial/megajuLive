@@ -1,11 +1,13 @@
 import express, { Request, Response, NextFunction } from 'express'
 import cors from 'cors'
+import helmet from 'helmet'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 import fs from 'fs'
 import dotenv from 'dotenv'
 import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 
 // ES Module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url)
@@ -42,7 +44,11 @@ async function seedDatabase() {
     if (!existingAdmin && process.env.NODE_ENV !== 'production') {
       console.log('🌱 Creating default users...')
 
-      const hashedAdminPassword = await bcrypt.hash('admin123', 10)
+      // Generate random passwords instead of hardcoded ones
+      const adminPass = crypto.randomBytes(8).toString('hex')
+      const userPass = crypto.randomBytes(8).toString('hex')
+
+      const hashedAdminPassword = await bcrypt.hash(adminPass, 10)
       await prisma.user.create({
         data: {
           email: 'admin@megaju.com',
@@ -52,7 +58,7 @@ async function seedDatabase() {
         }
       })
 
-      const hashedUserPassword = await bcrypt.hash('user123', 10)
+      const hashedUserPassword = await bcrypt.hash(userPass, 10)
       await prisma.user.create({
         data: {
           email: 'user@megaju.com',
@@ -63,6 +69,9 @@ async function seedDatabase() {
       })
 
       console.log('✅ Default users created')
+      console.log('⚠️  IMPORTANT — save these passwords (shown only once):')
+      console.log(`   Admin: admin@megaju.com / ${adminPass}`)
+      console.log(`   User:  user@megaju.com / ${userPass}`)
     }
   } catch (error) {
     console.error('⚠️  Seed error:', error)
@@ -75,8 +84,17 @@ loadConfig()
   .catch(console.error)
 
 // Middlewares
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP for SPA compatibility
+  crossOriginEmbedderPolicy: false,
+}))
+
+const corsOrigins = process.env.CORS_ORIGINS?.split(',') || ['http://localhost:5173']
+if (process.env.NODE_ENV === 'production' && corsOrigins.includes('http://localhost:5173')) {
+  console.warn('⚠️  CORS: localhost still in allowed origins for production!')
+}
 app.use(cors({
-  origin: process.env.CORS_ORIGINS?.split(',') || ['http://localhost:5173'],
+  origin: corsOrigins,
   credentials: true,
 }))
 app.use(express.json({ limit: '10mb' }))

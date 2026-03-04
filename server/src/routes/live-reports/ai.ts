@@ -3,10 +3,66 @@ import prisma from '../../utils/prisma.js'
 import OpenAI from 'openai'
 import { getConfig } from '../../utils/config.js'
 import { trackTokenUsage } from '../../utils/tokenTracker.js'
+import { aiLimiter } from '../../utils/rateLimiters.js'
 import { getDateRange, buildReportWhere } from '../../utils/reportHelpers.js'
 import '../../types/index.js'
 
 const router = Router()
+
+// GET /ai-insights/goals-text - Load saved monthly goals text
+router.get('/ai-insights/goals-text', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const store = (req.query.store as string) || null
+
+    const saved = await prisma.aIInsight.findFirst({
+      where: {
+        userId: req.user.id,
+        period: 'goals-text',
+        store,
+      },
+      orderBy: { updatedAt: 'desc' },
+    })
+
+    res.json({
+      goalsText: saved ? (saved.insightsContent as any)?.goalsText || '' : '',
+    })
+  } catch (error) {
+    console.error('Get goals text error:', error)
+    res.status(500).json({ message: 'Erro ao buscar metas' })
+  }
+})
+
+// PUT /ai-insights/goals-text - Save monthly goals text
+router.put('/ai-insights/goals-text', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { goalsText, store } = req.body
+    const storeVal = store || null
+
+    const existing = await prisma.aIInsight.findFirst({
+      where: { userId: req.user.id, period: 'goals-text', store: storeVal },
+    })
+
+    const saveData = {
+      insightsContent: { goalsText: goalsText || '' },
+      meta: {},
+      livesAnalyzed: 0,
+      tokensUsed: 0,
+    }
+
+    if (existing) {
+      await prisma.aIInsight.update({ where: { id: existing.id }, data: saveData })
+    } else {
+      await prisma.aIInsight.create({
+        data: { ...saveData, userId: req.user.id, period: 'goals-text', store: storeVal },
+      })
+    }
+
+    res.json({ success: true })
+  } catch (error) {
+    console.error('Save goals text error:', error)
+    res.status(500).json({ message: 'Erro ao salvar metas' })
+  }
+})
 
 // GET /ai-insights - Load saved insights from cache
 router.get('/ai-insights', async (req: Request, res: Response): Promise<void> => {
@@ -40,9 +96,13 @@ router.get('/ai-insights', async (req: Request, res: Response): Promise<void> =>
 })
 
 // POST /ai-insights - AI-powered analytics insights
-router.post('/ai-insights', async (req: Request, res: Response): Promise<void> => {
+router.post('/ai-insights', aiLimiter, async (req: Request, res: Response): Promise<void> => {
   try {
-    const { period, startDate, endDate, store } = req.body
+    const { period, startDate, endDate, store, monthlyGoals } = req.body
+    // Sanitize customPrompt: limit length and strip control characters
+    const customPrompt = req.body.customPrompt
+      ? String(req.body.customPrompt).slice(0, 500).replace(/[\x00-\x1f]/g, '')
+      : ''
     const { start, end } = getDateRange({ period, startDate, endDate } as Record<string, string>)
 
     const reportWhere = buildReportWhere(req.user.id, start, end, store)
@@ -335,6 +395,18 @@ FUNIL:
 
 FONTES DE TRAFEGO:
 ${topSources.map(s => `- ${s.source}: ${s.pageViews.toLocaleString('pt-BR')} views`).join('\n')}
+${monthlyGoals ? `
+
+METAS DO MES (definidas pelo lojista):
+${monthlyGoals}
+
+Avalie o progresso em relacao a CADA meta acima. Para cada meta, diga se esta no caminho certo, se vale a pena continuar com a estrategia atual, e de recomendacoes CONCRETAS baseadas nos dados reais. Se a meta for ranquear um produto, avalie a performance dele. Se for aumentar pedidos, analise a tendencia. Se for aumentar vendas, compare com o objetivo.` : ''}
+${customPrompt ? `
+
+ANALISE PERSONALIZADA SOLICITADA PELO LOJISTA:
+"${customPrompt}"
+
+IMPORTANTE: Alem do relatorio padrao completo (TODAS as secoes obrigatorias), inclua uma secao "analisePersonalizada" com analise DETALHADA e em formato de RELATORIO ANALITICO sobre o que foi pedido acima. Use dados concretos e numeros reais. NUNCA de uma resposta direta curta - sempre elabore como um consultor profissional com insights acionaveis, graficos mentais de tendencias, e recomendacoes especificas. A analise personalizada deve ser BEM DESTACADA e completa.` : ''}
 
 Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exata:
 {
@@ -395,7 +467,11 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
     "dica": "..."
   },
   "resumoGeral": "...",
-  "proximosPassos": ["...", "...", "..."]
+  "proximosPassos": ["...", "...", "..."]${customPrompt ? `,
+  "analisePersonalizada": "texto DETALHADO respondendo ao prompt personalizado do lojista em formato de relatorio analitico profissional com insights acionaveis e dados concretos (NUNCA resposta direta simples)"` : ''}${monthlyGoals ? `,
+  "avaliacaoMetas": [
+    {"meta": "descricao da meta", "status": "no_caminho | atencao | atrasado", "progresso": "descricao do progresso atual com numeros reais", "recomendacao": "o que fazer para atingir ou manter a meta"}
+  ]` : ''}
 }`
 
     const openai = new OpenAI({ apiKey, timeout: 120_000, maxRetries: 1 })
@@ -485,8 +561,8 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
     const savedInsight = existing
       ? await prisma.aIInsight.update({ where: { id: existing.id }, data: saveData })
       : await prisma.aIInsight.create({
-          data: { ...saveData, userId: req.user.id, period: periodVal, store: storeVal },
-        })
+        data: { ...saveData, userId: req.user.id, period: periodVal, store: storeVal },
+      })
 
     res.json({
       success: true,

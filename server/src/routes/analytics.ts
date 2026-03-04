@@ -30,8 +30,8 @@ router.post('/track', authenticate, async (req: Request, res: Response): Promise
       return
     }
 
-    // Verify live exists
-    const live = await prisma.live.findUnique({ where: { id: liveId } })
+    // Verify live exists and belongs to user
+    const live = await prisma.live.findFirst({ where: { id: liveId, userId: req.user.id } })
     if (!live) {
       res.status(404).json({ message: 'Live nao encontrada' })
       return
@@ -168,7 +168,7 @@ router.get('/dashboard', authenticate, async (req: Request, res: Response): Prom
     const avgConversion =
       analyticsWithData.length > 0
         ? analyticsWithData.reduce((sum, l) => sum + (l.analytics?.conversion || 0), 0) /
-          analyticsWithData.length
+        analyticsWithData.length
         : 0
 
     // Get recent events count (last 7 days)
@@ -178,11 +178,11 @@ router.get('/dashboard', authenticate, async (req: Request, res: Response): Prom
     const recentEventsCount =
       liveIds.length > 0
         ? await prisma.analyticsEvent.count({
-            where: {
-              liveId: { in: liveIds },
-              timestamp: { gte: weekAgo },
-            },
-          })
+          where: {
+            liveId: { in: liveIds },
+            timestamp: { gte: weekAgo },
+          },
+        })
         : 0
 
     res.json({

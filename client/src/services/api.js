@@ -236,6 +236,8 @@ export const liveReportsAPI = {
   undoDedup: (params) => api.post('/live-reports/products/undo-dedup', params),
   getSavedInsights: (params) => api.get('/live-reports/ai-insights', { params }),
   getAiInsights: (params) => api.post('/live-reports/ai-insights', params, { timeout: 120000 }),
+  getGoalsText: (params) => api.get('/live-reports/ai-insights/goals-text', { params }),
+  saveGoalsText: (data) => api.put('/live-reports/ai-insights/goals-text', data),
   getTopProducts: (params = {}) => {
     const searchParams = new URLSearchParams()
     Object.entries(params).forEach(([key, value]) => {

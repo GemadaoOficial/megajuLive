@@ -3,7 +3,7 @@ import OpenAI from 'openai'
 import multer from 'multer'
 import fs from 'fs'
 import path from 'path'
-import { authenticate } from '../middlewares/auth.js'
+import { authenticate, requireAdmin } from '../middlewares/auth.js'
 import { getConfig } from '../utils/config.js'
 import { trackTokenUsage } from '../utils/tokenTracker.js'
 import '../types/index.js'
@@ -17,19 +17,24 @@ function getOpenAI(): OpenAI {
   if (!_openai || (_openai as any)._apiKey !== key) {
     _openai = new OpenAI({
       apiKey: key,
-      timeout: 60_000,   // 60s max per request (fail fast instead of hanging)
-      maxRetries: 1,      // 1 retry instead of default 2 (saves time on failures)
+      timeout: 60_000,
+      maxRetries: 1,
     })
-    ;(_openai as any)._apiKey = key // track key for hot-reload detection
+      ; (_openai as any)._apiKey = key
   }
   return _openai
 }
 
-// Test endpoint to diagnose OpenAI connection
-router.get('/test', authenticate, async (req: Request, res: Response): Promise<void> => {
+// Shared check for OpenAI API key configuration
+function isOpenAIConfigured(): boolean {
+  const key = getConfig('OPENAI_API_KEY')
+  return !!key && key !== 'your-openai-api-key-here'
+}
+
+// Test endpoint (admin-only) - diagnose OpenAI connection
+router.get('/test', authenticate, requireAdmin, async (req: Request, res: Response): Promise<void> => {
   try {
-    const key = getConfig('OPENAI_API_KEY')
-    if (!key || key === 'your-openai-api-key-here') {
+    if (!isOpenAIConfigured()) {
       res.json({ status: 'no_key', message: 'OPENAI_API_KEY nao configurada' })
       return
     }
@@ -50,10 +55,8 @@ router.get('/test', authenticate, async (req: Request, res: Response): Promise<v
   } catch (error: any) {
     res.json({
       status: 'error',
-      message: error?.message || 'Erro desconhecido',
-      code: error?.code,
-      type: error?.type,
-      statusCode: error?.status,
+      message: 'Erro ao conectar com OpenAI',
+      keyConfigured: true,
     })
   }
 })
@@ -90,7 +93,7 @@ router.post('/suggest-title', async (req: Request, res: Response): Promise<void>
   try {
     const { prompt, category, niche } = req.body
 
-    if (!getConfig('OPENAI_API_KEY') || getConfig('OPENAI_API_KEY') === 'your-openai-api-key-here') {
+    if (!isOpenAIConfigured()) {
       res.json({
         titles: [
           `Super Promocao ${category || 'Especial'}!`,
@@ -152,7 +155,7 @@ router.post('/suggest-description', async (req: Request, res: Response): Promise
   try {
     const { prompt, title } = req.body
 
-    if (!getConfig('OPENAI_API_KEY') || getConfig('OPENAI_API_KEY') === 'your-openai-api-key-here') {
+    if (!isOpenAIConfigured()) {
       res.json({
         descriptions: [
           'Venha conferir as melhores ofertas ao vivo! Descontos exclusivos, frete gratis e cupons especiais esperando por voce. Nao perca!',
@@ -223,7 +226,7 @@ router.post(
         return
       }
 
-      if (!getConfig('OPENAI_API_KEY') || getConfig('OPENAI_API_KEY') === 'your-openai-api-key-here') {
+      if (!isOpenAIConfigured()) {
         const mockData = getMockExtractedData()
         cleanupFiles(files)
         res.json(mockData)
@@ -309,11 +312,12 @@ router.post(
   }
 )
 
-// Legacy endpoint for backward compatibility
+// Legacy endpoint (DEPRECATED - use /extract-live-report instead)
 router.post(
   '/extract-screenshot',
   upload.array('screenshots', 10),
   async (req: Request, res: Response): Promise<void> => {
+    console.warn('[AI] DEPRECATED: /extract-screenshot called. Use /extract-live-report instead.')
     try {
       const files = req.files as Express.Multer.File[]
       if (!files?.length) {
@@ -321,8 +325,8 @@ router.post(
         return
       }
 
-      if (!getConfig('OPENAI_API_KEY') || getConfig('OPENAI_API_KEY') === 'your-openai-api-key-here') {
-        files.forEach(f => fs.unlink(f.path, () => {}))
+      if (!isOpenAIConfigured()) {
+        files.forEach(f => fs.unlink(f.path, () => { }))
         res.json({
           likes: 30699, comments: 246, shares: 9,
           totalViews: 14136, totalOrders: 6, totalRevenue: '155.98', engagementRate: '2.3',
@@ -332,12 +336,12 @@ router.post(
 
       const openai = getOpenAI()
       const result = await extractFromImages(openai, files, STATS_PROMPT)
-      files.forEach(f => fs.unlink(f.path, () => {}))
+      files.forEach(f => fs.unlink(f.path, () => { }))
       res.json(result)
     } catch (error) {
       console.error('AI extract error:', error)
       const files = req.files as Express.Multer.File[]
-      if (files) files.forEach(f => fs.unlink(f.path, () => {}))
+      if (files) files.forEach(f => fs.unlink(f.path, () => { }))
       res.status(500).json({ message: 'Erro ao processar imagens' })
     }
   }
@@ -346,7 +350,7 @@ router.post(
 // --- Helpers ---
 
 function cleanupFiles(files: { [fieldname: string]: Express.Multer.File[] }) {
-  Object.values(files).flat().forEach(f => fs.unlink(f.path, () => {}))
+  Object.values(files).flat().forEach(f => fs.unlink(f.path, () => { }))
 }
 
 async function extractFromImages(openai: OpenAI, files: Express.Multer.File[], systemPrompt: string, maxTokens = 2000, tracking?: { userId: string; feature: string }) {

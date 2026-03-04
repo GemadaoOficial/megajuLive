@@ -5,6 +5,7 @@ import { Prisma } from '../generated/prisma/client.js'
 import { authenticate, requireAdmin } from '../middlewares/auth.js'
 import { parsePaginationParams, buildPaginatedResponse } from '../utils/pagination.js'
 import { createAuditLog } from './audit.js'
+import { formatAuditLogs } from '../utils/formatAuditLogs.js'
 import '../types/index.js'
 
 const router = Router()
@@ -31,34 +32,7 @@ router.get('/dashboard', async (req: Request, res: Response): Promise<void> => {
       include: { user: { select: { name: true } } },
     })
 
-    const recentActivity = recentLogs.map(log => {
-      let details: any = {}
-      try { if (log.details) details = JSON.parse(log.details) } catch { /* corrupted JSON */ }
-      const actionMap: Record<string, string> = {
-        CREATE: 'Criou', UPDATE: 'Atualizou', DELETE: 'Excluiu',
-        LOGIN: 'Login', LOGOUT: 'Logout', START_LIVE: 'Iniciou live', END_LIVE: 'Encerrou live',
-      }
-      const entityMap: Record<string, string> = {
-        USER: 'usuario', LIVE: 'live', PRODUCT: 'produto', AUTH: 'autenticacao',
-      }
-      const action = actionMap[log.action] || log.action
-      const entity = entityMap[log.entity] || log.entity
-      const title = details.title || details.name || ''
-
-      const diff = Date.now() - new Date(log.createdAt).getTime()
-      let time = ''
-      if (diff < 60000) time = 'agora'
-      else if (diff < 3600000) time = `${Math.floor(diff / 60000)} min atras`
-      else if (diff < 86400000) time = `${Math.floor(diff / 3600000)}h atras`
-      else time = new Date(log.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
-
-      return {
-        id: log.id,
-        text: `${log.user?.name || 'Sistema'}: ${action} ${entity}${title ? ': ' + title : ''}`,
-        time,
-        type: log.entity === 'USER' || log.entity === 'AUTH' ? 'user' : log.entity === 'LIVE' ? 'live' : 'tutorial',
-      }
-    })
+    const recentActivity = formatAuditLogs(recentLogs)
 
     // Active lives (LIVE status)
     const activeLives = await prisma.live.count({ where: { status: 'LIVE' } })
@@ -346,34 +320,7 @@ router.get('/analytics', async (req: Request, res: Response): Promise<void> => {
       include: { user: { select: { name: true } } },
     })
 
-    const recentActivity = recentLogs.map(log => {
-      let details: any = {}
-      try { if (log.details) details = JSON.parse(log.details) } catch { /* corrupted JSON */ }
-      const actionMap: Record<string, string> = {
-        CREATE: 'Criou', UPDATE: 'Atualizou', DELETE: 'Excluiu',
-        LOGIN: 'Login', LOGOUT: 'Logout', START_LIVE: 'Iniciou live', END_LIVE: 'Encerrou live',
-      }
-      const entityMap: Record<string, string> = {
-        USER: 'usuario', LIVE: 'live', PRODUCT: 'produto', AUTH: 'autenticacao',
-      }
-      const action = actionMap[log.action] || log.action
-      const entity = entityMap[log.entity] || log.entity
-      const title = details.title || details.name || ''
-
-      const diff = Date.now() - new Date(log.createdAt).getTime()
-      let time = ''
-      if (diff < 60000) time = 'agora'
-      else if (diff < 3600000) time = `${Math.floor(diff / 60000)} min atras`
-      else if (diff < 86400000) time = `${Math.floor(diff / 3600000)}h atras`
-      else time = new Date(log.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
-
-      return {
-        id: log.id,
-        text: `${log.user?.name || 'Sistema'}: ${action} ${entity}${title ? ': ' + title : ''}`,
-        time,
-        type: log.entity === 'USER' || log.entity === 'AUTH' ? 'user' : log.entity === 'LIVE' ? 'live' : 'tutorial',
-      }
-    })
+    const recentActivity = formatAuditLogs(recentLogs)
 
     res.json({
       stats: {

@@ -1,11 +1,12 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Sparkles, Star, AlertTriangle, Trash2, Coins, Trophy, TrendingDown,
   Calendar, ArrowRight, Lightbulb, Target, Filter as FilterIcon,
   ChevronDown, ChevronUp, BarChart3, RefreshCw, Loader2, Brain,
   ShoppingCart, Eye, MousePointerClick, Clock, DollarSign, Users,
-  CheckCircle2, XCircle, TrendingUp, Zap, Award, ChevronRight
+  CheckCircle2, XCircle, TrendingUp, Zap, Award, ChevronRight,
+  MessageSquare, Save, PenTool
 } from 'lucide-react'
 import { liveReportsAPI } from '../../../services/api'
 
@@ -52,7 +53,7 @@ function ScoreRing({ score, size = 120 }) {
 function ScoreBadge({ score }) {
   const color = score >= 8 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
     : score >= 6 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-    : 'bg-red-500/20 text-red-400 border-red-500/30'
+      : 'bg-red-500/20 text-red-400 border-red-500/30'
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-bold border ${color}`}>
       {score.toFixed(1)}
@@ -210,40 +211,394 @@ function DailyLiveCard({ live, index }) {
   )
 }
 
-// ─── Progress Steps ──────────────────────────────────────────────────────────
-function ProgressSteps({ progress }) {
-  const steps = [
-    { label: 'Coletando dados', threshold: 0 },
-    { label: 'Analisando padroes', threshold: 30 },
-    { label: 'Calculando metricas', threshold: 55 },
-    { label: 'Gerando insights', threshold: 80 },
-  ]
-  const current = steps.filter(s => progress >= s.threshold).length - 1
+// ─── Deep Analysis Rotating Messages ─────────────────────────────────────────
+const deepMessages = [
+  'A IA está analisando cada live individualmente...',
+  'Comparando métricas de engajamento e conversão...',
+  'Identificando os produtos com melhor desempenho...',
+  'Calculando retorno sobre investimento em moedas...',
+  'Analisando padrões de horário e audiência...',
+  'Cruzando dados de tráfego com vendas...',
+  'Gerando recomendações personalizadas...',
+  'Avaliando tendências de crescimento...',
+  'Finalizando análise profunda dos dados...',
+]
+
+function DeepAnalysisMessage() {
+  const [msgIndex, setMsgIndex] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setMsgIndex(prev => (prev + 1) % deepMessages.length)
+    }, 4000)
+    return () => clearInterval(timer)
+  }, [])
 
   return (
-    <div className="flex items-center gap-2 mt-4">
-      {steps.map((step, i) => (
-        <div key={i} className="flex items-center gap-2">
-          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-            i <= current
-              ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-              : 'bg-white/3 text-slate-500 border border-white/5'
-          }`}>
-            {i < current ? (
-              <CheckCircle2 className="w-3 h-3 text-violet-400" />
-            ) : i === current ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
-            ) : (
-              <div className="w-3 h-3 rounded-full border border-slate-600" />
-            )}
-            <span className="hidden sm:inline">{step.label}</span>
-          </div>
-          {i < steps.length - 1 && (
-            <ChevronRight className={`w-3 h-3 ${i < current ? 'text-violet-400' : 'text-slate-600'}`} />
+    <AnimatePresence mode="wait">
+      <motion.p
+        key={msgIndex}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -8 }}
+        transition={{ duration: 0.4 }}
+        className="text-xs text-slate-400 mt-1.5 text-center max-w-xs"
+      >
+        {deepMessages[msgIndex]}
+      </motion.p>
+    </AnimatePresence>
+  )
+}
+
+// ─── SVG Loading Animations ──────────────────────────────────────────────────
+function InsightsLoadingAnimation({ progress, completed }) {
+  const stages = [
+    { label: 'Coletando dados', desc: 'Buscando relatórios e métricas das lives...', threshold: 0, color: '#a78bfa' },
+    { label: 'Analisando padrões', desc: 'Identificando tendências e padrões de comportamento...', threshold: 30, color: '#60a5fa' },
+    { label: 'Calculando métricas', desc: 'Processando indicadores de performance...', threshold: 55, color: '#34d399' },
+    { label: 'Gerando insights', desc: 'Criando relatório inteligente personalizado...', threshold: 80, color: '#f59e0b' },
+  ]
+  const current = stages.filter(s => progress >= s.threshold).length - 1
+  const stage = stages[Math.max(0, current)]
+
+  if (completed) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        className="flex flex-col items-center justify-center py-16 px-4"
+      >
+        {/* Celebration SVG */}
+        <motion.svg
+          width="200" height="200" viewBox="0 0 200 200"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
+          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+        >
+          {/* Glow circle */}
+          <motion.circle
+            cx="100" cy="100" r="80"
+            fill="none" stroke="url(#completedGlow)" strokeWidth="3"
+            initial={{ r: 0, opacity: 0 }}
+            animate={{ r: 80, opacity: [0, 1, 0.6] }}
+            transition={{ duration: 1 }}
+          />
+          {/* Pulse ring */}
+          <motion.circle
+            cx="100" cy="100" r="70"
+            fill="none" stroke="#a78bfa" strokeWidth="1" opacity="0.3"
+            animate={{ r: [70, 95, 70], opacity: [0.3, 0, 0.3] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+          {/* Center filled circle */}
+          <motion.circle
+            cx="100" cy="100" r="55"
+            fill="url(#completedFill)"
+            initial={{ r: 0 }}
+            animate={{ r: 55 }}
+            transition={{ delay: 0.3, type: 'spring', stiffness: 150 }}
+          />
+          {/* Checkmark */}
+          <motion.path
+            d="M 72 100 L 92 118 L 130 78"
+            fill="none" stroke="white" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+          />
+          {/* Sparkle particles */}
+          {[...Array(8)].map((_, i) => {
+            const angle = (i / 8) * Math.PI * 2
+            const x = 100 + Math.cos(angle) * 90
+            const y = 100 + Math.sin(angle) * 90
+            return (
+              <motion.circle
+                key={i} cx={x} cy={y} r="3"
+                fill={['#a78bfa', '#f59e0b', '#34d399', '#60a5fa'][i % 4]}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: [0, 1.5, 0], opacity: [0, 1, 0] }}
+                transition={{ delay: 0.8 + i * 0.08, duration: 0.6 }}
+              />
+            )
+          })}
+          <defs>
+            <radialGradient id="completedFill">
+              <stop offset="0%" stopColor="#a78bfa" />
+              <stop offset="100%" stopColor="#7c3aed" />
+            </radialGradient>
+            <radialGradient id="completedGlow">
+              <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#7c3aed" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+        </motion.svg>
+
+        <motion.h3
+          className="text-2xl font-bold text-white mt-6 bg-gradient-to-r from-violet-400 via-purple-400 to-amber-400 bg-clip-text text-transparent"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+        >
+          Insights Concluído ✨
+        </motion.h3>
+        <motion.p
+          className="text-sm text-slate-400 mt-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1 }}
+        >
+          Aqui está o seu relatório
+        </motion.p>
+      </motion.div>
+    )
+  }
+
+  // Active loading SVG animations per stage
+  const renderStageSVG = () => {
+    const idx = Math.max(0, current)
+    return (
+      <AnimatePresence mode="wait">
+        <motion.svg
+          key={idx}
+          width="160" height="160" viewBox="0 0 160 160"
+          initial={{ opacity: 0, scale: 0.7, rotate: -10 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          exit={{ opacity: 0, scale: 0.7, rotate: 10 }}
+          transition={{ duration: 0.4 }}
+        >
+          {/* Background glow */}
+          <motion.circle
+            cx="80" cy="80" r="60"
+            fill="none" stroke={stage.color} strokeWidth="1" opacity="0.2"
+            animate={{ r: [55, 65, 55], opacity: [0.15, 0.3, 0.15] }}
+            transition={{ duration: 2.5, repeat: Infinity }}
+          />
+
+          {idx === 0 && (
+            /* Stage 0: Data collection - scanning radar */
+            <>
+              <motion.circle cx="80" cy="80" r="45" fill="none" stroke={stage.color} strokeWidth="1.5" opacity="0.3" />
+              <motion.circle cx="80" cy="80" r="30" fill="none" stroke={stage.color} strokeWidth="1" opacity="0.2" />
+              <motion.circle cx="80" cy="80" r="15" fill={stage.color} opacity="0.15" />
+              {/* Radar sweep */}
+              <motion.line
+                x1="80" y1="80" x2="80" y2="35"
+                stroke={stage.color} strokeWidth="2" strokeLinecap="round"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                style={{ transformOrigin: '80px 80px' }}
+              />
+              {/* Blinking dots (data points) */}
+              {[[60, 55], [105, 65], [70, 100], [95, 95], [80, 60]].map(([x, y], i) => (
+                <motion.circle
+                  key={i} cx={x} cy={y} r="3" fill={stage.color}
+                  animate={{ opacity: [0.2, 1, 0.2], scale: [0.8, 1.2, 0.8] }}
+                  transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
+                />
+              ))}
+              {/* Orbiting document icon */}
+              <motion.g
+                animate={{ rotate: -360 }}
+                transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+                style={{ transformOrigin: '80px 80px' }}
+              >
+                <rect x="115" y="73" width="12" height="14" rx="2" fill={stage.color} opacity="0.6" />
+                <line x1="118" y1="78" x2="124" y2="78" stroke="white" strokeWidth="1" opacity="0.5" />
+                <line x1="118" y1="81" x2="124" y2="81" stroke="white" strokeWidth="1" opacity="0.5" />
+              </motion.g>
+            </>
           )}
+
+          {idx === 1 && (
+            /* Stage 1: Pattern analysis - brain network */
+            <>
+              {/* Brain outline */}
+              <motion.ellipse
+                cx="80" cy="75" rx="32" ry="35"
+                fill="none" stroke={stage.color} strokeWidth="2" opacity="0.5"
+                animate={{ ry: [35, 37, 35] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              {/* Neural connections */}
+              {[[65, 60, 80, 50], [80, 50, 95, 60], [60, 75, 80, 70], [80, 70, 100, 75], [65, 90, 80, 85], [80, 85, 95, 90]].map(([x1, y1, x2, y2], i) => (
+                <motion.line
+                  key={i} x1={x1} y1={y1} x2={x2} y2={y2}
+                  stroke={stage.color} strokeWidth="1.5" strokeLinecap="round"
+                  animate={{ opacity: [0.2, 0.8, 0.2] }}
+                  transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
+                />
+              ))}
+              {/* Neural nodes */}
+              {[[65, 60], [80, 50], [95, 60], [60, 75], [80, 70], [100, 75], [65, 90], [80, 85], [95, 90]].map(([x, y], i) => (
+                <motion.circle
+                  key={i} cx={x} cy={y} r="4" fill={stage.color}
+                  animate={{ scale: [0.8, 1.3, 0.8], opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.15 }}
+                />
+              ))}
+              {/* Pulse wave across brain */}
+              <motion.rect
+                x="45" y="65" width="3" height="20" rx="1.5"
+                fill={stage.color} opacity="0.4"
+                animate={{ x: [45, 115], opacity: [0, 0.6, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            </>
+          )}
+
+          {idx === 2 && (
+            /* Stage 2: Calculating metrics - chart bars animating */
+            <>
+              {/* Chart baseline */}
+              <line x1="45" y1="115" x2="135" y2="115" stroke={stage.color} strokeWidth="1.5" opacity="0.4" />
+              <line x1="45" y1="115" x2="45" y2="45" stroke={stage.color} strokeWidth="1.5" opacity="0.4" />
+              {/* Animated bars */}
+              {[
+                { x: 55, h: 50, delay: 0 },
+                { x: 72, h: 35, delay: 0.15 },
+                { x: 89, h: 60, delay: 0.3 },
+                { x: 106, h: 45, delay: 0.45 },
+                { x: 123, h: 55, delay: 0.6 },
+              ].map((bar, i) => (
+                <motion.rect
+                  key={i} x={bar.x} width="12" rx="3"
+                  fill={stage.color} opacity="0.7"
+                  initial={{ y: 115, height: 0 }}
+                  animate={{ y: [115, 115 - bar.h, 115, 115 - bar.h * 0.9], height: [0, bar.h, 0, bar.h * 0.9] }}
+                  transition={{ duration: 2.5, repeat: Infinity, delay: bar.delay }}
+                />
+              ))}
+              {/* Trend line animating */}
+              <motion.polyline
+                points="60,90 78,100 95,70 112,80 129,60"
+                fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                opacity="0.6"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: [0, 1, 1, 0] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              />
+            </>
+          )}
+
+          {idx === 3 && (
+            /* Stage 3: Generating insights - AI sparkle */
+            <>
+              {/* Center AI orb */}
+              <motion.circle
+                cx="80" cy="80" r="20"
+                fill="url(#aiOrb)"
+                animate={{ r: [18, 22, 18] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              />
+              {/* Orbiting sparkles */}
+              {[...Array(6)].map((_, i) => {
+                const a = (i / 6) * Math.PI * 2
+                return (
+                  <motion.g
+                    key={i}
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 4 + i * 0.5, repeat: Infinity, ease: 'linear' }}
+                    style={{ transformOrigin: '80px 80px' }}
+                  >
+                    <motion.path
+                      d={`M ${80 + Math.cos(a) * 40} ${80 + Math.sin(a) * 40} l 3 -6 3 6 -6 0 z`}
+                      fill={['#f59e0b', '#a78bfa', '#34d399', '#60a5fa', '#f472b6', '#fbbf24'][i]}
+                      animate={{ scale: [0.8, 1.3, 0.8], opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 1 + i * 0.2, repeat: Infinity }}
+                    />
+                  </motion.g>
+                )
+              })}
+              {/* Radiating lines from orb */}
+              {[...Array(12)].map((_, i) => {
+                const a = (i / 12) * Math.PI * 2
+                return (
+                  <motion.line
+                    key={i}
+                    x1={80 + Math.cos(a) * 25} y1={80 + Math.sin(a) * 25}
+                    x2={80 + Math.cos(a) * 35} y2={80 + Math.sin(a) * 35}
+                    stroke={stage.color} strokeWidth="1.5" strokeLinecap="round"
+                    animate={{ opacity: [0, 0.8, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.12 }}
+                  />
+                )
+              })}
+              <defs>
+                <radialGradient id="aiOrb">
+                  <stop offset="0%" stopColor="#fbbf24" />
+                  <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.6" />
+                </radialGradient>
+              </defs>
+            </>
+          )}
+        </motion.svg>
+      </AnimatePresence>
+    )
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="flex flex-col items-center py-12 px-4"
+    >
+      {renderStageSVG()}
+
+      <motion.h4
+        key={current}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-lg font-bold text-white mt-6"
+      >
+        {stage.label}
+      </motion.h4>
+      {/* Deep analysis messages when in slow zone */}
+      {progress >= 80 && (
+        <DeepAnalysisMessage />
+      )}
+      {progress < 80 && (
+        <motion.p
+          key={`desc-${current}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-xs text-slate-400 mt-1.5 text-center max-w-xs"
+        >
+          {stage.desc}
+        </motion.p>
+      )}
+
+      {/* Progress bar */}
+      <div className="w-64 mt-6">
+        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+          <motion.div
+            className="h-full rounded-full"
+            style={{ background: `linear-gradient(90deg, ${stage.color}, ${stages[Math.min(current + 1, 3)].color})` }}
+            initial={{ width: '0%' }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.4 }}
+          />
         </div>
-      ))}
-    </div>
+        <p className="text-[10px] text-slate-600 text-center mt-2">{Math.min(Math.round(progress), 99)}% concluído</p>
+      </div>
+
+      {/* Step indicators */}
+      <div className="flex items-center gap-2 mt-5">
+        {stages.map((s, i) => (
+          <div key={i} className="flex items-center gap-1.5">
+            <motion.div
+              className={`w-2 h-2 rounded-full ${i < current ? 'bg-violet-400' : i === current ? 'bg-white' : 'bg-white/15'}`}
+              animate={i === current ? { scale: [1, 1.4, 1] } : {}}
+              transition={{ duration: 1, repeat: Infinity }}
+            />
+            {i < stages.length - 1 && (
+              <div className={`w-6 h-px ${i < current ? 'bg-violet-400/50' : 'bg-white/10'}`} />
+            )}
+          </div>
+        ))}
+      </div>
+    </motion.div>
   )
 }
 
@@ -304,6 +659,17 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
   const [generatedAt, setGeneratedAt] = useState(null)
   const progressRef = useRef(null)
 
+  // Custom prompt & monthly goals
+  const [customPrompt, setCustomPrompt] = useState('')
+  const [monthlyGoals, setMonthlyGoals] = useState('')
+  const [showPrompt, setShowPrompt] = useState(false)
+  const [showGoals, setShowGoals] = useState(false)
+  const [savingGoals, setSavingGoals] = useState(false)
+  const [goalsLoaded, setGoalsLoaded] = useState(false)
+  const [showCompleted, setShowCompleted] = useState(false)
+  const saveGoalsTimer = useRef(null)
+  const completedTimer = useRef(null)
+
   // Load saved insights on mount or when filters change
   useEffect(() => {
     let cancelled = false
@@ -332,16 +698,69 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
     return () => { cancelled = true }
   }, [period, store])
 
+  // Load saved monthly goals from DB
+  useEffect(() => {
+    let cancelled = false
+    const loadGoals = async () => {
+      try {
+        const params = { ...(store && { store }) }
+        const { data } = await liveReportsAPI.getGoalsText(params)
+        if (cancelled) return
+        if (data.goalsText) {
+          setMonthlyGoals(data.goalsText)
+          setShowGoals(true)
+        }
+        setGoalsLoaded(true)
+      } catch {
+        setGoalsLoaded(true)
+      }
+    }
+    loadGoals()
+    return () => { cancelled = true }
+  }, [store])
+
+  // Auto-save goals to DB with debounce
+  const saveGoalsToDB = useCallback((text) => {
+    if (saveGoalsTimer.current) clearTimeout(saveGoalsTimer.current)
+    saveGoalsTimer.current = setTimeout(async () => {
+      setSavingGoals(true)
+      try {
+        await liveReportsAPI.saveGoalsText({ goalsText: text, ...(store && { store }) })
+      } catch {
+        // Silently fail
+      } finally {
+        setSavingGoals(false)
+      }
+    }, 1000)
+  }, [store])
+
+  const handleGoalsChange = (e) => {
+    const text = e.target.value
+    setMonthlyGoals(text)
+    saveGoalsToDB(text)
+  }
+
   const handleGenerate = async () => {
     setLoading(true)
     setError(null)
     setProgress(0)
+    setShowCompleted(false)
 
     let p = 0
+    let tick = 0
     progressRef.current = setInterval(() => {
-      p += Math.random() * 8 + 2
-      if (p > 92) p = 92
-      setProgress(Math.round(p))
+      tick++
+      if (p < 80) {
+        // Fast phase: reach 80% quickly
+        p += Math.random() * 8 + 2
+        if (p > 80) p = 80
+      } else {
+        // Asymptotic phase: crawl toward 99.5% but never stop
+        // Each tick closes ~8-12% of the remaining gap to 99.5
+        const remaining = 99.5 - p
+        p += remaining * (0.04 + Math.random() * 0.06)
+      }
+      setProgress(Math.round(p * 10) / 10)
     }, 600)
 
     try {
@@ -350,11 +769,22 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
         params.startDate = startDate
         params.endDate = endDate
       }
+      if (customPrompt.trim()) params.customPrompt = customPrompt.trim()
+      if (monthlyGoals.trim()) params.monthlyGoals = monthlyGoals.trim()
       const { data } = await liveReportsAPI.getAiInsights(params)
+      clearInterval(progressRef.current)
+      setProgress(100)
+
+      // Show completion animation before revealing report
+      setShowCompleted(true)
+      await new Promise(resolve => {
+        completedTimer.current = setTimeout(resolve, 2500)
+      })
+      setShowCompleted(false)
+
       setInsights(data.insights)
       setMeta(data.meta)
       setGeneratedAt(data.generatedAt)
-      setProgress(100)
     } catch (err) {
       const msg = err.response?.data?.message || 'Erro ao gerar insights'
       setError(msg)
@@ -403,8 +833,89 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
           </button>
         </div>
 
-        {/* Progress steps */}
-        {loading && <ProgressSteps progress={progress} />}
+        {/* ── Metas do Mês ── */}
+        <div className="mt-4">
+          <button
+            onClick={() => setShowGoals(!showGoals)}
+            className="flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-white transition-colors"
+          >
+            <Target className="w-4 h-4 text-emerald-400" />
+            Metas do Mês
+            {monthlyGoals.trim() && (
+              <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-md border border-emerald-500/30">ATIVAS</span>
+            )}
+            <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${showGoals ? 'rotate-180' : ''}`} />
+          </button>
+          <AnimatePresence>
+            {showGoals && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-3 relative">
+                  <textarea
+                    value={monthlyGoals}
+                    onChange={handleGoalsChange}
+                    placeholder={`Ex:\n• Ranquear o produto "Creme Facial" no top 10\n• Aumentar pedidos para 50 por live\n• Atingir R$5.000 de receita por live\n• Divulgar o novo kit de maquiagem`}
+                    className="w-full h-28 bg-white/3 border border-emerald-500/20 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500/40 transition-all"
+                  />
+                  <div className="absolute bottom-3 right-3 flex items-center gap-1.5">
+                    {savingGoals ? (
+                      <span className="text-[10px] text-slate-500 flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" /> Salvando...</span>
+                    ) : monthlyGoals.trim() && goalsLoaded ? (
+                      <span className="text-[10px] text-emerald-500 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Salvo</span>
+                    ) : null}
+                  </div>
+                  <p className="text-[10px] text-slate-600 mt-1.5">Defina os objetivos deste mês. A IA avaliará o progresso de cada meta com base nos dados reais.</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* ── Prompt Personalizado ── */}
+        <div className="mt-3">
+          <button
+            onClick={() => setShowPrompt(!showPrompt)}
+            className="flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-white transition-colors"
+          >
+            <PenTool className="w-4 h-4 text-amber-400" />
+            Prompt Personalizado
+            {customPrompt.trim() && (
+              <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded-md border border-amber-500/30">COM PROMPT</span>
+            )}
+            <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform ${showPrompt ? 'rotate-180' : ''}`} />
+          </button>
+          <AnimatePresence>
+            {showPrompt && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-3">
+                  <textarea
+                    value={customPrompt}
+                    onChange={(e) => setCustomPrompt(e.target.value)}
+                    placeholder={`Ex: "Quero uma análise focada nos produtos que tem mais cliques mas não vendem" ou "Analise se vale a pena continuar investindo moedas acima de 10.000"`}
+                    className="w-full h-20 bg-white/3 border border-amber-500/20 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 resize-none focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500/40 transition-all"
+                  />
+                  <p className="text-[10px] text-slate-600 mt-1.5">Escreva o que quer analisar. O relatório completo será mantido + uma seção destacada com sua análise.</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* SVG Loading Animation */}
+        {(loading || showCompleted) && (
+          <InsightsLoadingAnimation progress={progress} completed={showCompleted} />
+        )}
 
         {/* Error */}
         {error && (
@@ -445,6 +956,68 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
                 </div>
               </div>
             </Glass>
+
+            {/* ── Avaliação de Metas (FIRST SECTION — prominent) ── */}
+            {insights.avaliacaoMetas?.length > 0 && (
+              <Glass delay={0.08} className="p-0 overflow-hidden border-emerald-500/30">
+                {/* Top accent bar */}
+                <div className="h-1 w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500" />
+                <div className="p-6">
+                  <div className="flex items-center gap-4 mb-5">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+                      <Target className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-white">Avaliação de Metas</h3>
+                        <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded-lg border border-emerald-500/30 uppercase tracking-wider animate-pulse">Prioridade</span>
+                      </div>
+                      <p className="text-xs text-slate-400">Progresso em relação às suas metas do mês</p>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    {insights.avaliacaoMetas.map((item, i) => {
+                      const statusConfig = {
+                        no_caminho: { icon: CheckCircle2, label: 'No caminho', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/25', accent: 'from-emerald-500 to-teal-500' },
+                        atencao: { icon: AlertTriangle, label: 'Atenção', color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/25', accent: 'from-yellow-500 to-amber-500' },
+                        atrasado: { icon: XCircle, label: 'Atrasado', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/25', accent: 'from-red-500 to-rose-500' },
+                      }
+                      const cfg = statusConfig[item.status] || statusConfig.atencao
+                      const StatusIcon = cfg.icon
+
+                      return (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 * i }}
+                          className={`p-4 rounded-xl border ${cfg.bg}`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${cfg.accent} flex items-center justify-center shrink-0 shadow-md`}>
+                              <StatusIcon className="w-4 h-4 text-white" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="text-sm font-bold text-white">{item.meta}</p>
+                                <span className={`px-2 py-0.5 text-[10px] font-bold rounded-md ${cfg.color} bg-white/5 border border-white/10 uppercase`}>{cfg.label}</span>
+                              </div>
+                              <p className="text-xs text-slate-300 leading-relaxed mb-1.5">{item.progresso}</p>
+                              {item.recomendacao && (
+                                <div className="flex items-start gap-1.5 mt-2 p-2.5 bg-white/3 rounded-lg">
+                                  <Lightbulb className="w-3.5 h-3.5 text-amber-400 mt-0.5 shrink-0" />
+                                  <p className="text-xs text-slate-400">{item.recomendacao}</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </Glass>
+            )}
 
             {/* ── Analise Diaria ── */}
             {insights.analiseDiaria?.length > 0 && (
@@ -928,6 +1501,29 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
                 </div>
               </Glass>
             )}
+
+            {/* ── Análise Personalizada (HIGHLIGHTED) ── */}
+            {insights.analisePersonalizada && (
+              <Glass delay={0.42} className="p-6 border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-yellow-500/3">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-lg shadow-amber-500/25">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-lg font-bold text-white">Análise Personalizada</h3>
+                      <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded-lg border border-amber-500/30 uppercase">Solicitada</span>
+                    </div>
+                    <p className="text-xs text-slate-400">Resposta ao seu prompt personalizado</p>
+                  </div>
+                </div>
+                <div className="p-4 bg-amber-500/5 border border-amber-500/15 rounded-xl">
+                  <p className="text-sm text-slate-200 leading-relaxed whitespace-pre-line">{insights.analisePersonalizada}</p>
+                </div>
+              </Glass>
+            )}
+
+
 
             {/* ── Token meta footer ── */}
             {meta && (

@@ -10,17 +10,23 @@ import {
   revokeAllUserTokens,
 } from '../utils/tokens.js'
 import { createAuditLog } from './audit.js'
+import { authLimiter } from '../utils/rateLimiters.js'
 import '../types/index.js'
 
 const router = Router()
 
 // Register
-router.post('/register', async (req: Request, res: Response): Promise<void> => {
+router.post('/register', authLimiter, async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email, password } = req.body
 
     if (!name || !email || !password) {
       res.status(400).json({ message: 'Todos os campos sao obrigatorios' })
+      return
+    }
+
+    if (password.length < 8) {
+      res.status(400).json({ message: 'Senha deve ter pelo menos 8 caracteres' })
       return
     }
 
@@ -59,7 +65,7 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
 })
 
 // Login
-router.post('/login', async (req: Request, res: Response): Promise<void> => {
+router.post('/login', authLimiter, async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body
 
@@ -215,8 +221,8 @@ router.put('/password', authenticate, async (req: Request, res: Response): Promi
       return
     }
 
-    if (newPassword.length < 6) {
-      res.status(400).json({ message: 'Nova senha deve ter pelo menos 6 caracteres' })
+    if (newPassword.length < 8) {
+      res.status(400).json({ message: 'Nova senha deve ter pelo menos 8 caracteres' })
       return
     }
 

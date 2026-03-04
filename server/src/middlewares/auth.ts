@@ -22,7 +22,13 @@ export const authenticate = async (
     }
 
     const token = authHeader.split(' ')[1]
-    const decoded = jwt.verify(token, getConfig('JWT_SECRET')!) as TokenPayload
+    const secret = getConfig('JWT_SECRET')
+    if (!secret) {
+      console.error('Auth error: JWT_SECRET not configured')
+      res.status(500).json({ message: 'Erro de configuracao do servidor' })
+      return
+    }
+    const decoded = jwt.verify(token, secret) as TokenPayload
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
