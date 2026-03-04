@@ -1017,6 +1017,83 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
               </Glass>
             )}
 
+            {/* ── Análise Personalizada (TOP - SVG animated) ── */}
+            {insights.analisePersonalizada && (
+              <Glass delay={0.09} className="p-0 overflow-hidden border-amber-500/30">
+                {/* Top accent bar */}
+                <div className="h-1 w-full bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-500" />
+                <div className="p-6">
+                  <div className="flex items-center gap-4 mb-5">
+                    {/* Animated SVG sparkle icon */}
+                    <div className="relative w-14 h-14 shrink-0">
+                      <motion.svg
+                        width="56" height="56" viewBox="0 0 56 56"
+                        className="absolute inset-0"
+                      >
+                        {/* Background glow circle */}
+                        <motion.circle
+                          cx="28" cy="28" r="24"
+                          fill="url(#sparkleGlow)"
+                          animate={{ r: [22, 26, 22], opacity: [0.3, 0.6, 0.3] }}
+                          transition={{ duration: 2.5, repeat: Infinity }}
+                        />
+                        {/* Center diamond */}
+                        <motion.path
+                          d="M28 8 L36 28 L28 48 L20 28 Z"
+                          fill="url(#sparkleFill)" stroke="#fbbf24" strokeWidth="1"
+                          animate={{ scale: [0.9, 1.05, 0.9], rotate: [0, 5, -5, 0] }}
+                          transition={{ duration: 3, repeat: Infinity }}
+                          style={{ transformOrigin: '28px 28px' }}
+                        />
+                        {/* Orbiting sparkle dots */}
+                        {[0, 1, 2, 3, 4, 5].map(i => {
+                          const angle = (i / 6) * Math.PI * 2
+                          const x = 28 + Math.cos(angle) * 20
+                          const y = 28 + Math.sin(angle) * 20
+                          return (
+                            <motion.circle
+                              key={i} cx={x} cy={y} r="2"
+                              fill={['#fbbf24', '#f59e0b', '#d97706', '#fbbf24', '#f59e0b', '#d97706'][i]}
+                              animate={{ scale: [0.5, 1.5, 0.5], opacity: [0.3, 1, 0.3] }}
+                              transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.25 }}
+                            />
+                          )
+                        })}
+                        {/* Outer rotating ring */}
+                        <motion.circle
+                          cx="28" cy="28" r="25" fill="none"
+                          stroke="#fbbf24" strokeWidth="0.5" strokeDasharray="4 8" opacity="0.4"
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                          style={{ transformOrigin: '28px 28px' }}
+                        />
+                        <defs>
+                          <radialGradient id="sparkleGlow">
+                            <stop offset="0%" stopColor="#fbbf24" stopOpacity="0.3" />
+                            <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
+                          </radialGradient>
+                          <linearGradient id="sparkleFill" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stopColor="#fbbf24" />
+                            <stop offset="100%" stopColor="#f59e0b" />
+                          </linearGradient>
+                        </defs>
+                      </motion.svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-lg font-bold text-white">Análise Personalizada</h3>
+                        <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded-lg border border-amber-500/30 uppercase tracking-wider animate-pulse">Solicitada</span>
+                      </div>
+                      <p className="text-xs text-slate-400 mt-0.5">Resposta ao seu prompt personalizado</p>
+                    </div>
+                  </div>
+                  <div className="p-5 bg-gradient-to-br from-amber-500/5 to-yellow-500/3 border border-amber-500/15 rounded-xl">
+                    <p className="text-sm text-slate-200 leading-relaxed whitespace-pre-line">{insights.analisePersonalizada}</p>
+                  </div>
+                </div>
+              </Glass>
+            )}
+
             {/* ── Analise Diaria ── */}
             {insights.analiseDiaria?.length > 0 && (
               <Glass delay={0.1} className="p-6">
@@ -1500,26 +1577,7 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
               </Glass>
             )}
 
-            {/* ── Análise Personalizada (HIGHLIGHTED) ── */}
-            {insights.analisePersonalizada && (
-              <Glass delay={0.42} className="p-6 border-amber-500/30 bg-gradient-to-br from-amber-500/5 to-yellow-500/3">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-lg shadow-amber-500/25">
-                    <Sparkles className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-lg font-bold text-white">Análise Personalizada</h3>
-                      <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-bold rounded-lg border border-amber-500/30 uppercase">Solicitada</span>
-                    </div>
-                    <p className="text-xs text-slate-400">Resposta ao seu prompt personalizado</p>
-                  </div>
-                </div>
-                <div className="p-4 bg-amber-500/5 border border-amber-500/15 rounded-xl">
-                  <p className="text-sm text-slate-200 leading-relaxed whitespace-pre-line">{insights.analisePersonalizada}</p>
-                </div>
-              </Glass>
-            )}
+
 
 
 
