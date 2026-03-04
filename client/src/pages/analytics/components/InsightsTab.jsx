@@ -555,10 +555,10 @@ function InsightsLoadingAnimation({ progress, completed }) {
         {stage.label}
       </motion.h4>
       {/* Deep analysis messages when in slow zone */}
-      {progress >= 80 && (
+      {progress >= 60 && (
         <DeepAnalysisMessage />
       )}
-      {progress < 80 && (
+      {progress < 60 && (
         <motion.p
           key={`desc-${current}`}
           initial={{ opacity: 0 }}
@@ -747,21 +747,19 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
     setShowCompleted(false)
 
     let p = 0
-    let tick = 0
     progressRef.current = setInterval(() => {
-      tick++
-      if (p < 80) {
-        // Fast phase: reach 80% quickly
-        p += Math.random() * 8 + 2
-        if (p > 80) p = 80
+      if (p < 60) {
+        // Fast phase: reach 60% in ~4 seconds
+        p += Math.random() * 12 + 5
+        if (p > 60) p = 60
       } else {
-        // Asymptotic phase: crawl toward 99.5% but never stop
-        // Each tick closes ~8-12% of the remaining gap to 99.5
-        const remaining = 99.5 - p
-        p += remaining * (0.04 + Math.random() * 0.06)
+        // Slow but ALWAYS MOVING phase: each tick closes 15-25% of gap to 99
+        const remaining = 99 - p
+        const step = remaining * (0.15 + Math.random() * 0.10)
+        p += Math.max(step, 0.3) // minimum 0.3% per tick so it never looks stuck
       }
-      setProgress(Math.round(p * 10) / 10)
-    }, 600)
+      setProgress(Math.round(p))
+    }, 800)
 
     try {
       const params = { period, ...(store && { store }) }

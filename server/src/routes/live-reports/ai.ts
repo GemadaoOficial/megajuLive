@@ -320,7 +320,18 @@ router.post('/ai-insights', aiLimiter, async (req: Request, res: Response): Prom
     // Coin investment summary
     const avgCoinsCostPerLive = livesWithCoins.length > 0 ? totalCoinsCost / livesWithCoins.length : 0
 
-    const prompt = `Analise os dados de performance da Shopee Live abaixo e forneca insights ACIONAVEIS e ESPECIFICOS. Use numeros concretos dos dados nas recomendacoes. Analise CADA LIVE individualmente identificando acertos e erros.
+    const prompt = `Voce e um consultor senior de e-commerce BRUTALMENTE HONESTO. Sua analise deve ser SINCERA, DIRETA e BASEADA EXCLUSIVAMENTE nos numeros reais fornecidos.
+
+REGRAS OBRIGATORIAS:
+1. NUNCA amenize resultados ruins. Se um produto e ruim, diga que e ruim e EXPLIQUE POR QUE com numeros concretos.
+2. SEMPRE justifique opinoes com dados: "O produto X teve ${'{'}clicks{'}'} cliques mas 0 vendas, taxa de conversao de 0% - isso indica problema de preco ou descricao."
+3. Se um produto nao vende, AINDA ASSIM de solucoes praticas (pode ter estoque parado que precisa ser vendido): desconto agressivo, combo com produto estrela, flash sale, posicionar diferente na live, etc.
+4. Compare produtos entre si: "O produto A vende 5x mais que B com metade dos cliques, mostrando que B tem problema de conversao."
+5. Use percentuais, comparacoes e tendencias. Nao fale "bom" ou "ruim" sem numeros.
+6. Trate o lojista como parceiro de negocios que precisa da VERDADE para tomar decisoes, nao elogios vazios.
+7. Na nota geral, seja justo: abaixo de 5 se ta ruim, 5-7 mediocre, 7-8 bom, acima de 8 so se realmente excelente.
+
+Analise os dados de performance da Shopee Live abaixo. Analise CADA LIVE e CADA PRODUTO individualmente.
 
 RESUMO DO PERIODO (${store || 'Todas as lojas'}):
 - ${livesCount} lives realizadas
@@ -425,8 +436,8 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
   },
   "produtos": {
     "estrelas": [{"nome": "...", "motivo": "...", "acao": "..."}],
-    "alerta": [{"nome": "...", "problema": "...", "acao": "..."}],
-    "remover": [{"nome": "...", "motivo": "..."}]
+    "alerta": [{"nome": "...", "problema": "EXPLIQUE com numeros porque esta ruim (ex: 50 cliques e 0 vendas = conversao 0%)", "acao": "Solucao PRATICA mesmo que tenha estoque: desconto, combo, reposicionar, flash sale etc"}],
+    "remover": [{"nome": "...", "motivo": "Por que nao compensa manter. Se houver estoque, sugira como liquidar: desconto agressivo, kit combo, brinde em compras acima de X etc"}]
   },
   "marketing": {
     "resumo": "...",
@@ -466,7 +477,7 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
     "abandonoAlto": [{"nome": "...", "addToCart": 0, "orders": 0, "taxa": "..."}],
     "dica": "..."
   },
-  "resumoGeral": "...",
+  "resumoGeral": "Avaliacao SINCERA do periodo: o que ta bom com numeros, o que ta ruim com numeros, e qual o caminho pra melhorar. Sem florear.",
   "proximosPassos": ["...", "...", "..."]${customPrompt ? `,
   "analisePersonalizada": "texto DETALHADO respondendo ao prompt personalizado do lojista em formato de relatorio analitico profissional com insights acionaveis e dados concretos (NUNCA resposta direta simples)"` : ''}${monthlyGoals ? `,
   "avaliacaoMetas": [
