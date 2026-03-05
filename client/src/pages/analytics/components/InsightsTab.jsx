@@ -667,8 +667,10 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
   const [savingGoals, setSavingGoals] = useState(false)
   const [goalsLoaded, setGoalsLoaded] = useState(false)
   const [showCompleted, setShowCompleted] = useState(false)
+  const [streamingText, setStreamingText] = useState('')
   const saveGoalsTimer = useRef(null)
   const completedTimer = useRef(null)
+  const streamingRef = useRef(null)
 
   // Load saved insights on mount or when filters change
   useEffect(() => {
@@ -745,21 +747,17 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
     setError(null)
     setProgress(0)
     setShowCompleted(false)
+    setStreamingText('')
 
+    // Start with a fast initial progress to show something is happening
     let p = 0
     progressRef.current = setInterval(() => {
-      if (p < 60) {
-        // Fast phase: reach 60% in ~4 seconds
-        p += Math.random() * 12 + 5
-        if (p > 60) p = 60
-      } else {
-        // Slow but ALWAYS MOVING phase: each tick closes 15-25% of gap to 99
-        const remaining = 99 - p
-        const step = remaining * (0.15 + Math.random() * 0.10)
-        p += Math.max(step, 0.3) // minimum 0.3% per tick so it never looks stuck
+      if (p < 30) {
+        p += Math.random() * 8 + 3
+        if (p > 30) p = 30
       }
       setProgress(Math.round(p))
-    }, 800)
+    }, 600)
 
     try {
       const params = { period, ...(store && { store }) }
@@ -769,23 +767,86 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
       }
       if (customPrompt.trim()) params.customPrompt = customPrompt.trim()
       if (monthlyGoals.trim()) params.monthlyGoals = monthlyGoals.trim()
-      const { data } = await liveReportsAPI.getAiInsights(params)
-      clearInterval(progressRef.current)
-      setProgress(100)
 
-      // Show completion animation before revealing report
-      setShowCompleted(true)
-      await new Promise(resolve => {
-        completedTimer.current = setTimeout(resolve, 2500)
+      const token = localStorage.getItem('accessToken')
+      const apiBase = import.meta.env.VITE_API_URL || '/api'
+      const response = await fetch(`${apiBase}/live-reports/ai-insights`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` }),
+        },
+        body: JSON.stringify(params),
       })
-      setShowCompleted(false)
 
-      setInsights(data.insights)
-      setMeta(data.meta)
-      setGeneratedAt(data.generatedAt)
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}))
+        throw new Error(errData.message || `Erro ${response.status}`)
+      }
+
+      // Stop initial progress, switch to stream-driven progress
+      clearInterval(progressRef.current)
+      p = 30
+      setProgress(30)
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let totalChars = 0
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          const payload = line.slice(6).trim()
+          if (payload === '[DONE]') continue
+
+          try {
+            const event = JSON.parse(payload)
+
+            if (event.type === 'chunk') {
+              totalChars += event.text.length
+              setStreamingText(prev => prev + event.text)
+              // Progress driven by actual data (30-95%)
+              const streamProgress = Math.min(30 + (totalChars / 80), 95)
+              p = streamProgress
+              setProgress(Math.round(p))
+            }
+
+            if (event.type === 'done') {
+              clearInterval(progressRef.current)
+              setProgress(100)
+              setShowCompleted(true)
+              await new Promise(resolve => {
+                completedTimer.current = setTimeout(resolve, 2500)
+              })
+              setShowCompleted(false)
+              setStreamingText('')
+              setInsights(event.insights)
+              setMeta(event.meta)
+              setGeneratedAt(event.generatedAt)
+            }
+
+            if (event.type === 'error') {
+              throw new Error(event.message)
+            }
+          } catch (parseErr) {
+            if (parseErr.message && !parseErr.message.includes('JSON')) {
+              throw parseErr
+            }
+          }
+        }
+      }
     } catch (err) {
-      const msg = err.response?.data?.message || 'Erro ao gerar insights'
+      const msg = err.message || 'Erro ao gerar insights'
       setError(msg)
+      setStreamingText('')
     } finally {
       clearInterval(progressRef.current)
       setLoading(false)
@@ -913,6 +974,32 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
         {/* SVG Loading Animation */}
         {(loading || showCompleted) && (
           <InsightsLoadingAnimation progress={progress} completed={showCompleted} />
+        )}
+
+        {/* Streaming text display */}
+        {loading && streamingText && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="mt-4 overflow-hidden"
+          >
+            <div className="p-4 bg-slate-900/60 border border-white/5 rounded-xl max-h-48 overflow-y-auto" ref={el => {
+              if (el) el.scrollTop = el.scrollHeight
+            }}>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider">IA Respondendo em tempo real</span>
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed font-mono whitespace-pre-wrap">
+                {streamingText}
+                <motion.span
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.5, repeat: Infinity }}
+                  className="text-violet-400"
+                >|</motion.span>
+              </p>
+            </div>
+          </motion.div>
         )}
 
         {/* Error */}

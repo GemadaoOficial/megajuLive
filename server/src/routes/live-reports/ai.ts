@@ -485,9 +485,16 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
   ]` : ''}
 }`
 
-    const openai = new OpenAI({ apiKey, timeout: 120_000, maxRetries: 1 })
+    const openai = new OpenAI({ apiKey, timeout: 180_000, maxRetries: 1 })
 
-    const completion = await openai.chat.completions.create({
+    // ---- SSE STREAMING ----
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Connection', 'keep-alive')
+    res.setHeader('X-Accel-Buffering', 'no')
+    res.flushHeaders()
+
+    const stream = await openai.chat.completions.create({
       model: 'gpt-4.1-mini',
       messages: [
         { role: 'system', content: 'Voce e um consultor senior especialista em Shopee Live Brasil com experiencia em e-commerce e growth hacking. Seu papel e analisar dados de performance e fornecer insights ACIONAVEIS e ESPECIFICOS (nunca genericos). Use numeros concretos dos dados fornecidos nas suas recomendacoes. Analise CADA live individualmente, identificando onde o lojista acertou e onde errou - se uma live teve queda, explique por que.\n\nIMPORTANTE sobre MOEDAS SHOPEE: 1 moeda = R$0,01. O lojista COMPRA moedas investindo dinheiro real. Exemplo: investir R$500 = comprar 50.000 moedas para distribuir nas lives do mes. O campo coinsCost ja representa o custo em reais. Ao analisar moedas, sempre calcule o ROI real: (receita gerada - custo moedas) / custo moedas. Se gastou R$200 em moedas e faturou R$3.000, o ROI = 1400%.\n\nDe uma nota geral de 0 a 10 para o desempenho no periodo. E de uma nota de 0 a 10 para CADA live individual.\n\nResponda em portugues brasileiro. Retorne APENAS JSON valido, sem markdown.' },
@@ -495,33 +502,47 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
       ],
       max_tokens: 10000,
       temperature: 0.3,
+      stream: true,
+      stream_options: { include_usage: true },
     })
 
-    trackTokenUsage(req.user.id, 'ai-insights', completion.usage)
+    let fullText = ''
+    let usage: any = null
 
-    const text = completion.choices[0].message.content || '{}'
-    const finishReason = completion.choices[0].finish_reason
-    console.log(`[AI Insights] finish_reason: ${finishReason}, response length: ${text.length}`)
+    for await (const chunk of stream) {
+      const delta = chunk.choices?.[0]?.delta?.content
+      if (delta) {
+        fullText += delta
+        // Send chunk to client
+        res.write(`data: ${JSON.stringify({ type: 'chunk', text: delta })}\n\n`)
+      }
+      // Capture usage from the final chunk
+      if (chunk.usage) {
+        usage = chunk.usage
+      }
+    }
 
-    let jsonStr = text
-    // Strip markdown code fences if present
+    trackTokenUsage(req.user.id, 'ai-insights', usage)
+
+    console.log(`[AI Insights] Stream complete, response length: ${fullText.length}`)
+    console.log(`[AI Insights] Tokens: ${usage?.prompt_tokens} in, ${usage?.completion_tokens} out, ${usage?.total_tokens} total`)
+
+    // Parse JSON from streamed text
+    let jsonStr = fullText
     jsonStr = jsonStr.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '')
     const jsonMatch = jsonStr.match(/\{[\s\S]*\}/)
     let insights: any = {}
     try {
       insights = JSON.parse(jsonMatch ? jsonMatch[0] : jsonStr)
     } catch {
-      // If truncated (finish_reason=length), try to fix by closing open brackets
-      if (finishReason === 'length' && jsonMatch) {
+      // Try to fix truncated JSON
+      if (jsonMatch) {
         let fixedJson = jsonMatch[0]
-        // Count open/close brackets and add missing closers
         const opens = (fixedJson.match(/\{/g) || []).length
         const closes = (fixedJson.match(/\}/g) || []).length
         const openBrackets = (fixedJson.match(/\[/g) || []).length
         const closeBrackets = (fixedJson.match(/\]/g) || []).length
-        // Remove trailing comma or incomplete value
         fixedJson = fixedJson.replace(/,\s*$/, '')
-        // Remove incomplete key-value pair at the end
         fixedJson = fixedJson.replace(/,\s*"[^"]*":\s*"?[^"}\]]*$/, '')
         for (let i = 0; i < openBrackets - closeBrackets; i++) fixedJson += ']'
         for (let i = 0; i < opens - closes; i++) fixedJson += '}'
@@ -529,20 +550,20 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
           insights = JSON.parse(fixedJson)
           console.log('[AI Insights] Successfully recovered truncated JSON')
         } catch {
-          console.error('[AI Insights] Failed to recover truncated JSON. First 500 chars:', text.slice(0, 500))
-          console.error('[AI Insights] Last 200 chars:', text.slice(-200))
-          res.status(500).json({ message: 'Resposta da IA foi cortada. Tente novamente.' })
+          console.error('[AI Insights] Failed to recover JSON. First 500 chars:', fullText.slice(0, 500))
+          res.write(`data: ${JSON.stringify({ type: 'error', message: 'Resposta da IA foi cortada. Tente novamente.' })}\n\n`)
+          res.write('data: [DONE]\n\n')
+          res.end()
           return
         }
       } else {
-        console.error('[AI Insights] Invalid JSON response. First 500 chars:', text.slice(0, 500))
-        res.status(500).json({ message: 'Resposta da IA invalida. Tente novamente.' })
+        console.error('[AI Insights] Invalid JSON. First 500 chars:', fullText.slice(0, 500))
+        res.write(`data: ${JSON.stringify({ type: 'error', message: 'Resposta da IA invalida. Tente novamente.' })}\n\n`)
+        res.write('data: [DONE]\n\n')
+        res.end()
         return
       }
     }
-
-    const tokens = completion.usage
-    console.log(`[AI Insights] Tokens: ${tokens?.prompt_tokens} in, ${tokens?.completion_tokens} out, ${tokens?.total_tokens} total`)
 
     const metaData = {
       livesCount,
@@ -550,10 +571,10 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
       totalProducts: products.length,
       totalCoinsCost,
       coinsROI: Math.round(coinsROI),
-      tokensUsed: tokens?.total_tokens || 0,
+      tokensUsed: usage?.total_tokens || 0,
     }
 
-    // Save/replace insights in database (findFirst + update/create to handle nullable store)
+    // Save/replace insights in database
     const storeVal = store || null
     const periodVal = period || '30d'
     const existing = await prisma.aIInsight.findFirst({
@@ -564,7 +585,7 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
       insightsContent: insights,
       meta: metaData,
       livesAnalyzed: livesCount,
-      tokensUsed: tokens?.total_tokens || 0,
+      tokensUsed: usage?.total_tokens || 0,
       startDate: start || null,
       endDate: end || null,
     }
@@ -575,28 +596,36 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
         data: { ...saveData, userId: req.user.id, period: periodVal, store: storeVal },
       })
 
-    res.json({
-      success: true,
+    // Send final structured data
+    res.write(`data: ${JSON.stringify({
+      type: 'done',
       insights,
       meta: metaData,
       generatedAt: savedInsight.updatedAt,
-    })
+    })}\n\n`)
+    res.write('data: [DONE]\n\n')
+    res.end()
+
   } catch (error: any) {
     const errMsg = error?.message || String(error)
     const errStatus = error?.status || error?.statusCode
     console.error(`[AI Insights] Error (status=${errStatus}):`, errMsg)
-    console.error('[AI Insights] Full error:', JSON.stringify({ status: errStatus, code: error?.code, type: error?.type, message: errMsg }, null, 2))
 
-    // OpenAI specific error handling
-    if (errStatus === 429) {
-      res.status(429).json({ message: 'Limite de requisicoes da IA atingido. Aguarde 1 minuto e tente novamente.' })
-    } else if (errMsg.includes('maximum context length')) {
-      res.status(400).json({ message: 'Prompt muito grande. Selecione um periodo menor ou uma loja especifica.' })
-    } else if (errMsg.includes('timeout') || errMsg.includes('timed out') || error?.code === 'ETIMEDOUT') {
-      res.status(504).json({ message: 'A IA demorou demais para responder. Tente novamente.' })
+    // Check if headers already sent (SSE started)
+    if (res.headersSent) {
+      res.write(`data: ${JSON.stringify({ type: 'error', message: errMsg.slice(0, 200) })}\n\n`)
+      res.write('data: [DONE]\n\n')
+      res.end()
     } else {
-      // Show actual error for debugging
-      res.status(errStatus || 500).json({ message: `Erro da IA: ${errMsg.slice(0, 200)}` })
+      if (errStatus === 429) {
+        res.status(429).json({ message: 'Limite de requisicoes da IA atingido. Aguarde 1 minuto e tente novamente.' })
+      } else if (errMsg.includes('maximum context length')) {
+        res.status(400).json({ message: 'Prompt muito grande. Selecione um periodo menor ou uma loja especifica.' })
+      } else if (errMsg.includes('timeout') || errMsg.includes('timed out') || error?.code === 'ETIMEDOUT') {
+        res.status(504).json({ message: 'A IA demorou demais para responder. Tente novamente.' })
+      } else {
+        res.status(errStatus || 500).json({ message: `Erro da IA: ${errMsg.slice(0, 200)}` })
+      }
     }
   }
 })
