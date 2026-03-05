@@ -38,6 +38,8 @@ Sistema completo para gerenciamento de transmissoes ao vivo para e-commerce, com
 ### Analytics e Relatorios
 - **Visao Geral**: Metricas de engajamento e vendas
 - **Comparar Datas**: Compare metricas entre qualquer duas datas
+- **Insights com IA**: Relatorio inteligente gerado por IA com streaming em tempo real (SSE)
+- **Animacao SVG Premium**: Loading cinematico com orb pulsante, particulas orbitais e arco de progresso
 - Graficos interativos (Recharts)
 - Exportacao de dados
 - Historico permanente de snapshots

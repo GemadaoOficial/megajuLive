@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+﻿import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Sparkles, Star, AlertTriangle, Trash2, Coins, Trophy, TrendingDown,
@@ -252,15 +252,6 @@ function DeepAnalysisMessage() {
 
 // ─── SVG Loading Animations ──────────────────────────────────────────────────
 function InsightsLoadingAnimation({ progress, completed }) {
-  const stages = [
-    { label: 'Coletando dados', desc: 'Buscando relatórios e métricas das lives...', threshold: 0, color: '#a78bfa' },
-    { label: 'Analisando padrões', desc: 'Identificando tendências e padrões de comportamento...', threshold: 30, color: '#60a5fa' },
-    { label: 'Calculando métricas', desc: 'Processando indicadores de performance...', threshold: 55, color: '#34d399' },
-    { label: 'Gerando insights', desc: 'Criando relatório inteligente personalizado...', threshold: 80, color: '#f59e0b' },
-  ]
-  const current = stages.filter(s => progress >= s.threshold).length - 1
-  const stage = stages[Math.max(0, current)]
-
   if (completed) {
     return (
       <motion.div
@@ -269,273 +260,63 @@ function InsightsLoadingAnimation({ progress, completed }) {
         exit={{ opacity: 0, scale: 0.8 }}
         className="flex flex-col items-center justify-center py-16 px-4"
       >
-        {/* Celebration SVG */}
         <motion.svg
           width="200" height="200" viewBox="0 0 200 200"
           initial={{ scale: 0 }}
           animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
           transition={{ type: 'spring', stiffness: 200, damping: 15 }}
         >
-          {/* Glow circle */}
-          <motion.circle
-            cx="100" cy="100" r="80"
-            fill="none" stroke="url(#completedGlow)" strokeWidth="3"
-            initial={{ r: 0, opacity: 0 }}
-            animate={{ r: 80, opacity: [0, 1, 0.6] }}
-            transition={{ duration: 1 }}
-          />
-          {/* Pulse ring */}
-          <motion.circle
-            cx="100" cy="100" r="70"
-            fill="none" stroke="#a78bfa" strokeWidth="1" opacity="0.3"
-            animate={{ r: [70, 95, 70], opacity: [0.3, 0, 0.3] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-          {/* Center filled circle */}
-          <motion.circle
-            cx="100" cy="100" r="55"
-            fill="url(#completedFill)"
-            initial={{ r: 0 }}
-            animate={{ r: 55 }}
-            transition={{ delay: 0.3, type: 'spring', stiffness: 150 }}
-          />
-          {/* Checkmark */}
-          <motion.path
-            d="M 72 100 L 92 118 L 130 78"
-            fill="none" stroke="white" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-          />
-          {/* Sparkle particles */}
-          {[...Array(8)].map((_, i) => {
-            const angle = (i / 8) * Math.PI * 2
-            const x = 100 + Math.cos(angle) * 90
-            const y = 100 + Math.sin(angle) * 90
-            return (
-              <motion.circle
-                key={i} cx={x} cy={y} r="3"
-                fill={['#a78bfa', '#f59e0b', '#34d399', '#60a5fa'][i % 4]}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: [0, 1.5, 0], opacity: [0, 1, 0] }}
-                transition={{ delay: 0.8 + i * 0.08, duration: 0.6 }}
-              />
-            )
-          })}
           <defs>
-            <radialGradient id="completedFill">
+            <radialGradient id="doneGlow">
               <stop offset="0%" stopColor="#a78bfa" />
               <stop offset="100%" stopColor="#7c3aed" />
             </radialGradient>
-            <radialGradient id="completedGlow">
+            <radialGradient id="doneRing">
               <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.6" />
               <stop offset="100%" stopColor="#7c3aed" stopOpacity="0" />
             </radialGradient>
           </defs>
+          <motion.circle cx="100" cy="100" r="80" fill="none" stroke="url(#doneRing)" strokeWidth="3"
+            initial={{ r: 0, opacity: 0 }} animate={{ r: 80, opacity: [0, 1, 0.6] }} transition={{ duration: 1 }} />
+          <motion.circle cx="100" cy="100" r="70" fill="none" stroke="#a78bfa" strokeWidth="1" opacity="0.3"
+            animate={{ r: [70, 95, 70], opacity: [0.3, 0, 0.3] }} transition={{ duration: 2, repeat: Infinity }} />
+          <motion.circle cx="100" cy="100" r="55" fill="url(#doneGlow)"
+            initial={{ r: 0 }} animate={{ r: 55 }} transition={{ delay: 0.3, type: 'spring', stiffness: 150 }} />
+          <motion.path d="M 72 100 L 92 118 L 130 78" fill="none" stroke="white" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"
+            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.6, duration: 0.5 }} />
+          {[...Array(8)].map((_, i) => {
+            const angle = (i / 8) * Math.PI * 2
+            return (
+              <motion.circle key={i} cx={100 + Math.cos(angle) * 90} cy={100 + Math.sin(angle) * 90} r="3"
+                fill={['#a78bfa', '#f59e0b', '#34d399', '#60a5fa'][i % 4]}
+                initial={{ scale: 0, opacity: 0 }} animate={{ scale: [0, 1.5, 0], opacity: [0, 1, 0] }}
+                transition={{ delay: 0.8 + i * 0.08, duration: 0.6 }} />
+            )
+          })}
         </motion.svg>
-
         <motion.h3
-          className="text-2xl font-bold text-white mt-6 bg-gradient-to-r from-violet-400 via-purple-400 to-amber-400 bg-clip-text text-transparent"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
+          className="text-2xl font-bold mt-6"
+          style={{ background: 'linear-gradient(90deg, #a78bfa, #c084fc, #f59e0b, #a78bfa)', backgroundSize: '200% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', animation: 'shimmer 2s linear infinite' }}
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}
         >
-          Insights Concluído ✨
+          Relatório Concluído ✨
         </motion.h3>
-        <motion.p
-          className="text-sm text-slate-400 mt-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.1 }}
-        >
+        <motion.p className="text-sm text-slate-400 mt-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}>
           Aqui está o seu relatório
         </motion.p>
       </motion.div>
     )
   }
 
-  // Active loading SVG animations per stage
-  const renderStageSVG = () => {
-    const idx = Math.max(0, current)
-    return (
-      <AnimatePresence mode="wait">
-        <motion.svg
-          key={idx}
-          width="160" height="160" viewBox="0 0 160 160"
-          initial={{ opacity: 0, scale: 0.7, rotate: -10 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          exit={{ opacity: 0, scale: 0.7, rotate: 10 }}
-          transition={{ duration: 0.4 }}
-        >
-          {/* Background glow */}
-          <motion.circle
-            cx="80" cy="80" r="60"
-            fill="none" stroke={stage.color} strokeWidth="1" opacity="0.2"
-            animate={{ r: [55, 65, 55], opacity: [0.15, 0.3, 0.15] }}
-            transition={{ duration: 2.5, repeat: Infinity }}
-          />
-
-          {idx === 0 && (
-            /* Stage 0: Data collection - scanning radar */
-            <>
-              <motion.circle cx="80" cy="80" r="45" fill="none" stroke={stage.color} strokeWidth="1.5" opacity="0.3" />
-              <motion.circle cx="80" cy="80" r="30" fill="none" stroke={stage.color} strokeWidth="1" opacity="0.2" />
-              <motion.circle cx="80" cy="80" r="15" fill={stage.color} opacity="0.15" />
-              {/* Radar sweep */}
-              <motion.line
-                x1="80" y1="80" x2="80" y2="35"
-                stroke={stage.color} strokeWidth="2" strokeLinecap="round"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                style={{ transformOrigin: '80px 80px' }}
-              />
-              {/* Blinking dots (data points) */}
-              {[[60, 55], [105, 65], [70, 100], [95, 95], [80, 60]].map(([x, y], i) => (
-                <motion.circle
-                  key={i} cx={x} cy={y} r="3" fill={stage.color}
-                  animate={{ opacity: [0.2, 1, 0.2], scale: [0.8, 1.2, 0.8] }}
-                  transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
-                />
-              ))}
-              {/* Orbiting document icon */}
-              <motion.g
-                animate={{ rotate: -360 }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
-                style={{ transformOrigin: '80px 80px' }}
-              >
-                <rect x="115" y="73" width="12" height="14" rx="2" fill={stage.color} opacity="0.6" />
-                <line x1="118" y1="78" x2="124" y2="78" stroke="white" strokeWidth="1" opacity="0.5" />
-                <line x1="118" y1="81" x2="124" y2="81" stroke="white" strokeWidth="1" opacity="0.5" />
-              </motion.g>
-            </>
-          )}
-
-          {idx === 1 && (
-            /* Stage 1: Pattern analysis - brain network */
-            <>
-              {/* Brain outline */}
-              <motion.ellipse
-                cx="80" cy="75" rx="32" ry="35"
-                fill="none" stroke={stage.color} strokeWidth="2" opacity="0.5"
-                animate={{ ry: [35, 37, 35] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-              {/* Neural connections */}
-              {[[65, 60, 80, 50], [80, 50, 95, 60], [60, 75, 80, 70], [80, 70, 100, 75], [65, 90, 80, 85], [80, 85, 95, 90]].map(([x1, y1, x2, y2], i) => (
-                <motion.line
-                  key={i} x1={x1} y1={y1} x2={x2} y2={y2}
-                  stroke={stage.color} strokeWidth="1.5" strokeLinecap="round"
-                  animate={{ opacity: [0.2, 0.8, 0.2] }}
-                  transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
-                />
-              ))}
-              {/* Neural nodes */}
-              {[[65, 60], [80, 50], [95, 60], [60, 75], [80, 70], [100, 75], [65, 90], [80, 85], [95, 90]].map(([x, y], i) => (
-                <motion.circle
-                  key={i} cx={x} cy={y} r="4" fill={stage.color}
-                  animate={{ scale: [0.8, 1.3, 0.8], opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.15 }}
-                />
-              ))}
-              {/* Pulse wave across brain */}
-              <motion.rect
-                x="45" y="65" width="3" height="20" rx="1.5"
-                fill={stage.color} opacity="0.4"
-                animate={{ x: [45, 115], opacity: [0, 0.6, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              />
-            </>
-          )}
-
-          {idx === 2 && (
-            /* Stage 2: Calculating metrics - chart bars animating */
-            <>
-              {/* Chart baseline */}
-              <line x1="45" y1="115" x2="135" y2="115" stroke={stage.color} strokeWidth="1.5" opacity="0.4" />
-              <line x1="45" y1="115" x2="45" y2="45" stroke={stage.color} strokeWidth="1.5" opacity="0.4" />
-              {/* Animated bars */}
-              {[
-                { x: 55, h: 50, delay: 0 },
-                { x: 72, h: 35, delay: 0.15 },
-                { x: 89, h: 60, delay: 0.3 },
-                { x: 106, h: 45, delay: 0.45 },
-                { x: 123, h: 55, delay: 0.6 },
-              ].map((bar, i) => (
-                <motion.rect
-                  key={i} x={bar.x} width="12" rx="3"
-                  fill={stage.color} opacity="0.7"
-                  initial={{ y: 115, height: 0 }}
-                  animate={{ y: [115, 115 - bar.h, 115, 115 - bar.h * 0.9], height: [0, bar.h, 0, bar.h * 0.9] }}
-                  transition={{ duration: 2.5, repeat: Infinity, delay: bar.delay }}
-                />
-              ))}
-              {/* Trend line animating */}
-              <motion.polyline
-                points="60,90 78,100 95,70 112,80 129,60"
-                fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                opacity="0.6"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: [0, 1, 1, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              />
-            </>
-          )}
-
-          {idx === 3 && (
-            /* Stage 3: Generating insights - AI sparkle */
-            <>
-              {/* Center AI orb */}
-              <motion.circle
-                cx="80" cy="80" r="20"
-                fill="url(#aiOrb)"
-                animate={{ r: [18, 22, 18] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              />
-              {/* Orbiting sparkles */}
-              {[...Array(6)].map((_, i) => {
-                const a = (i / 6) * Math.PI * 2
-                return (
-                  <motion.g
-                    key={i}
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 4 + i * 0.5, repeat: Infinity, ease: 'linear' }}
-                    style={{ transformOrigin: '80px 80px' }}
-                  >
-                    <motion.path
-                      d={`M ${80 + Math.cos(a) * 40} ${80 + Math.sin(a) * 40} l 3 -6 3 6 -6 0 z`}
-                      fill={['#f59e0b', '#a78bfa', '#34d399', '#60a5fa', '#f472b6', '#fbbf24'][i]}
-                      animate={{ scale: [0.8, 1.3, 0.8], opacity: [0.5, 1, 0.5] }}
-                      transition={{ duration: 1 + i * 0.2, repeat: Infinity }}
-                    />
-                  </motion.g>
-                )
-              })}
-              {/* Radiating lines from orb */}
-              {[...Array(12)].map((_, i) => {
-                const a = (i / 12) * Math.PI * 2
-                return (
-                  <motion.line
-                    key={i}
-                    x1={80 + Math.cos(a) * 25} y1={80 + Math.sin(a) * 25}
-                    x2={80 + Math.cos(a) * 35} y2={80 + Math.sin(a) * 35}
-                    stroke={stage.color} strokeWidth="1.5" strokeLinecap="round"
-                    animate={{ opacity: [0, 0.8, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.12 }}
-                  />
-                )
-              })}
-              <defs>
-                <radialGradient id="aiOrb">
-                  <stop offset="0%" stopColor="#fbbf24" />
-                  <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.6" />
-                </radialGradient>
-              </defs>
-            </>
-          )}
-        </motion.svg>
-      </AnimatePresence>
-    )
-  }
+  // ─── Premium Animated Loading ───
+  const progressAngle = (progress / 100) * 360
+  const arcRad = 72
+  const arcEndX = 100 + arcRad * Math.cos(((progressAngle - 90) * Math.PI) / 180)
+  const arcEndY = 100 + arcRad * Math.sin(((progressAngle - 90) * Math.PI) / 180)
+  const largeArc = progressAngle > 180 ? 1 : 0
+  const arcPath = progressAngle > 0
+    ? `M 100 ${100 - arcRad} A ${arcRad} ${arcRad} 0 ${largeArc} 1 ${arcEndX} ${arcEndY}`
+    : ''
 
   return (
     <motion.div
@@ -544,37 +325,148 @@ function InsightsLoadingAnimation({ progress, completed }) {
       exit={{ opacity: 0, y: -20 }}
       className="flex flex-col items-center py-12 px-4"
     >
-      {renderStageSVG()}
+      <style>{`
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+      `}</style>
 
+      <motion.svg width="220" height="220" viewBox="0 0 200 200" className="overflow-visible">
+        <defs>
+          <radialGradient id="orbCore">
+            <stop offset="0%" stopColor="#c084fc" />
+            <stop offset="50%" stopColor="#8b5cf6" />
+            <stop offset="100%" stopColor="#6d28d9" stopOpacity="0.8" />
+          </radialGradient>
+          <radialGradient id="orbGlow">
+            <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.4" />
+            <stop offset="100%" stopColor="#7c3aed" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#a78bfa" />
+            <stop offset="50%" stopColor="#38bdf8" />
+            <stop offset="100%" stopColor="#34d399" />
+          </linearGradient>
+          <linearGradient id="ring1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#60a5fa" stopOpacity="0.05" />
+          </linearGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          <filter id="softGlow">
+            <feGaussianBlur stdDeviation="8" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+
+        {/* Ambient glow */}
+        <motion.circle cx="100" cy="100" r="60" fill="url(#orbGlow)" filter="url(#softGlow)"
+          animate={{ r: [55, 65, 55], opacity: [0.6, 0.9, 0.6] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }} />
+
+        {/* Outer orbit rings */}
+        <motion.circle cx="100" cy="100" r="82" fill="none" stroke="url(#ring1)" strokeWidth="0.5" strokeDasharray="4 8"
+          animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+          style={{ transformOrigin: '100px 100px' }} />
+        <motion.circle cx="100" cy="100" r="68" fill="none" stroke="url(#ring1)" strokeWidth="0.5" strokeDasharray="2 12"
+          animate={{ rotate: -360 }} transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+          style={{ transformOrigin: '100px 100px' }} />
+
+        {/* Progress arc */}
+        {arcPath && (
+          <motion.path d={arcPath} fill="none" stroke="url(#arcGrad)" strokeWidth="3" strokeLinecap="round"
+            filter="url(#glow)"
+            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.6 }} />
+        )}
+        {/* Arc track */}
+        <circle cx="100" cy="100" r="72" fill="none" stroke="white" strokeWidth="0.5" opacity="0.06" />
+
+        {/* Pulse rings */}
+        <motion.circle cx="100" cy="100" r="30" fill="none" stroke="#a78bfa" strokeWidth="1"
+          animate={{ r: [30, 50, 30], opacity: [0.4, 0, 0.4] }}
+          transition={{ duration: 2.5, repeat: Infinity }} />
+        <motion.circle cx="100" cy="100" r="25" fill="none" stroke="#60a5fa" strokeWidth="0.5"
+          animate={{ r: [25, 45, 25], opacity: [0.3, 0, 0.3] }}
+          transition={{ duration: 2.5, repeat: Infinity, delay: 1.2 }} />
+
+        {/* Central AI orb */}
+        <motion.circle cx="100" cy="100" r="22" fill="url(#orbCore)" filter="url(#glow)"
+          animate={{ r: [20, 24, 20] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }} />
+
+        {/* Brain icon inside orb */}
+        <motion.g animate={{ scale: [0.95, 1.05, 0.95] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ transformOrigin: '100px 100px' }}>
+          <motion.path
+            d="M92 105c-3-1-5-3-5-6 0-4 3-6 5-7 0-3 1-6 4-7 2-2 5-2 7-1 2-2 5-3 7-1 3-1 5 0 7 2 3 1 4 4 4 7 2 1 5 3 5 7 0 3-2 5-5 6"
+            fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.9" />
+          <line x1="100" y1="88" x2="100" y2="108" stroke="white" strokeWidth="1" opacity="0.5" />
+        </motion.g>
+
+        {/* Orbiting data dots */}
+        {[
+          { r: 50, dur: 6, color: '#a78bfa', size: 3 },
+          { r: 58, dur: 8, color: '#60a5fa', size: 2.5 },
+          { r: 44, dur: 5, color: '#34d399', size: 2 },
+          { r: 64, dur: 10, color: '#f59e0b', size: 2 },
+        ].map((orb, i) => (
+          <motion.g key={i} animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
+            transition={{ duration: orb.dur, repeat: Infinity, ease: 'linear' }}
+            style={{ transformOrigin: '100px 100px' }}>
+            <motion.circle cx={100 + orb.r} cy="100" r={orb.size} fill={orb.color} filter="url(#glow)"
+              animate={{ opacity: [0.6, 1, 0.6] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }} />
+          </motion.g>
+        ))}
+
+        {/* Floating micro-particles */}
+        {[...Array(16)].map((_, i) => {
+          const angle = (i / 16) * Math.PI * 2
+          const dist = 35 + (i * 3.7) % 50
+          return (
+            <motion.circle key={`p-${i}`}
+              cx={100 + Math.cos(angle) * dist} cy={100 + Math.sin(angle) * dist}
+              r={0.8 + (i % 3) * 0.4} fill="#a78bfa"
+              animate={{ opacity: [0, 0.6, 0], y: [0, -8, 0] }}
+              transition={{ duration: 2 + (i % 4), repeat: Infinity, delay: (i * 0.4) % 3 }} />
+          )
+        })}
+      </motion.svg>
+
+      {/* Title with shimmer */}
       <motion.h4
-        key={current}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-lg font-bold text-white mt-6"
+        className="text-xl font-bold mt-4"
+        style={{
+          background: 'linear-gradient(90deg, #c084fc, #818cf8, #38bdf8, #34d399, #c084fc)',
+          backgroundSize: '300% 100%',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          animation: 'shimmer 3s linear infinite',
+        }}
+        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
       >
-        {stage.label}
+        Gerando Relatório
       </motion.h4>
-      {/* Deep analysis messages when in slow zone */}
-      {progress >= 60 && (
+
+      {/* Deep analysis messages */}
+      {progress >= 30 ? (
         <DeepAnalysisMessage />
-      )}
-      {progress < 60 && (
-        <motion.p
-          key={`desc-${current}`}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-xs text-slate-400 mt-1.5 text-center max-w-xs"
-        >
-          {stage.desc}
+      ) : (
+        <motion.p className="text-xs text-slate-500 mt-2 text-center max-w-xs"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          Preparando análise inteligente...
         </motion.p>
       )}
 
       {/* Progress bar */}
-      <div className="w-64 mt-6">
-        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+      <div className="w-72 mt-6">
+        <div className="h-1 bg-white/5 rounded-full overflow-hidden">
           <motion.div
             className="h-full rounded-full"
-            style={{ background: `linear-gradient(90deg, ${stage.color}, ${stages[Math.min(current + 1, 3)].color})` }}
+            style={{
+              background: 'linear-gradient(90deg, #8b5cf6, #6366f1, #38bdf8, #34d399)',
+              backgroundSize: '200% 100%',
+              animation: 'shimmer 2s linear infinite',
+            }}
             initial={{ width: '0%' }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.4 }}
@@ -582,25 +474,10 @@ function InsightsLoadingAnimation({ progress, completed }) {
         </div>
         <p className="text-[10px] text-slate-600 text-center mt-2">{Math.min(Math.round(progress), 99)}% concluído</p>
       </div>
-
-      {/* Step indicators */}
-      <div className="flex items-center gap-2 mt-5">
-        {stages.map((s, i) => (
-          <div key={i} className="flex items-center gap-1.5">
-            <motion.div
-              className={`w-2 h-2 rounded-full ${i < current ? 'bg-violet-400' : i === current ? 'bg-white' : 'bg-white/15'}`}
-              animate={i === current ? { scale: [1, 1.4, 1] } : {}}
-              transition={{ duration: 1, repeat: Infinity }}
-            />
-            {i < stages.length - 1 && (
-              <div className={`w-6 h-px ${i < current ? 'bg-violet-400/50' : 'bg-white/10'}`} />
-            )}
-          </div>
-        ))}
-      </div>
     </motion.div>
   )
 }
+
 
 // ─── Main Component ─────────────────────────────────────────────────────────
 // ─── Time Ago Formatter ──────────────────────────────────────────────────────
