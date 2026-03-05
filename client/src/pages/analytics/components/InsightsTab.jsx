@@ -784,78 +784,122 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
         throw new Error(errData.message || `Erro ${response.status}`)
       }
 
-      // Stop initial progress, switch to stream-driven progress
-      clearInterval(progressRef.current)
-      p = 30
-      setProgress(30)
+      const contentType = response.headers.get('content-type') || ''
 
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let buffer = ''
-      let totalChars = 0
-      let result = null
-      let streamError = null
-
-      // Read stream
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
-
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue
-          const payload = line.slice(6).trim()
-          if (payload === '[DONE]') continue
-
-          try {
-            const event = JSON.parse(payload)
-
-            if (event.type === 'chunk') {
-              totalChars += event.text.length
-              setStreamingText(prev => prev + event.text)
-              const streamProgress = Math.min(30 + (totalChars / 80), 95)
-              p = streamProgress
-              setProgress(Math.round(p))
-            }
-
-            if (event.type === 'done') {
-              result = event
-            }
-
-            if (event.type === 'error') {
-              streamError = event.message
-            }
-          } catch (e) {
-            console.warn('[SSE] Parse error on line:', line.slice(0, 100), e)
-          }
-        }
-      }
-
-      // Handle result after stream ends
-      if (streamError) {
-        throw new Error(streamError)
-      }
-
-      if (result) {
+      // ---- JSON fallback (old server without SSE) ----
+      if (contentType.includes('application/json')) {
         clearInterval(progressRef.current)
+        const data = await response.json()
         setProgress(100)
         setShowCompleted(true)
         await new Promise(resolve => {
           completedTimer.current = setTimeout(resolve, 2500)
         })
         setShowCompleted(false)
-        setStreamingText('')
-        setInsights(result.insights)
-        setMeta(result.meta)
-        setGeneratedAt(result.generatedAt)
+        setInsights(data.insights)
+        setMeta(data.meta)
+        setGeneratedAt(data.generatedAt)
       } else {
-        // Fallback: try to parse accumulated text as old JSON response
-        const fullText = streamingText || buffer
-        console.warn('[SSE] No done event received, trying fallback parse...')
-        throw new Error('A IA respondeu mas os dados nao puderam ser processados. Tente novamente.')
+        // ---- SSE Streaming ----
+        clearInterval(progressRef.current)
+        p = 30
+        setProgress(30)
+
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+        let totalChars = 0
+        let result = null
+        let streamError = null
+        let allText = ''
+
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          buffer += decoder.decode(value, { stream: true })
+          const lines = buffer.split('\n')
+          buffer = lines.pop() || ''
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue
+            const payload = line.slice(6).trim()
+            if (payload === '[DONE]') continue
+
+            try {
+              const event = JSON.parse(payload)
+
+              if (event.type === 'chunk') {
+                totalChars += event.text.length
+                allText += event.text
+                setStreamingText(prev => prev + event.text)
+                const streamProgress = Math.min(30 + (totalChars / 80), 95)
+                p = streamProgress
+                setProgress(Math.round(p))
+              }
+
+              if (event.type === 'done') {
+                result = event
+              }
+
+              if (event.type === 'error') {
+                streamError = event.message
+              }
+            } catch (e) {
+              console.warn('[SSE] Parse error:', line.slice(0, 100), e)
+            }
+          }
+        }
+
+        if (streamError) {
+          throw new Error(streamError)
+        }
+
+        if (result) {
+          clearInterval(progressRef.current)
+          setProgress(100)
+          setShowCompleted(true)
+          await new Promise(resolve => {
+            completedTimer.current = setTimeout(resolve, 2500)
+          })
+          setShowCompleted(false)
+          setStreamingText('')
+          setInsights(result.insights)
+          setMeta(result.meta)
+          setGeneratedAt(result.generatedAt)
+        } else if (allText) {
+          // Fallback: try parsing accumulated streamed text as JSON
+          console.warn('[SSE] No done event, trying fallback JSON parse...')
+          try {
+            const jsonMatch = allText.match(/\{[\s\S]*\}/)
+            if (jsonMatch) {
+              const parsed = JSON.parse(jsonMatch[0])
+              clearInterval(progressRef.current)
+              setProgress(100)
+              setShowCompleted(true)
+              await new Promise(resolve => {
+                completedTimer.current = setTimeout(resolve, 2500)
+              })
+              setShowCompleted(false)
+              setStreamingText('')
+              // Could be either {insights:..., meta:...} or the raw insights object
+              if (parsed.insights) {
+                setInsights(parsed.insights)
+                setMeta(parsed.meta)
+                setGeneratedAt(parsed.generatedAt)
+              } else {
+                setInsights(parsed)
+              }
+            } else {
+              throw new Error('Formato inesperado')
+            }
+          } catch (fallbackErr) {
+            console.error('[SSE] Fallback parse failed:', fallbackErr)
+            throw new Error('A IA respondeu mas os dados nao puderam ser processados. Tente novamente.')
+          }
+        } else {
+          throw new Error('Nenhuma resposta recebida da IA. Reinicie o servidor e tente novamente.')
+        }
       }
     } catch (err) {
       console.error('[Insights] Error:', err)

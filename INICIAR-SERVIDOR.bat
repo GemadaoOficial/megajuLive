@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 echo ========================================
 echo    MegaJu Live - Servidor de Rede
 echo ========================================
@@ -16,7 +17,13 @@ for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /C:"IPv4"') do (
 )
 echo ========================================
 echo.
-echo [2] Iniciando servidor na porta 5000...
+echo [2] Compilando o frontend...
+echo.
+cd client
+call npm run build
+cd ..
+echo.
+echo [3] Iniciando servidor na porta 5000...
 echo.
 cd server
 npm start
