@@ -793,7 +793,10 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
       const decoder = new TextDecoder()
       let buffer = ''
       let totalChars = 0
+      let result = null
+      let streamError = null
 
+      // Read stream
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
@@ -813,37 +816,49 @@ export default function InsightsTab({ period, startDate, endDate, store }) {
             if (event.type === 'chunk') {
               totalChars += event.text.length
               setStreamingText(prev => prev + event.text)
-              // Progress driven by actual data (30-95%)
               const streamProgress = Math.min(30 + (totalChars / 80), 95)
               p = streamProgress
               setProgress(Math.round(p))
             }
 
             if (event.type === 'done') {
-              clearInterval(progressRef.current)
-              setProgress(100)
-              setShowCompleted(true)
-              await new Promise(resolve => {
-                completedTimer.current = setTimeout(resolve, 2500)
-              })
-              setShowCompleted(false)
-              setStreamingText('')
-              setInsights(event.insights)
-              setMeta(event.meta)
-              setGeneratedAt(event.generatedAt)
+              result = event
             }
 
             if (event.type === 'error') {
-              throw new Error(event.message)
+              streamError = event.message
             }
-          } catch (parseErr) {
-            if (parseErr.message && !parseErr.message.includes('JSON')) {
-              throw parseErr
-            }
+          } catch (e) {
+            console.warn('[SSE] Parse error on line:', line.slice(0, 100), e)
           }
         }
       }
+
+      // Handle result after stream ends
+      if (streamError) {
+        throw new Error(streamError)
+      }
+
+      if (result) {
+        clearInterval(progressRef.current)
+        setProgress(100)
+        setShowCompleted(true)
+        await new Promise(resolve => {
+          completedTimer.current = setTimeout(resolve, 2500)
+        })
+        setShowCompleted(false)
+        setStreamingText('')
+        setInsights(result.insights)
+        setMeta(result.meta)
+        setGeneratedAt(result.generatedAt)
+      } else {
+        // Fallback: try to parse accumulated text as old JSON response
+        const fullText = streamingText || buffer
+        console.warn('[SSE] No done event received, trying fallback parse...')
+        throw new Error('A IA respondeu mas os dados nao puderam ser processados. Tente novamente.')
+      }
     } catch (err) {
+      console.error('[Insights] Error:', err)
       const msg = err.message || 'Erro ao gerar insights'
       setError(msg)
       setStreamingText('')

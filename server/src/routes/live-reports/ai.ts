@@ -508,19 +508,26 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
 
     let fullText = ''
     let usage: any = null
+    let chunkCount = 0
 
     for await (const chunk of stream) {
       const delta = chunk.choices?.[0]?.delta?.content
       if (delta) {
         fullText += delta
+        chunkCount++
         // Send chunk to client
-        res.write(`data: ${JSON.stringify({ type: 'chunk', text: delta })}\n\n`)
+        const ok = res.write(`data: ${JSON.stringify({ type: 'chunk', text: delta })}\n\n`)
+        if (!ok) {
+          // Backpressure - wait for drain
+          await new Promise(resolve => res.once('drain', resolve))
+        }
       }
       // Capture usage from the final chunk
       if (chunk.usage) {
         usage = chunk.usage
       }
     }
+    console.log(`[AI Insights] Stream sent ${chunkCount} chunks`)
 
     trackTokenUsage(req.user.id, 'ai-insights', usage)
 
@@ -597,12 +604,14 @@ Retorne APENAS um JSON valido (sem markdown, sem \`\`\`) com esta estrutura exat
       })
 
     // Send final structured data
-    res.write(`data: ${JSON.stringify({
+    const donePayload = JSON.stringify({
       type: 'done',
       insights,
       meta: metaData,
       generatedAt: savedInsight.updatedAt,
-    })}\n\n`)
+    })
+    console.log(`[AI Insights] Sending done event (${donePayload.length} chars)`)
+    res.write(`data: ${donePayload}\n\n`)
     res.write('data: [DONE]\n\n')
     res.end()
 
